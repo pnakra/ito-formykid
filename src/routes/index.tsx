@@ -33,13 +33,13 @@ function LandingPage() {
         <section className="py-16 md:py-24">
           <div className="mx-auto max-w-2xl px-5">
             <h1 className="text-2xl md:text-3xl font-medium text-foreground leading-[1.35] mb-4">
-              Your kid is online. You deserve to understand what they're seeing.
+              Stay ahead of what your child is seeing online.
             </h1>
             <p className="text-[15px] text-muted-foreground leading-relaxed mb-8">
-              Enter a creator, game, phrase, or behavior you've noticed — and get plain-language context on what it is, why it appeals to young people, and how to stay in the conversation without pushing them away.
+              Decode troubling content and behavior shifts. Understand why it resonates. Know what to ask, what to watch for, and what actually helps. For parents of adolescents 11–18.
             </p>
             <Link to="/scan">
-              <Button size="lg">Try it free — no account needed</Button>
+              <Button size="lg">Try it free</Button>
             </Link>
             <p className="mt-3 text-xs text-hint">
               First scan free. $9/month after that.
@@ -50,23 +50,29 @@ function LandingPage() {
         {/* Value prop cards */}
         <section className="py-12 border-t">
           <div className="mx-auto max-w-3xl px-5">
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2">
               <div className="rounded-[14px] border bg-card p-5">
-                <p className="label-text mb-2">What it is</p>
+                <p className="label-text mb-2">DECODE IT</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Plain-language breakdowns of creators, games, communities, and language — written for parents, not researchers.
+                  Plain-language breakdowns of creators, games, communities, and language — with pipeline context and transparent reasoning.
                 </p>
               </div>
               <div className="rounded-[14px] border bg-card p-5">
-                <p className="label-text mb-2">Why it appeals</p>
+                <p className="label-text mb-2">UNDERSTAND THE PULL</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Understanding why your child is drawn to something is more useful than knowing why it's harmful.
+                  Every harmful content pipeline works because it meets a real need. Understanding why your child is drawn to something is what makes conversation possible.
                 </p>
               </div>
               <div className="rounded-[14px] border bg-card p-5">
-                <p className="label-text mb-2">What not to do</p>
+                <p className="label-text mb-2">STAY AHEAD</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  The responses that tend to backfire — and what to try instead.
+                  Monthly briefings, situation logging, and protective factor guidance — so you're not just reacting to crises.
+                </p>
+              </div>
+              <div className="rounded-[14px] border bg-card p-5">
+                <p className="label-text mb-2">KNOW WHAT HELPS</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  The research on what reduces adolescent vulnerability to harmful online influence — translated into things you can actually do.
                 </p>
               </div>
             </div>
@@ -77,10 +83,10 @@ function LandingPage() {
         <section className="py-12 border-t">
           <div className="mx-auto max-w-xl px-5">
             <h2 className="text-xl font-medium text-foreground mb-3">
-              It's not just one thing.
+              Built for the full range of harmful online influence.
             </h2>
             <p className="text-[15px] text-muted-foreground leading-relaxed">
-              Harmful online content doesn't come from one source. It shows up in gaming communities, influencer content, friend group language, and platform algorithms working together. is this ok? helps you see the pattern, not just the piece.
+              is this ok? covers gender-based attitudes and masculinity culture, body image and eating disorder content, sexual coercion and consent myths, identity suppression and anti-LGBTQ+ pipelines, grooming-adjacent communities, and harmful gaming culture. The common thread: content that shapes how young people think about themselves, relationships, and other people — before parents realize it's happening.
             </p>
           </div>
         </section>
