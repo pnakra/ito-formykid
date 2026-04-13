@@ -303,7 +303,7 @@ function StepConcerns({
       </div>
 
       <p className="text-[12px] text-hint leading-relaxed">
-        is this ok? currently covers content related to gender-based attitudes, masculinity culture, and body image and eating. We're expanding coverage over time.
+        is this ok? covers gender-based attitudes and masculinity culture, body image and eating disorder content, sexual coercion and consent myths, LGBTQ+ identity suppression content, grooming-adjacent communities, and harmful gaming culture. We're expanding coverage over time.
       </p>
     </div>
   );
