@@ -17,6 +17,8 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          digest_age_group: string | null
+          digest_enabled: boolean
           email: string
           id: string
           is_subscribed: boolean
@@ -25,6 +27,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          digest_age_group?: string | null
+          digest_enabled?: boolean
           email: string
           id: string
           is_subscribed?: boolean
@@ -33,6 +37,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          digest_age_group?: string | null
+          digest_enabled?: boolean
           email?: string
           id?: string
           is_subscribed?: boolean
@@ -40,6 +46,38 @@ export type Database = {
           stripe_customer_id?: string | null
         }
         Relationships: []
+      }
+      scan_notes: {
+        Row: {
+          created_at: string
+          id: string
+          note_text: string
+          scan_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          note_text: string
+          scan_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          note_text?: string
+          scan_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scan_notes_scan_id_fkey"
+            columns: ["scan_id"]
+            isOneToOne: false
+            referencedRelation: "scans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scans: {
         Row: {
