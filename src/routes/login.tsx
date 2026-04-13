@@ -25,7 +25,7 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   if (user) {
-    navigate({ to: "/scan" });
+    navigate({ to: "/home" });
     return null;
   }
 
@@ -43,7 +43,7 @@ function LoginPage() {
       setError(authError.message);
       setLoading(false);
     } else {
-      navigate({ to: "/scan" });
+      navigate({ to: "/home" });
     }
   };
 
