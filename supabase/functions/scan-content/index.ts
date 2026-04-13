@@ -40,7 +40,11 @@ If input is unrecognizable, set confidence to Low and explain in what_it_is.
 
 Distinguish clearly between mainstream self-help, edgy humor, pickup content, grievance content, and overt hate.
 
-In spectrum_reasoning and confidence_note, show your work — parents who see transparent reasoning trust the tool more and are less likely to over- or under-react.`;
+In spectrum_reasoning and confidence_note, show your work — parents who see transparent reasoning trust the tool more and are less likely to over- or under-react.
+
+Always complete every sentence and every array item fully. Never truncate mid-sentence. If you are running long, shorten earlier fields rather than cutting off later ones.
+
+The what_not_to_do items must be consistent with the spectrum_label. If the spectrum_label is 'Concerning' or 'High risk', do not include items that suggest the parent may be overreacting or that the content is probably harmless. Reserve reassuring framing for 'Mainstream' or 'Edgy but benign' results only. For concerning or high risk results, what_not_to_do should focus on how to engage without alienating — not on whether to engage at all.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -115,6 +119,7 @@ serve(async (req) => {
             type: "function",
             function: { name: "analyze_content" },
           },
+          max_tokens: 2000,
         }),
       }
     );
