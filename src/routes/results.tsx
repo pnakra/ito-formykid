@@ -140,7 +140,10 @@ function ResultsPage() {
       const scanResult: ScanResult = await response.json();
       setResult(scanResult);
 
-      // Save scan and increment count
+      // Mark first scan as done in localStorage
+      localStorage.setItem("itook_first_scan_done", "true");
+
+      // Save scan and increment count (only for authenticated users)
       if (user) {
         await supabase.from("scans").insert({
           user_id: user.id,
@@ -167,7 +170,12 @@ function ResultsPage() {
   };
 
   const handleScanAnother = () => {
-    if (!isSubscribed && (scanCount ?? 0) >= 1) {
+    // If not signed in, prompt signup
+    if (!user) {
+      setShowPaywall(true);
+      return;
+    }
+    if (!isSubscribed && (scanCount ?? 0) >= 3) {
       setShowPaywall(true);
     } else {
       sessionStorage.removeItem("scanIntake");
@@ -177,7 +185,7 @@ function ResultsPage() {
 
   const handleSaveReport = async () => {
     if (!user) {
-      navigate({ to: "/login" });
+      setShowPaywall(true);
       return;
     }
     if (!isSubscribed) {
