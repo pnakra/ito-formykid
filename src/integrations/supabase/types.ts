@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      monthly_briefing_cache: {
+        Row: {
+          age_group: string
+          bullets: Json
+          created_at: string
+          id: string
+          month_key: string
+          protective_factor_note: string
+          user_id: string
+        }
+        Insert: {
+          age_group: string
+          bullets: Json
+          created_at?: string
+          id?: string
+          month_key: string
+          protective_factor_note: string
+          user_id: string
+        }
+        Update: {
+          age_group?: string
+          bullets?: Json
+          created_at?: string
+          id?: string
+          month_key?: string
+          protective_factor_note?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -44,6 +74,42 @@ export type Database = {
           is_subscribed?: boolean
           scan_count?: number
           stripe_customer_id?: string | null
+        }
+        Relationships: []
+      }
+      protective_factors: {
+        Row: {
+          come_without_judgment: string
+          created_at: string
+          id: string
+          offline_friendships: string
+          open_conversations: string
+          question_and_pushback: string
+          stable_identity: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          come_without_judgment?: string
+          created_at?: string
+          id?: string
+          offline_friendships?: string
+          open_conversations?: string
+          question_and_pushback?: string
+          stable_identity?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          come_without_judgment?: string
+          created_at?: string
+          id?: string
+          offline_friendships?: string
+          open_conversations?: string
+          question_and_pushback?: string
+          stable_identity?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -108,6 +174,33 @@ export type Database = {
           input_type?: string
           risk_level?: string
           summary?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      situation_log: {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          logged_date: string
+          note_text: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          logged_date?: string
+          note_text: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          logged_date?: string
+          note_text?: string
           user_id?: string
         }
         Relationships: []
