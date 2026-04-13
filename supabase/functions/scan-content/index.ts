@@ -6,6 +6,26 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+const SYSTEM_PROMPT = `You are the engine behind 'is this ok? for parents,' built by Override Labs — an Illinois nonprofit focused on youth harm prevention. Help parents of young people aged 11–18 understand potentially harmful online content and stay meaningfully connected with their child.
+
+You will receive: child's age, gender identity, type of content concerned about, behavioral signals noticed, and a specific creator, term, game, or community to analyze.
+
+Mandatory rules:
+
+Never imply clinical certainty. Use 'may', 'often', 'in some cases.'
+
+Never generate extended conversation scripts. One opening question only — to preserve the authentic parent-child relationship.
+
+Calibrate all output to child's age and observed signals.
+
+If LGBTQ+ specific risks are relevant given the signals, acknowledge that dimension.
+
+If input is unrecognizable, set confidence to Low and explain in what_it_is.
+
+Distinguish clearly between mainstream self-help, edgy humor, pickup content, grievance content, and overt hate.
+
+In spectrum_reasoning and confidence_note, show your work — parents who see transparent reasoning trust the tool more and are less likely to over- or under-react.`;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -14,7 +34,7 @@ serve(async (req) => {
   try {
     const { content, inputType } = await req.json();
 
-    if (!content || typeof content !== "string" || content.length > 5000) {
+    if (!content || typeof content !== "string" || content.length > 10000) {
       return new Response(
         JSON.stringify({ error: "Invalid content" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -26,30 +46,6 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are a child safety content analyst for "is this ok?" — a warm, calm orientation tool for parents. You help parents understand content their child may be consuming online.
-
-You will receive either a URL or a text description of online content. Analyze it for potential harm to teens, specifically around:
-- Sexual content, sexualization, or non-consensual themes
-- Coercion, manipulation, or grooming patterns
-- Normalization of unhealthy relationship dynamics
-- Explicit violence or self-harm content
-- Hate speech or extremist content
-
-Respond with a JSON object using this exact structure:
-{
-  "risk_level": "low" | "concerning" | "high" | "unknown",
-  "summary": "A 2-3 sentence plain-language summary of what this content is and why it matters. Write as if speaking warmly to a parent.",
-  "guidance": "A 2-4 sentence orientation for the parent. Not a script — just gentle direction on how they might approach a conversation with their teen about this content. Be warm, non-alarmist, and empowering."
-}
-
-If you cannot determine the content (e.g. the URL is unfamiliar or the description is vague), use risk_level "unknown" and explain what you can and can't assess.
-
-IMPORTANT: Respond ONLY with valid JSON. No markdown, no explanation outside the JSON.`;
-
-    const userMessage = inputType === "url"
-      ? `Please analyze this URL that a teen may be consuming: ${content}`
-      : `Please analyze this content/description that a teen may be encountering: ${content}`;
-
     const response = await fetch(
       "https://ai.gateway.lovable.dev/v1/chat/completions",
       {
@@ -59,28 +55,41 @@ IMPORTANT: Respond ONLY with valid JSON. No markdown, no explanation outside the
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
+          model: "google/gemini-2.5-pro",
           messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userMessage },
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content },
           ],
           tools: [
             {
               type: "function",
               function: {
                 name: "analyze_content",
-                description: "Return a content safety analysis for parents",
+                description: "Return a structured content analysis for parents",
                 parameters: {
                   type: "object",
                   properties: {
-                    risk_level: {
-                      type: "string",
-                      enum: ["low", "concerning", "high", "unknown"],
-                    },
-                    summary: { type: "string" },
-                    guidance: { type: "string" },
+                    what_it_is: { type: "string", description: "2-3 sentences. Plain language, no jargon." },
+                    platform_context: { type: "string", description: "1-2 sentences on where this lives and how a young person typically encounters it." },
+                    spectrum_label: { type: "string", enum: ["Mainstream", "Edgy but benign", "Concerning", "High risk"] },
+                    spectrum_reasoning: { type: "string", description: "One sentence explaining the classification." },
+                    confidence: { type: "string", enum: ["Low", "Medium", "High"] },
+                    confidence_note: { type: "string", description: "One sentence explaining confidence level." },
+                    why_it_appeals: { type: "string", description: "2-3 sentences. Genuinely explain why this resonates with young people." },
+                    pipeline_context: { type: ["string", "null"], description: "If part of a known radicalization or harm pipeline, explain in 1-2 sentences. Otherwise null." },
+                    values_promoted: { type: "array", items: { type: "string" }, description: "3-5 strings using 'may promote' framing." },
+                    age_specific_note: { type: ["string", "null"], description: "If age changes risk or approach, note it. Otherwise null." },
+                    what_not_to_do: { type: "array", items: { type: "string" }, description: "3 specific parental responses that tend to backfire." },
+                    opening_question: { type: "string", description: "One curiosity-oriented question to open dialogue." },
+                    warning_signs: { type: "array", items: { type: "string" }, description: "3-4 observable signals of deeper engagement." },
+                    return_signals: { type: "array", items: { type: "string" }, description: "2-3 signs the situation is improving." },
                   },
-                  required: ["risk_level", "summary", "guidance"],
+                  required: [
+                    "what_it_is", "platform_context", "spectrum_label", "spectrum_reasoning",
+                    "confidence", "confidence_note", "why_it_appeals", "pipeline_context",
+                    "values_promoted", "age_specific_note", "what_not_to_do",
+                    "opening_question", "warning_signs", "return_signals"
+                  ],
                   additionalProperties: false,
                 },
               },

@@ -1,12 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/scan")({
   head: () => ({
@@ -26,11 +25,6 @@ interface IntakeData {
   query: string;
 }
 
-interface ScanResult {
-  risk_level: "low" | "concerning" | "high" | "unknown";
-  summary: string;
-  guidance: string;
-}
 
 const CONCERN_OPTIONS = [
   "A specific creator, YouTuber, or podcast",
@@ -66,8 +60,6 @@ function ScanPage() {
     observations: [],
     query: "",
   });
-  const [scanning, setScanning] = useState(false);
-  const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState("");
   const [scanCount, setScanCount] = useState<number | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -107,92 +99,21 @@ function ScanPage() {
   const toggleItem = (list: string[], item: string): string[] =>
     list.includes(item) ? list.filter((i) => i !== item) : [...list, item];
 
-  const handleSubmit = async () => {
-    if (!user || !data.query.trim()) return;
+  const handleSubmit = () => {
+    if (!data.query.trim()) return;
 
     if (!canScan) {
       setError("You've used your 3 free scans. Subscribe to continue.");
       return;
     }
 
-    setScanning(true);
-    setError("");
-    setResult(null);
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      const contextParts: string[] = [];
-      if (data.age) contextParts.push(`Child's age: ${data.age}`);
-      if (data.gender) contextParts.push(`Gender: ${data.gender}`);
-      if (data.concerns.length) contextParts.push(`Concerns: ${data.concerns.join(", ")}`);
-      if (data.observations.length) contextParts.push(`Observations: ${data.observations.join(", ")}`);
-      contextParts.push(`Query: ${data.query.trim()}`);
-
-      const content = contextParts.join("\n");
-
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scan-content`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({ content, inputType: "text" }),
-        }
-      );
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || "Scan failed");
-      }
-
-      const scanResult: ScanResult = await response.json();
-      setResult(scanResult);
-
-      await supabase.from("scans").insert({
-        user_id: user.id,
-        input_type: "text",
-        input_content: content,
-        risk_level: scanResult.risk_level,
-        summary: scanResult.summary,
-        guidance: scanResult.guidance,
-      });
-
-      const newCount = (scanCount ?? 0) + 1;
-      await supabase
-        .from("profiles")
-        .update({ scan_count: newCount })
-        .eq("id", user.id);
-      setScanCount(newCount);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setScanning(false);
-    }
+    // Store intake data and navigate to results
+    sessionStorage.setItem("scanIntake", JSON.stringify(data));
+    navigate({ to: "/results" });
   };
 
   if (authLoading) return null;
 
-  if (result) {
-    return <ResultView result={result} onNewScan={() => { setResult(null); setStep(1); setData({ age: "", gender: "", concerns: [], observations: [], query: "" }); }} />;
-  }
-
-  if (scanning) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header isLoggedIn={true} />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <Loader2 className="h-6 w-6 animate-spin mx-auto mb-3 text-muted-foreground" />
-            <p className="text-[15px] text-muted-foreground">Analyzing…</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -460,56 +381,3 @@ function StepQuery({
   );
 }
 
-function ResultView({ result, onNewScan }: { result: ScanResult; onNewScan: () => void }) {
-  const riskVariant = (level: string) => {
-    switch (level) {
-      case "low": return "low" as const;
-      case "concerning": return "concerning" as const;
-      case "high": return "high" as const;
-      default: return "neutral" as const;
-    }
-  };
-
-  const riskLabel = (level: string) => {
-    switch (level) {
-      case "low": return "Low risk";
-      case "concerning": return "Concerning";
-      case "high": return "High risk";
-      default: return "Unknown";
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header isLoggedIn={true} />
-      <main className="flex-1 py-10">
-        <div className="mx-auto max-w-xl px-5">
-          <h1 className="text-2xl font-medium text-foreground mb-1">Your report</h1>
-          <p className="text-sm text-muted-foreground mb-6">Here's what we found.</p>
-
-          <div className="rounded-[14px] border bg-card p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <Badge variant={riskVariant(result.risk_level)}>
-                {riskLabel(result.risk_level)}
-              </Badge>
-            </div>
-            <p className="text-[15px] text-foreground mb-4 leading-relaxed">
-              {result.summary}
-            </p>
-            <div className="rounded-[10px] bg-background border p-4">
-              <p className="label-text mb-2">Orientation</p>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {result.guidance}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-5">
-            <Button variant="outline" onClick={onNewScan}>Scan something else</Button>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </div>
-  );
-}
