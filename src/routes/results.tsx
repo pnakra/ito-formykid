@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { CollapsibleCard } from "@/components/CollapsibleCard";
 
 export const Route = createFileRoute("/results")({
   head: () => ({
@@ -19,6 +20,7 @@ export const Route = createFileRoute("/results")({
 });
 
 interface ScanResult {
+  summary_verdict: string;
   what_it_is: string;
   platform_context: string;
   spectrum_label: "Mainstream" | "Edgy but benign" | "Concerning" | "High risk";
@@ -78,6 +80,33 @@ function ResultsPage() {
   const [digestName, setDigestName] = useState("");
   const [digestSubmitted, setDigestSubmitted] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  // Collapsible card state: FOR PARENTS defaults expanded, rest collapsed
+  const [openCards, setOpenCards] = useState<Record<string, boolean>>({
+    whatThisIs: false,
+    whyItAppeals: false,
+    valuesPromoted: false,
+    watchFor: false,
+    forParents: true,
+    nextSteps: false,
+  });
+
+  const toggleCard = (key: string) => {
+    setOpenCards(prev => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const allExpanded = Object.values(openCards).every(v => v);
+  const toggleAll = () => {
+    const newState = !allExpanded;
+    setOpenCards({
+      whatThisIs: newState,
+      whyItAppeals: newState,
+      valuesPromoted: newState,
+      watchFor: newState,
+      forParents: newState,
+      nextSteps: newState,
+    });
+  };
 
   useEffect(() => {
     const stored = sessionStorage.getItem("scanIntake");
@@ -140,10 +169,8 @@ function ResultsPage() {
       const scanResult: ScanResult = await response.json();
       setResult(scanResult);
 
-      // Mark first scan as done in localStorage
       localStorage.setItem("itook_first_scan_done", "true");
 
-      // Save scan and increment count (only for authenticated users)
       if (user) {
         await supabase.from("scans").insert({
           user_id: user.id,
@@ -170,7 +197,6 @@ function ResultsPage() {
   };
 
   const handleScanAnother = () => {
-    // If not signed in, prompt signup
     if (!user) {
       setShowPaywall(true);
       return;
@@ -197,8 +223,13 @@ function ResultsPage() {
 
   const handleDigestSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: store digest signup
     setDigestSubmitted(true);
+  };
+
+  // Helper to get first sentence for preview
+  const firstSentence = (text: string) => {
+    const match = text.match(/^[^.!?]+[.!?]/);
+    return match ? match[0] : text;
   };
 
   if (loading) {
@@ -240,12 +271,42 @@ function ResultsPage() {
       <Header isLoggedIn={!!user} />
 
       <main className="flex-1 py-10">
-        <div className="mx-auto max-w-xl px-5 space-y-5">
+        <div className="mx-auto max-w-xl px-5 space-y-3">
+
+          {/* Summary card — always visible, never collapsible */}
+          <div className="rounded-[14px] p-6" style={{ backgroundColor: "#F5F2EC" }}>
+            <p className="text-[18px] font-medium leading-relaxed text-center" style={{ color: "#2C3B2A" }}>
+              {result.summary_verdict || result.what_it_is}
+            </p>
+            <div className="flex items-center justify-center gap-3 mt-4">
+              <Badge className={SPECTRUM_COLORS[result.spectrum_label]}>
+                {result.spectrum_label}
+              </Badge>
+            </div>
+            <p className="text-[13px] text-center mt-2" style={{ color: "#9AA898" }}>
+              {intake.query}
+            </p>
+          </div>
+
+          {/* Expand / Collapse all toggle */}
+          <div className="flex justify-end">
+            <button
+              onClick={toggleAll}
+              className="text-[12px] hover:underline transition-colors"
+              style={{ color: "#9AA898" }}
+            >
+              {allExpanded ? "Collapse all" : "Expand all"}
+            </button>
+          </div>
 
           {/* Card 1 — What this is */}
-          <div className="rounded-[14px] bg-card p-5">
-            <p className="label-text mb-3">WHAT THIS IS</p>
-            <h1 className="text-2xl font-medium text-foreground mb-3">{intake.query}</h1>
+          <CollapsibleCard
+            label="WHAT THIS IS"
+            previewText={firstSentence(result.what_it_is)}
+            isOpen={openCards.whatThisIs}
+            onToggle={() => toggleCard("whatThisIs")}
+          >
+            <h2 className="text-xl font-medium text-foreground mb-3">{intake.query}</h2>
             <p className="text-[15px] text-foreground leading-relaxed mb-2">{result.what_it_is}</p>
             <p className="text-[13px] text-muted-foreground leading-relaxed mb-5">{result.platform_context}</p>
 
@@ -276,24 +337,31 @@ function ResultsPage() {
               <p className="label-text mt-2 mb-1">WHY THIS CONFIDENCE LEVEL</p>
               <p className="text-[13px] text-hint leading-relaxed">{result.confidence_note}</p>
             </div>
-          </div>
+          </CollapsibleCard>
 
           {/* Card 2 — Why it appeals */}
-          <div className="rounded-[14px] bg-card p-5">
-            <p className="label-text mb-3">WHY YOUNG PEOPLE WATCH THIS</p>
+          <CollapsibleCard
+            label="WHY YOUNG PEOPLE WATCH THIS"
+            previewText={firstSentence(result.why_it_appeals)}
+            isOpen={openCards.whyItAppeals}
+            onToggle={() => toggleCard("whyItAppeals")}
+          >
             <p className="text-[15px] text-foreground leading-relaxed">{result.why_it_appeals}</p>
-
             {result.pipeline_context && (
               <div className="mt-4 border-l-[3px] border-risk-concerning-foreground rounded-r-[10px] bg-risk-concerning/30 p-4">
                 <p className="label-text mb-1">PART OF A LARGER PATTERN</p>
                 <p className="text-[13px] text-foreground leading-relaxed">{result.pipeline_context}</p>
               </div>
             )}
-          </div>
+          </CollapsibleCard>
 
           {/* Card 3 — Values it may promote */}
-          <div className="rounded-[14px] bg-card p-5">
-            <p className="label-text mb-3">VALUES IT MAY PROMOTE</p>
+          <CollapsibleCard
+            label="VALUES IT MAY PROMOTE"
+            previewText={firstSentence(result.values_promoted[0] || "")}
+            isOpen={openCards.valuesPromoted}
+            onToggle={() => toggleCard("valuesPromoted")}
+          >
             <ul className="space-y-2">
               {result.values_promoted.map((v, i) => (
                 <li key={i} className="flex items-start gap-3 text-[15px] text-foreground leading-relaxed">
@@ -302,18 +370,21 @@ function ResultsPage() {
                 </li>
               ))}
             </ul>
-
             {result.age_specific_note && intake.age && (
               <div className="mt-4 rounded-[10px] bg-background border p-4">
                 <p className="label-text mb-1">NOTE FOR PARENTS OF {intake.age}-YEAR-OLDS</p>
                 <p className="text-[13px] text-muted-foreground leading-relaxed">{result.age_specific_note}</p>
               </div>
             )}
-          </div>
+          </CollapsibleCard>
 
           {/* Card 4 — Warning signs */}
-          <div className="rounded-[14px] bg-card p-5">
-            <p className="label-text mb-1">WHAT TO WATCH FOR</p>
+          <CollapsibleCard
+            label="WHAT TO WATCH FOR"
+            previewText={firstSentence(result.warning_signs[0] || "")}
+            isOpen={openCards.watchFor}
+            onToggle={() => toggleCard("watchFor")}
+          >
             <p className="text-[13px] text-muted-foreground mb-3">Signs of deeper engagement — observable without monitoring their device</p>
             <ul className="space-y-2 mb-4">
               {result.warning_signs.map((s, i) => (
@@ -323,7 +394,6 @@ function ResultsPage() {
                 </li>
               ))}
             </ul>
-
             <div className="border-t pt-4">
               <p className="text-[13px] text-muted-foreground mb-3">Signs things may be improving</p>
               <ul className="space-y-2">
@@ -335,11 +405,15 @@ function ResultsPage() {
                 ))}
               </ul>
             </div>
-          </div>
+          </CollapsibleCard>
 
-          {/* Card 5 — For parents */}
-          <div className="rounded-[14px] bg-card p-5">
-            <p className="label-text mb-1">FOR PARENTS</p>
+          {/* Card 5 — For parents (defaults EXPANDED) */}
+          <CollapsibleCard
+            label="FOR PARENTS"
+            previewText={firstSentence(result.what_not_to_do[0] || "")}
+            isOpen={openCards.forParents}
+            onToggle={() => toggleCard("forParents")}
+          >
             <p className="text-[13px] text-muted-foreground mb-3">What tends to backfire</p>
             <ul className="space-y-2 mb-4">
               {result.what_not_to_do.map((s, i) => (
@@ -349,7 +423,6 @@ function ResultsPage() {
                 </li>
               ))}
             </ul>
-
             <div className="border-t pt-4">
               <p className="text-[13px] text-muted-foreground mb-3">One way to open the conversation</p>
               <div className="border-l-[3px] pl-4" style={{ borderColor: "#3B5438" }}>
@@ -359,11 +432,15 @@ function ResultsPage() {
                 This is a suggestion, not a script. The most effective conversations start with your own words and genuine curiosity.
               </p>
             </div>
-          </div>
+          </CollapsibleCard>
 
           {/* Card 6 — Next steps */}
-          <div className="rounded-[14px] bg-card p-5">
-            <p className="label-text mb-4">NEXT STEPS</p>
+          <CollapsibleCard
+            label="NEXT STEPS"
+            previewText="Look up something else, save this report, or get the monthly digest"
+            isOpen={openCards.nextSteps}
+            onToggle={() => toggleCard("nextSteps")}
+          >
             <div className="grid grid-cols-1 gap-3">
               <button
                 onClick={handleScanAnother}
@@ -395,7 +472,7 @@ function ResultsPage() {
                 </p>
               </button>
             </div>
-          </div>
+          </CollapsibleCard>
 
         </div>
       </main>
