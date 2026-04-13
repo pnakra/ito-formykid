@@ -35,9 +35,14 @@ export const Route = createRootRoute({
       { title: "is this ok? for parents — understand what your child sees online" },
       { name: "description", content: "A calm orientation tool helping parents understand harmful online content and how to talk about it with their teens." },
       { name: "author", content: "is this ok?" },
-      { property: "og:title", content: "is this ok? for parents" },
-      { property: "og:description", content: "Understand what your child sees online. Get gentle guidance for meaningful conversations." },
+      { property: "og:title", content: "is this ok? for parents — understand what your child sees online" },
+      { property: "og:description", content: "A calm orientation tool helping parents understand harmful online content and how to talk about it with their teens." },
       { property: "og:type", content: "website" },
+      { name: "twitter:title", content: "is this ok? for parents — understand what your child sees online" },
+      { name: "twitter:description", content: "A calm orientation tool helping parents understand harmful online content and how to talk about it with their teens." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/967bf54b-b021-49c5-abd9-2b8b264f20a6" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/967bf54b-b021-49c5-abd9-2b8b264f20a6" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       {
