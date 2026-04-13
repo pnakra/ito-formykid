@@ -42,16 +42,16 @@ function LandingPage() {
 
       <main className="flex-1">
         {/* Hero */}
-        <section className="py-16 md:py-24">
+        <section className="py-12 md:py-24">
           <div className="mx-auto max-w-2xl px-5">
-            <h1 className="text-2xl md:text-[32px] font-medium text-foreground leading-[1.35] mb-5">
+            <h1 className="text-[24px] md:text-[32px] font-medium text-foreground leading-[1.35] mb-4">
               Something doesn't feel right. We can help you figure out what's going on.
             </h1>
-            <p className="text-[16px] text-hint leading-relaxed mb-8">
+            <p className="text-[15px] md:text-[16px] text-hint leading-relaxed mb-7">
               Parents and grandparents use is this ok? when they hear something from a child that worries them — a word, a name, a video, a change in how they're acting. Type it in and we'll tell you what it is, why young people are drawn to it, and how to talk about it without pushing them away.
             </p>
             <Link to="/scan">
-              <Button size="lg">Try it free — no account needed</Button>
+              <Button size="lg" className="w-full sm:w-auto">Try it free — no account needed</Button>
             </Link>
             <p className="mt-3 text-[12px] text-hint">
               First look is free. $9/month after that.
@@ -167,7 +167,7 @@ function LandingPage() {
                 <p className="text-[15px] text-foreground">You're signed up. We'll be in touch.</p>
               </div>
             ) : (
-              <form onSubmit={handleDigestSubmit} className="flex gap-3">
+              <form onSubmit={handleDigestSubmit} className="flex flex-col sm:flex-row gap-3">
                 <Input
                   type="email"
                   value={digestEmail}
@@ -176,7 +176,7 @@ function LandingPage() {
                   required
                   className="flex-1"
                 />
-                <Button type="submit">Send me the monthly update</Button>
+                <Button type="submit" className="w-full sm:w-auto whitespace-nowrap">Send me the monthly update</Button>
               </form>
             )}
 
