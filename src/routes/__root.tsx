@@ -32,14 +32,12 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "is this ok? for parents — understand what your child sees online" },
+      { name: "description", content: "A calm orientation tool helping parents understand harmful online content and how to talk about it with their teens." },
+      { name: "author", content: "is this ok?" },
+      { property: "og:title", content: "is this ok? for parents" },
+      { property: "og:description", content: "Understand what your child sees online. Get gentle guidance for meaningful conversations." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -68,5 +66,9 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <AuthProvider>
+      <Outlet />
+    </AuthProvider>
+  );
 }
