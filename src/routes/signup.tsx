@@ -26,7 +26,7 @@ function SignupPage() {
   const [success, setSuccess] = useState(false);
 
   if (user) {
-    navigate({ to: "/scan" });
+    navigate({ to: "/home" });
     return null;
   }
 

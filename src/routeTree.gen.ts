@@ -13,6 +13,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ScanRouteImport } from './routes/scan'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as HomeRouteImport } from './routes/home'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AccountRouteImport } from './routes/account'
@@ -36,6 +37,11 @@ const ResultsRoute = ResultsRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HomeRoute = HomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const HistoryRoute = HistoryRouteImport.update({
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/checkout': typeof CheckoutRoute
   '/history': typeof HistoryRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/checkout': typeof CheckoutRoute
   '/history': typeof HistoryRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/checkout': typeof CheckoutRoute
   '/history': typeof HistoryRoute
+  '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/checkout'
     | '/history'
+    | '/home'
     | '/login'
     | '/results'
     | '/scan'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/checkout'
     | '/history'
+    | '/home'
     | '/login'
     | '/results'
     | '/scan'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/account'
     | '/checkout'
     | '/history'
+    | '/home'
     | '/login'
     | '/results'
     | '/scan'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   CheckoutRoute: typeof CheckoutRoute
   HistoryRoute: typeof HistoryRoute
+  HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   ResultsRoute: typeof ResultsRoute
   ScanRoute: typeof ScanRoute
@@ -162,6 +175,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/home': {
+      id: '/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/history': {
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   CheckoutRoute: CheckoutRoute,
   HistoryRoute: HistoryRoute,
+  HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   ResultsRoute: ResultsRoute,
   ScanRoute: ScanRoute,
