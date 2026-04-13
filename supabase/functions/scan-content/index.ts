@@ -44,7 +44,9 @@ In spectrum_reasoning and confidence_note, show your work — parents who see tr
 
 Always complete every sentence and every array item fully. Never truncate mid-sentence. If you are running long, shorten earlier fields rather than cutting off later ones.
 
-The what_not_to_do items must be consistent with the spectrum_label. If the spectrum_label is 'Concerning' or 'High risk', do not include items that suggest the parent may be overreacting or that the content is probably harmless. Reserve reassuring framing for 'Mainstream' or 'Edgy but benign' results only. For concerning or high risk results, what_not_to_do should focus on how to engage without alienating — not on whether to engage at all.`;
+The what_not_to_do items must be consistent with the spectrum_label. If the spectrum_label is 'Concerning' or 'High risk', do not include items that suggest the parent may be overreacting or that the content is probably harmless. Reserve reassuring framing for 'Mainstream' or 'Edgy but benign' results only. For concerning or high risk results, what_not_to_do should focus on how to engage without alienating — not on whether to engage at all.
+
+summary_verdict: One plain-language sentence that tells a non-technical parent the single most important thing to know about this content. Write it as if speaking directly to a worried grandparent. No jargon. No spectrum labels. No confidence language. Just the honest one-sentence takeaway. Examples of the right tone: 'This is content that teaches boys their worth is based on how they look, and it can lead to more harmful ideas over time.' or 'This appears to be a harmless gaming term, but it's worth knowing the context.' or 'This is a community that actively tries to pull young people away from the adults in their life — it deserves your attention.'`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -89,6 +91,7 @@ serve(async (req) => {
                 parameters: {
                   type: "object",
                   properties: {
+                    summary_verdict: { type: "string", description: "One plain-language sentence — the single most important takeaway for a non-technical parent or grandparent. No jargon, no labels." },
                     what_it_is: { type: "string", description: "2-3 sentences. Plain language, no jargon." },
                     platform_context: { type: "string", description: "1-2 sentences on where this lives and how a young person typically encounters it." },
                     spectrum_label: { type: "string", enum: ["Mainstream", "Edgy but benign", "Concerning", "High risk"] },
@@ -105,7 +108,7 @@ serve(async (req) => {
                     return_signals: { type: "array", items: { type: "string" }, description: "2-3 signs the situation is improving." },
                   },
                   required: [
-                    "what_it_is", "platform_context", "spectrum_label", "spectrum_reasoning",
+                    "summary_verdict", "what_it_is", "platform_context", "spectrum_label", "spectrum_reasoning",
                     "confidence", "confidence_note", "why_it_appeals", "pipeline_context",
                     "values_promoted", "age_specific_note", "what_not_to_do",
                     "opening_question", "warning_signs", "return_signals"
