@@ -1,12 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/scan")({
   head: () => ({
@@ -26,11 +25,6 @@ interface IntakeData {
   query: string;
 }
 
-interface ScanResult {
-  risk_level: "low" | "concerning" | "high" | "unknown";
-  summary: string;
-  guidance: string;
-}
 
 const CONCERN_OPTIONS = [
   "A specific creator, YouTuber, or podcast",
@@ -66,8 +60,6 @@ function ScanPage() {
     observations: [],
     query: "",
   });
-  const [scanning, setScanning] = useState(false);
-  const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState("");
   const [scanCount, setScanCount] = useState<number | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
