@@ -95,7 +95,7 @@ function AccountPage() {
               ) : (
                 <div>
                   <p className="text-[15px] text-foreground mb-3">No active subscription</p>
-                  <Button size="sm">
+                  <Button size="sm" onClick={() => navigate({ to: "/checkout" })}>
                     Subscribe — $9/month
                   </Button>
                   <p className="text-xs text-hint mt-2">
