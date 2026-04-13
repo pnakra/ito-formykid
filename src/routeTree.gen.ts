@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ScanRouteImport } from './routes/scan'
+import { Route as ResultsRouteImport } from './routes/results'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -25,6 +26,11 @@ const SignupRoute = SignupRouteImport.update({
 const ScanRoute = ScanRouteImport.update({
   id: '/scan',
   path: '/scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResultsRoute = ResultsRouteImport.update({
+  id: '/results',
+  path: '/results',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
+  '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
 }
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
+  '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
 }
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/history': typeof HistoryRoute
   '/login': typeof LoginRoute
+  '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
 }
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/history'
     | '/login'
+    | '/results'
     | '/scan'
     | '/signup'
   fileRoutesByTo: FileRoutesByTo
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/history'
     | '/login'
+    | '/results'
     | '/scan'
     | '/signup'
   id:
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/history'
     | '/login'
+    | '/results'
     | '/scan'
     | '/signup'
   fileRoutesById: FileRoutesById
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   HistoryRoute: typeof HistoryRoute
   LoginRoute: typeof LoginRoute
+  ResultsRoute: typeof ResultsRoute
   ScanRoute: typeof ScanRoute
   SignupRoute: typeof SignupRoute
 }
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/scan'
       fullPath: '/scan'
       preLoaderRoute: typeof ScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/results': {
+      id: '/results'
+      path: '/results'
+      fullPath: '/results'
+      preLoaderRoute: typeof ResultsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   HistoryRoute: HistoryRoute,
   LoginRoute: LoginRoute,
+  ResultsRoute: ResultsRoute,
   ScanRoute: ScanRoute,
   SignupRoute: SignupRoute,
 }
