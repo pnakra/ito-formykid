@@ -317,9 +317,9 @@ function ResultsPage() {
             <p className="text-[13px] text-muted-foreground mb-3">Signs of deeper engagement — observable without monitoring their device</p>
             <ul className="space-y-2 mb-4">
               {result.warning_signs.map((s, i) => (
-                <li key={i} className="flex items-start gap-2 text-[15px] text-foreground leading-relaxed">
-                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />
-                  {s}
+                <li key={i} className="flex items-start gap-3 text-[15px] text-foreground leading-relaxed">
+                  <span className="mt-[9px] h-[5px] w-[5px] rounded-full bg-muted-foreground shrink-0" />
+                  <span className="flex-1">{s}</span>
                 </li>
               ))}
             </ul>
