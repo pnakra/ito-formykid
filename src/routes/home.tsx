@@ -271,15 +271,24 @@ function HomePage() {
       .eq("user_id", user.id)
       .single();
 
+    const updatePayload = {
+      open_conversations: updated.open_conversations,
+      come_without_judgment: updated.come_without_judgment,
+      offline_friendships: updated.offline_friendships,
+      question_and_pushback: updated.question_and_pushback,
+      stable_identity: updated.stable_identity,
+      updated_at: new Date().toISOString(),
+    };
+
     if (existing) {
       await supabase
         .from("protective_factors")
-        .update({ [key]: status, updated_at: new Date().toISOString() })
+        .update(updatePayload)
         .eq("user_id", user.id);
     } else {
       await supabase.from("protective_factors").insert({
         user_id: user.id,
-        ...updated,
+        ...updatePayload,
       });
     }
 
