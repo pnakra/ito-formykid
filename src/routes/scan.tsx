@@ -114,24 +114,6 @@ function ScanPage() {
 
   if (authLoading) return null;
 
-  if (result) {
-    return <ResultView result={result} onNewScan={() => { setResult(null); setStep(1); setData({ age: "", gender: "", concerns: [], observations: [], query: "" }); }} />;
-  }
-
-  if (scanning) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header isLoggedIn={true} />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <Loader2 className="h-6 w-6 animate-spin mx-auto mb-3 text-muted-foreground" />
-            <p className="text-[15px] text-muted-foreground">Analyzing…</p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -399,56 +381,3 @@ function StepQuery({
   );
 }
 
-function ResultView({ result, onNewScan }: { result: ScanResult; onNewScan: () => void }) {
-  const riskVariant = (level: string) => {
-    switch (level) {
-      case "low": return "low" as const;
-      case "concerning": return "concerning" as const;
-      case "high": return "high" as const;
-      default: return "neutral" as const;
-    }
-  };
-
-  const riskLabel = (level: string) => {
-    switch (level) {
-      case "low": return "Low risk";
-      case "concerning": return "Concerning";
-      case "high": return "High risk";
-      default: return "Unknown";
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header isLoggedIn={true} />
-      <main className="flex-1 py-10">
-        <div className="mx-auto max-w-xl px-5">
-          <h1 className="text-2xl font-medium text-foreground mb-1">Your report</h1>
-          <p className="text-sm text-muted-foreground mb-6">Here's what we found.</p>
-
-          <div className="rounded-[14px] border bg-card p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <Badge variant={riskVariant(result.risk_level)}>
-                {riskLabel(result.risk_level)}
-              </Badge>
-            </div>
-            <p className="text-[15px] text-foreground mb-4 leading-relaxed">
-              {result.summary}
-            </p>
-            <div className="rounded-[10px] bg-background border p-4">
-              <p className="label-text mb-2">Orientation</p>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {result.guidance}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-5">
-            <Button variant="outline" onClick={onNewScan}>Scan something else</Button>
-          </div>
-        </div>
-      </main>
-      <Footer />
-    </div>
-  );
-}
