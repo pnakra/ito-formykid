@@ -10,8 +10,8 @@ import { ChevronLeft } from "lucide-react";
 export const Route = createFileRoute("/scan")({
   head: () => ({
     meta: [
-      { title: "Scan content — is this ok?" },
-      { name: "description", content: "Paste a URL or describe content to get a calm, clear assessment." },
+      { title: "Look something up — is this ok?" },
+      { name: "description", content: "Tell us what you noticed and we'll help you understand what's going on." },
     ],
   }),
   component: ScanPage,
@@ -25,29 +25,30 @@ interface IntakeData {
   query: string;
 }
 
-
 const CONCERN_OPTIONS = [
-  "A specific creator, YouTuber, or podcast",
-  "A game or gaming community",
-  "Language or phrases I've been hearing",
-  "Attitude or behavior changes",
-  "Something I saw online that I don't understand",
-  "I'm not sure — I just have a feeling something is off",
+  "Something I heard them say",
+  "Something I saw them watching or reading",
+  "A game or app they've been using",
+  "The way they've been acting lately",
+  "A word or phrase I didn't recognize",
+  "Something a teacher or other parent mentioned",
+  "I just have a feeling something is off and I want to understand it better",
 ];
 
 const OBSERVATION_OPTIONS = [
-  "Language or attitudes toward women that concern me",
-  "Language or attitudes toward LGBTQ+ people that concern me",
-  "Withdrawal from family or friends",
-  "A new online community or friend group I don't know much about",
-  "Changes in how they talk about their own body or appearance",
-  "Content about masculinity or \"being a real man\"",
-  "Content about dieting, fitness, or body image that feels excessive",
-  "Something they said that I couldn't place",
-  "I haven't noticed anything specific yet",
+  "Comments about women or girls that concern me",
+  "Comments about men or boys that seem off",
+  "Something that seems unkind toward gay or transgender people",
+  "They seem to care a lot about how they look in a way that worries me",
+  "They've been pulling away from family or old friends",
+  "A new group of people online I don't know anything about",
+  "Skipping meals or talking about food in a way that worries me",
+  "Saying things that sound like they came from somewhere online",
+  "Acting like the adults in their life don't understand anything",
+  "Something I can't quite put my finger on",
 ];
 
-const AUTOFILL_CHIPS = ["Andrew Tate", "looksmaxxing", "Fresh & Fit", "redpill"];
+const AUTOFILL_CHIPS = ["looksmaxxing", "Fresh & Fit", "sigma male", "redpill"];
 
 function ScanPage() {
   const { user, loading: authLoading } = useAuth();
@@ -89,9 +90,9 @@ function ScanPage() {
   const canScan = isSubscribed || (scanCount !== null && scanCount < 3);
 
   const canAdvance = () => {
-    if (step === 1) return true; // all optional
+    if (step === 1) return true;
     if (step === 2) return data.concerns.length > 0;
-    if (step === 3) return true; // optional
+    if (step === 3) return true;
     if (step === 4) return data.query.trim().length > 0;
     return false;
   };
@@ -103,17 +104,15 @@ function ScanPage() {
     if (!data.query.trim()) return;
 
     if (!canScan) {
-      setError("You've used your 3 free scans. Subscribe to continue.");
+      setError("You've used your 3 free lookups. Subscribe to continue.");
       return;
     }
 
-    // Store intake data and navigate to results
     sessionStorage.setItem("scanIntake", JSON.stringify(data));
     navigate({ to: "/results" });
   };
 
   if (authLoading) return null;
-
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -126,8 +125,8 @@ function ScanPage() {
           {!isSubscribed && scanCount !== null && (
             <div className="mb-4 rounded-[10px] border bg-card px-4 py-3 text-sm text-muted-foreground">
               {scanCount < 3
-                ? `${3 - scanCount} free scan${3 - scanCount === 1 ? "" : "s"} remaining`
-                : "You've used your free scans. "}
+                ? `${3 - scanCount} free lookup${3 - scanCount === 1 ? "" : "s"} remaining`
+                : "You've used your free lookups. "}
               {scanCount >= 3 && (
                 <button
                   onClick={() => navigate({ to: "/account" })}
@@ -168,6 +167,10 @@ function ScanPage() {
             )}
           </div>
 
+          {error && (
+            <p className="text-sm text-risk-high-foreground mt-3">{error}</p>
+          )}
+
           <div className="mt-5 flex items-center justify-between">
             {step > 1 ? (
               <button
@@ -188,7 +191,7 @@ function ScanPage() {
                     onClick={() => setStep(step + 1)}
                     className="text-[12px] text-hint hover:text-muted-foreground transition-colors"
                   >
-                    Skip this step
+                    Skip this step →
                   </button>
                 )}
                 <Button
@@ -199,12 +202,17 @@ function ScanPage() {
                 </Button>
               </div>
             ) : (
-              <Button
-                onClick={handleSubmit}
-                disabled={!canAdvance() || !canScan}
-              >
-                Get my report
-              </Button>
+              <div className="flex flex-col items-end gap-2">
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!canAdvance() || !canScan}
+                >
+                  Look it up
+                </Button>
+                <p className="text-[12px] text-hint leading-relaxed text-right max-w-[260px]">
+                  We'll explain what it is, why young people are drawn to it, and how to talk about it.
+                </p>
+              </div>
             )}
           </div>
         </div>
@@ -231,9 +239,9 @@ function StepAboutChild({
 
   return (
     <div>
-      <h2 className="text-xl font-medium text-foreground mb-1">Tell us a little about your child</h2>
+      <h2 className="text-xl font-medium text-foreground mb-1">First, tell us a little about your child</h2>
       <p className="text-[13px] text-hint mb-5">
-        This helps us give you more relevant context. Nothing you share here is stored or shared.
+        This helps us give you more useful information. You don't have to fill everything in.
       </p>
 
       <div className="mb-5">
@@ -251,7 +259,10 @@ function StepAboutChild({
       </div>
 
       <div>
-        <label className="label-text mb-2 block">How do they identify?</label>
+        <label className="label-text mb-1 block">How do they identify?</label>
+        <p className="text-[12px] text-hint mb-2">
+          If you're not sure, that's okay — just leave it blank.
+        </p>
         <div className="flex flex-wrap gap-2">
           {genders.map((g) => (
             <button
@@ -282,10 +293,10 @@ function StepConcerns({
 }) {
   return (
     <div>
-      <h2 className="text-xl font-medium text-foreground mb-1">What brought you here?</h2>
-      <p className="text-[13px] text-hint mb-5">Select everything that applies.</p>
+      <h2 className="text-xl font-medium text-foreground mb-1">What made you want to look something up today?</h2>
+      <p className="text-[13px] text-hint mb-5">Tap everything that feels right. There are no wrong answers.</p>
 
-      <div className="flex flex-wrap gap-2 mb-4">
+      <div className="flex flex-wrap gap-2">
         {CONCERN_OPTIONS.map((option) => (
           <button
             key={option}
@@ -301,10 +312,6 @@ function StepConcerns({
           </button>
         ))}
       </div>
-
-      <p className="text-[12px] text-hint leading-relaxed">
-        is this ok? covers gender-based attitudes and masculinity culture, body image and eating disorder content, sexual coercion and consent myths, LGBTQ+ identity suppression content, grooming-adjacent communities, and harmful gaming culture. We're expanding coverage over time.
-      </p>
     </div>
   );
 }
@@ -319,9 +326,8 @@ function StepObservations({
   return (
     <div>
       <h2 className="text-xl font-medium text-foreground mb-1">What have you noticed?</h2>
-      <p className="text-[13px] text-hint mb-1">Check all that apply</p>
       <p className="text-[13px] text-hint mb-5">
-        You don't need to have the right words for this. Just check what feels true.
+        You don't need the right words for this. Just check what feels true, even if you can't explain it yet.
       </p>
 
       <div className="flex flex-wrap gap-2">
@@ -353,18 +359,21 @@ function StepQuery({
 }) {
   return (
     <div>
-      <h2 className="text-xl font-medium text-foreground mb-1">What specifically do you want to understand?</h2>
+      <h2 className="text-xl font-medium text-foreground mb-1">What specifically do you want to look up?</h2>
       <p className="text-[13px] text-hint mb-5">
-        A name, a word, a phrase, a game, a community — anything.
+        This can be a name, a word, a phrase, a game, a video — whatever it is you heard or saw. Even if you don't know what it means, type it in.
       </p>
 
       <Textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder='e.g. Andrew Tate, "sigma male", Fresh & Fit, "looksmaxxing", a Roblox game...'
-        className="min-h-[100px] mb-3"
+        placeholder="e.g. a name you heard, a word they used, an app they're always on..."
+        className="min-h-[100px] mb-4"
       />
 
+      <p className="text-[12px] text-hint mb-2">
+        Not sure where to start? Some things other parents have looked up:
+      </p>
       <div className="flex flex-wrap gap-2">
         {AUTOFILL_CHIPS.map((chip) => (
           <button
@@ -380,4 +389,3 @@ function StepQuery({
     </div>
   );
 }
-
