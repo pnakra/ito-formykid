@@ -146,13 +146,47 @@ serve(async (req) => {
     }
 
     const aiData = await response.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+    const message = aiData.choices?.[0]?.message;
+    const toolCall = message?.tool_calls?.[0];
 
-    if (!toolCall?.function?.arguments) {
-      throw new Error("No structured response from AI");
+    let result;
+
+    if (toolCall?.function?.arguments) {
+      // Primary path: structured tool call response
+      result = JSON.parse(toolCall.function.arguments);
+    } else if (message?.content) {
+      // Fallback: model returned JSON in content instead of tool_calls
+      console.warn("AI returned content instead of tool_call, attempting JSON extraction");
+      const text = message.content;
+      let cleaned = text
+        .replace(/```json\s*/gi, "")
+        .replace(/```\s*/g, "")
+        .trim();
+
+      const jsonStart = cleaned.search(/\{/);
+      const jsonEnd = cleaned.lastIndexOf("}");
+
+      if (jsonStart === -1 || jsonEnd === -1) {
+        console.error("No JSON found in AI content response:", text.substring(0, 500));
+        throw new Error("Could not parse AI response");
+      }
+
+      cleaned = cleaned.substring(jsonStart, jsonEnd + 1);
+
+      try {
+        result = JSON.parse(cleaned);
+      } catch {
+        // Fix common JSON issues
+        cleaned = cleaned
+          .replace(/,\s*}/g, "}")
+          .replace(/,\s*]/g, "]")
+          .replace(/[\x00-\x1F\x7F]/g, "");
+        result = JSON.parse(cleaned);
+      }
+    } else {
+      console.error("AI response structure:", JSON.stringify(aiData).substring(0, 1000));
+      throw new Error("No usable response from AI");
     }
-
-    const result = JSON.parse(toolCall.function.arguments);
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
