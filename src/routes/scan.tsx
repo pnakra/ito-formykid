@@ -107,70 +107,17 @@ function ScanPage() {
   const toggleItem = (list: string[], item: string): string[] =>
     list.includes(item) ? list.filter((i) => i !== item) : [...list, item];
 
-  const handleSubmit = async () => {
-    if (!user || !data.query.trim()) return;
+  const handleSubmit = () => {
+    if (!data.query.trim()) return;
 
     if (!canScan) {
       setError("You've used your 3 free scans. Subscribe to continue.");
       return;
     }
 
-    setScanning(true);
-    setError("");
-    setResult(null);
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      const contextParts: string[] = [];
-      if (data.age) contextParts.push(`Child's age: ${data.age}`);
-      if (data.gender) contextParts.push(`Gender: ${data.gender}`);
-      if (data.concerns.length) contextParts.push(`Concerns: ${data.concerns.join(", ")}`);
-      if (data.observations.length) contextParts.push(`Observations: ${data.observations.join(", ")}`);
-      contextParts.push(`Query: ${data.query.trim()}`);
-
-      const content = contextParts.join("\n");
-
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scan-content`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-          },
-          body: JSON.stringify({ content, inputType: "text" }),
-        }
-      );
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || "Scan failed");
-      }
-
-      const scanResult: ScanResult = await response.json();
-      setResult(scanResult);
-
-      await supabase.from("scans").insert({
-        user_id: user.id,
-        input_type: "text",
-        input_content: content,
-        risk_level: scanResult.risk_level,
-        summary: scanResult.summary,
-        guidance: scanResult.guidance,
-      });
-
-      const newCount = (scanCount ?? 0) + 1;
-      await supabase
-        .from("profiles")
-        .update({ scan_count: newCount })
-        .eq("id", user.id);
-      setScanCount(newCount);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setScanning(false);
-    }
+    // Store intake data and navigate to results
+    sessionStorage.setItem("scanIntake", JSON.stringify(data));
+    navigate({ to: "/results" });
   };
 
   if (authLoading) return null;
