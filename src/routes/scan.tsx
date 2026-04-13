@@ -65,11 +65,15 @@ function ScanPage() {
   const [scanCount, setScanCount] = useState<number | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
 
+  // Check if this is a returning user who hasn't signed in
+  const hasCompletedFirstScan = typeof window !== "undefined" && localStorage.getItem("itook_first_scan_done") === "true";
+
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate({ to: "/login" });
+    // Only redirect to login if they've already used their free scan and aren't signed in
+    if (!authLoading && !user && hasCompletedFirstScan) {
+      navigate({ to: "/signup" });
     }
-  }, [user, authLoading, navigate]);
+  }, [user, authLoading, navigate, hasCompletedFirstScan]);
 
   useEffect(() => {
     if (user) {
@@ -87,7 +91,8 @@ function ScanPage() {
     }
   }, [user]);
 
-  const canScan = isSubscribed || (scanCount !== null && scanCount < 3);
+  // Unauthenticated first-time users can always scan; authenticated users check limits
+  const canScan = !user ? !hasCompletedFirstScan : (isSubscribed || (scanCount !== null && scanCount < 3));
 
   const canAdvance = () => {
     if (step === 1) return true;
@@ -112,17 +117,17 @@ function ScanPage() {
     navigate({ to: "/results" });
   };
 
-  if (authLoading) return null;
+  if (authLoading && hasCompletedFirstScan) return null;
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header isLoggedIn={true} />
+      <Header isLoggedIn={!!user} />
 
       <main className="flex-1 py-10">
         <div className="mx-auto max-w-xl px-5">
           <p className="text-[13px] text-hint mb-4">Step {step} of 4</p>
 
-          {!isSubscribed && scanCount !== null && (
+          {user && !isSubscribed && scanCount !== null && (
             <div className="mb-4 rounded-[10px] border bg-card px-4 py-3 text-sm text-muted-foreground">
               {scanCount < 3
                 ? `${3 - scanCount} free lookup${3 - scanCount === 1 ? "" : "s"} remaining`
