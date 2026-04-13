@@ -14,7 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_subscribed: boolean
+          scan_count: number
+          stripe_customer_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          is_subscribed?: boolean
+          scan_count?: number
+          stripe_customer_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_subscribed?: boolean
+          scan_count?: number
+          stripe_customer_id?: string | null
+        }
+        Relationships: []
+      }
+      scans: {
+        Row: {
+          created_at: string
+          guidance: string
+          id: string
+          input_content: string
+          input_type: string
+          risk_level: string
+          summary: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          guidance: string
+          id?: string
+          input_content: string
+          input_type: string
+          risk_level: string
+          summary: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          guidance?: string
+          id?: string
+          input_content?: string
+          input_type?: string
+          risk_level?: string
+          summary?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
