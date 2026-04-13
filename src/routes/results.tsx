@@ -404,22 +404,52 @@ function ResultsPage() {
       {showPaywall && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-5">
           <div className="w-full max-w-md rounded-[14px] bg-background p-6 border">
-            <h2 className="text-xl font-medium text-foreground mb-2">You've used your free scan.</h2>
-            <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-              Get unlimited scans, saved reports, and the monthly digest for $9/month.
-            </p>
-            <div className="space-y-2">
-              <Button className="w-full" onClick={() => navigate({ to: "/checkout" })}>
-                Subscribe
-              </Button>
-              <Button
-                variant="ghost"
-                className="w-full text-muted-foreground"
-                onClick={() => { setShowPaywall(false); setShowDigest(true); }}
-              >
-                Not right now
-              </Button>
-            </div>
+            {!user ? (
+              <>
+                <h2 className="text-xl font-medium text-foreground mb-2">Create a free account to continue</h2>
+                <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+                  Sign up to save reports, look up more content, and get the monthly digest. Your first 3 lookups are free.
+                </p>
+                <div className="space-y-2">
+                  <Button className="w-full" onClick={() => navigate({ to: "/signup" })}>
+                    Sign up free
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full text-muted-foreground"
+                    onClick={() => navigate({ to: "/login" })}
+                  >
+                    Already have an account? Sign in
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full text-muted-foreground"
+                    onClick={() => { setShowPaywall(false); setShowDigest(true); }}
+                  >
+                    Not right now
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <h2 className="text-xl font-medium text-foreground mb-2">You've used your free lookups.</h2>
+                <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+                  Get unlimited scans, saved reports, and the monthly digest for $9/month.
+                </p>
+                <div className="space-y-2">
+                  <Button className="w-full" onClick={() => navigate({ to: "/checkout" })}>
+                    Subscribe
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full text-muted-foreground"
+                    onClick={() => { setShowPaywall(false); setShowDigest(true); }}
+                  >
+                    Not right now
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
