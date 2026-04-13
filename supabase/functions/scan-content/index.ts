@@ -46,7 +46,56 @@ Always complete every sentence and every array item fully. Never truncate mid-se
 
 The what_not_to_do items must be consistent with the spectrum_label. If the spectrum_label is 'Concerning' or 'High risk', do not include items that suggest the parent may be overreacting or that the content is probably harmless. Reserve reassuring framing for 'Mainstream' or 'Edgy but benign' results only. For concerning or high risk results, what_not_to_do should focus on how to engage without alienating — not on whether to engage at all.
 
-summary_verdict: One plain-language sentence that tells a non-technical parent the single most important thing to know about this content. Write it as if speaking directly to a worried grandparent. No jargon. No spectrum labels. No confidence language. Just the honest one-sentence takeaway. Examples of the right tone: 'This is content that teaches boys their worth is based on how they look, and it can lead to more harmful ideas over time.' or 'This appears to be a harmless gaming term, but it's worth knowing the context.' or 'This is a community that actively tries to pull young people away from the adults in their life — it deserves your attention.'`;
+summary_verdict: One plain-language sentence that tells a non-technical parent the single most important thing to know about this content. Write it as if speaking directly to a worried grandparent. No jargon. No spectrum labels. No confidence language. Just the honest one-sentence takeaway. Examples of the right tone: 'This is content that teaches boys their worth is based on how they look, and it can lead to more harmful ideas over time.' or 'This appears to be a harmless gaming term, but it's worth knowing the context.' or 'This is a community that actively tries to pull young people away from the adults in their life — it deserves your attention.'
+
+You MUST respond with ONLY a valid JSON object — no markdown, no code fences, no explanation text before or after. The JSON must have exactly these fields:
+
+{
+  "summary_verdict": "string — one plain-language sentence takeaway",
+  "what_it_is": "string — 2-3 sentences, plain language",
+  "platform_context": "string — 1-2 sentences on where this lives",
+  "spectrum_label": "Mainstream" | "Edgy but benign" | "Concerning" | "High risk",
+  "spectrum_reasoning": "string — one sentence explaining classification",
+  "confidence": "Low" | "Medium" | "High",
+  "confidence_note": "string — one sentence explaining confidence level",
+  "why_it_appeals": "string — 2-3 sentences",
+  "pipeline_context": "string or null — 1-2 sentences if part of a harm pipeline, otherwise null",
+  "values_promoted": ["string", "string", "string"] — 3-5 items using 'may promote' framing,
+  "age_specific_note": "string or null",
+  "what_not_to_do": ["string", "string", "string"] — 3 specific parental responses that backfire,
+  "opening_question": "string — one curiosity-oriented question",
+  "warning_signs": ["string", "string", "string"] — 3-4 observable signals,
+  "return_signals": ["string", "string"] — 2-3 signs things are improving
+}`;
+
+function extractJson(text: string): Record<string, unknown> {
+  // Strip markdown fences
+  let cleaned = text
+    .replace(/```json\s*/gi, "")
+    .replace(/```\s*/g, "")
+    .trim();
+
+  // Find JSON boundaries
+  const jsonStart = cleaned.indexOf("{");
+  const jsonEnd = cleaned.lastIndexOf("}");
+
+  if (jsonStart === -1 || jsonEnd === -1) {
+    throw new Error("No JSON object found in response");
+  }
+
+  cleaned = cleaned.substring(jsonStart, jsonEnd + 1);
+
+  try {
+    return JSON.parse(cleaned);
+  } catch {
+    // Fix common JSON issues
+    cleaned = cleaned
+      .replace(/,\s*}/g, "}")
+      .replace(/,\s*]/g, "]")
+      .replace(/[\x00-\x1F\x7F]/g, " ");
+    return JSON.parse(cleaned);
+  }
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -77,52 +126,12 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-pro",
+          model: "google/gemini-2.5-flash",
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content },
           ],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "analyze_content",
-                description: "Return a structured content analysis for parents",
-                parameters: {
-                  type: "object",
-                  properties: {
-                    summary_verdict: { type: "string", description: "One plain-language sentence — the single most important takeaway for a non-technical parent or grandparent. No jargon, no labels." },
-                    what_it_is: { type: "string", description: "2-3 sentences. Plain language, no jargon." },
-                    platform_context: { type: "string", description: "1-2 sentences on where this lives and how a young person typically encounters it." },
-                    spectrum_label: { type: "string", enum: ["Mainstream", "Edgy but benign", "Concerning", "High risk"] },
-                    spectrum_reasoning: { type: "string", description: "One sentence explaining the classification." },
-                    confidence: { type: "string", enum: ["Low", "Medium", "High"] },
-                    confidence_note: { type: "string", description: "One sentence explaining confidence level." },
-                    why_it_appeals: { type: "string", description: "2-3 sentences. Genuinely explain why this resonates with young people." },
-                    pipeline_context: { type: ["string", "null"], description: "If part of a known radicalization or harm pipeline, explain in 1-2 sentences. Otherwise null." },
-                    values_promoted: { type: "array", items: { type: "string" }, description: "3-5 strings using 'may promote' framing." },
-                    age_specific_note: { type: ["string", "null"], description: "If age changes risk or approach, note it. Otherwise null." },
-                    what_not_to_do: { type: "array", items: { type: "string" }, description: "3 specific parental responses that tend to backfire." },
-                    opening_question: { type: "string", description: "One curiosity-oriented question to open dialogue." },
-                    warning_signs: { type: "array", items: { type: "string" }, description: "3-4 observable signals of deeper engagement." },
-                    return_signals: { type: "array", items: { type: "string" }, description: "2-3 signs the situation is improving." },
-                  },
-                  required: [
-                    "summary_verdict", "what_it_is", "platform_context", "spectrum_label", "spectrum_reasoning",
-                    "confidence", "confidence_note", "why_it_appeals", "pipeline_context",
-                    "values_promoted", "age_specific_note", "what_not_to_do",
-                    "opening_question", "warning_signs", "return_signals"
-                  ],
-                  additionalProperties: false,
-                },
-              },
-            },
-          ],
-          tool_choice: {
-            type: "function",
-            function: { name: "analyze_content" },
-          },
-          max_tokens: 2000,
+          max_tokens: 3000,
         }),
       }
     );
@@ -146,13 +155,20 @@ serve(async (req) => {
     }
 
     const aiData = await response.json();
-    const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
+    const message = aiData.choices?.[0]?.message;
 
-    if (!toolCall?.function?.arguments) {
-      throw new Error("No structured response from AI");
+    // Try tool_calls first (in case model uses them), then content
+    let result;
+    const toolCall = message?.tool_calls?.[0];
+
+    if (toolCall?.function?.arguments) {
+      result = JSON.parse(toolCall.function.arguments);
+    } else if (message?.content) {
+      result = extractJson(message.content);
+    } else {
+      console.error("AI response structure:", JSON.stringify(aiData).substring(0, 1000));
+      throw new Error("No usable response from AI");
     }
-
-    const result = JSON.parse(toolCall.function.arguments);
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
