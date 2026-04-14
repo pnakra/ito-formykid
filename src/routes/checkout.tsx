@@ -9,7 +9,7 @@ export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
       { title: "Subscribe — is this ok?" },
-      { name: "description", content: "Subscribe to is this ok? for parents for unlimited content scans." },
+      { name: "description", content: "Subscribe to is this ok? for parents — ongoing support, saved reports, and monthly briefings." },
     ],
   }),
   component: CheckoutPage,
@@ -40,7 +40,7 @@ function CheckoutPage() {
             $9/month. Cancel anytime. Made by a nonprofit — no ads, no data selling, no surveillance.
           </p>
           <ul className="text-sm text-muted-foreground mb-6 space-y-2 leading-relaxed">
-            <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Look up creators, terms, games, and behaviors — as often as you need</li>
+            <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Look up anything — creators, terms, games, behaviors — as often as you need</li>
             <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Save reports and add your own notes over time</li>
             <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Track situations and see patterns across observations</li>
             <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Monthly briefings tailored to your child's age group</li>

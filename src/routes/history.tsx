@@ -140,7 +140,7 @@ function HistoryPage() {
             Your lookups
           </h1>
           <p className="text-sm text-muted-foreground mb-6">
-            Everything you've looked up, with your notes and observations over time.
+            Everything you've looked up, with notes and observations over time.
           </p>
 
           {loading ? (

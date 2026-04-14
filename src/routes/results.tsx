@@ -12,7 +12,7 @@ export const Route = createFileRoute("/results")({
   head: () => ({
     meta: [
       { title: "Your report — is this ok?" },
-      { name: "description", content: "Your personalized content analysis report." },
+      { name: "description", content: "Your parent briefing — what it is, why it matters, and how to talk about it." },
     ],
   }),
   component: ResultsPage,
@@ -367,7 +367,7 @@ function ResultsPage() {
                     onChange={(e) => setDigestEmail(e.target.value)}
                     required
                   />
-                  <Button type="submit" className="w-full">Sign me up</Button>
+                  <Button type="submit" className="w-full">Subscribe to the digest</Button>
                 </form>
                 <button
                   onClick={() => setShowDigest(false)}

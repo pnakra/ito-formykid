@@ -121,7 +121,7 @@ function ScanPage() {
     if (!data.query.trim()) return;
 
     if (!canScan) {
-      setError("You've used your 3 free lookups. Subscribe to continue.");
+      setError("You've used your free lookups. Subscribe for ongoing access and support.");
       return;
     }
 

@@ -442,7 +442,7 @@ function HomePage() {
 
                 <p className="text-[12px] text-hint mt-3 text-center">
                   Your child's profile is saved. Update it anytime in{" "}
-                  <Link to="/account" className="text-foreground underline underline-offset-4">Settings</Link>.
+                  <Link to="/account" className="text-foreground underline underline-offset-4">Account</Link>.
                 </p>
               </div>
 
@@ -503,7 +503,7 @@ function HomePage() {
             <div className="space-y-8">
 
               {/* Intro */}
-              <div className="text-center">
+              <div>
                 <p className="text-[14px] text-muted-foreground leading-relaxed">
                   You don't need a crisis to use this. These tools help you notice patterns, stay informed, and strengthen the things that keep your child resilient.
                 </p>
