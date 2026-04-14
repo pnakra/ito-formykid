@@ -82,7 +82,7 @@ function LandingPage() {
             </div>
 
             <p className="text-[12px] text-hint text-center">
-              First lookup is free. $9/month after that — includes both modes.
+              Your first lookup is free — no account needed. $9/month for ongoing support: saved reports, situation tracking, monthly briefings, and more.
             </p>
           </div>
         </section>

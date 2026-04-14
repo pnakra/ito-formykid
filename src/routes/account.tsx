@@ -249,9 +249,14 @@ function AccountPage() {
                   )}
                 </Button>
               ) : (
-                <Button size="sm" onClick={() => navigate({ to: "/checkout" })}>
-                  Subscribe — $9/month
-                </Button>
+                <>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Get ongoing support: saved reports, situation tracking, monthly briefings, and protective factors guidance.
+                  </p>
+                  <Button size="sm" onClick={() => navigate({ to: "/checkout" })}>
+                    Continue with support — $9/month
+                  </Button>
+                </>
               )}
 
               <div className="pt-2">

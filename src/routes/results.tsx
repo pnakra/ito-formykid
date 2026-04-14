@@ -458,7 +458,7 @@ function ResultsPage() {
                   {saved ? "✓ Report saved" : "Save this report"}
                 </p>
                 <p className="text-[13px] text-muted-foreground">
-                  {!user ? "Sign in to save" : !isSubscribed ? "Subscribe to save reports" : "Access it anytime from your account"}
+                  {!user ? "Sign in to save" : !isSubscribed ? "Available with ongoing support" : "Access it anytime from your account"}
                 </p>
               </button>
 
@@ -485,7 +485,7 @@ function ResultsPage() {
               <>
                 <h2 className="text-xl font-medium text-foreground mb-2">Create a free account to continue</h2>
                 <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-                  Sign up to save reports, look up more content, and get the monthly digest. Your first 3 lookups are free.
+                  Sign up to save reports, track situations over time, and get the monthly digest. Free lookups included.
                 </p>
                 <div className="space-y-2">
                   <Button className="w-full" onClick={() => navigate({ to: "/signup" })}>
@@ -509,10 +509,16 @@ function ResultsPage() {
               </>
             ) : (
               <>
-                <h2 className="text-xl font-medium text-foreground mb-2">You've used your free lookups.</h2>
-                <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-                  Get unlimited scans, saved reports, and the monthly digest for $9/month.
+                <h2 className="text-xl font-medium text-foreground mb-2">Continue with ongoing support</h2>
+                <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+                  For $9/month, keep this tool as a companion — not just for moments of worry, but for staying ahead over time.
                 </p>
+                <ul className="text-sm text-muted-foreground mb-5 space-y-1.5 leading-relaxed">
+                  <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Save reports and add notes over time</li>
+                  <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Track situations and see patterns</li>
+                  <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Monthly briefings for your child's age group</li>
+                  <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Protective factors guidance</li>
+                </ul>
                 <div className="space-y-2">
                   <Button className="w-full" onClick={() => navigate({ to: "/checkout" })}>
                     Subscribe
