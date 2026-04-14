@@ -7,7 +7,6 @@ import { Loader2, AlertTriangle, HelpCircle, Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { CollapsibleCard } from "@/components/CollapsibleCard";
 
 export const Route = createFileRoute("/results")({
   head: () => ({
@@ -87,32 +86,6 @@ function ResultsPage() {
   const [digestSubmitted, setDigestSubmitted] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const [openCards, setOpenCards] = useState<Record<string, boolean>>({
-    whatThisIs: false,
-    whyItAppeals: false,
-    valuesPromoted: false,
-    watchFor: false,
-    forParents: true,
-    nextSteps: false,
-  });
-
-  const toggleCard = (key: string) => {
-    setOpenCards(prev => ({ ...prev, [key]: !prev[key] }));
-  };
-
-  const allExpanded = Object.values(openCards).every(v => v);
-  const toggleAll = () => {
-    const newState = !allExpanded;
-    setOpenCards({
-      whatThisIs: newState,
-      whyItAppeals: newState,
-      valuesPromoted: newState,
-      watchFor: newState,
-      forParents: newState,
-      nextSteps: newState,
-    });
-  };
-
   useEffect(() => {
     const stored = sessionStorage.getItem("scanIntake");
     if (!stored) {
@@ -172,7 +145,6 @@ function ResultsPage() {
       }
 
       const scanResult: ScanResult = await response.json();
-      // Ensure result_type defaults to normal if missing
       if (!scanResult.result_type) {
         scanResult.result_type = scanResult.confidence === "Low" ? "low_confidence" : "normal";
       }
@@ -242,11 +214,6 @@ function ResultsPage() {
     setDigestSubmitted(true);
   };
 
-  const firstSentence = (text: string) => {
-    const match = text.match(/^[^.!?]+[.!?]/);
-    return match ? match[0] : text;
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col">
@@ -254,7 +221,7 @@ function ResultsPage() {
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="h-6 w-6 animate-spin mx-auto mb-3 text-muted-foreground" />
-            <p className="text-[15px] text-foreground mb-1">Analyzing…</p>
+            <p className="text-[15px] text-foreground mb-1">Preparing your briefing…</p>
             <p className="text-[13px] text-hint">This usually takes 10–15 seconds.</p>
           </div>
         </main>
@@ -286,208 +253,23 @@ function ResultsPage() {
       <Header isLoggedIn={!!user} />
 
       <main className="flex-1 py-10">
-        <div className="mx-auto max-w-xl px-5 space-y-3">
+        <div className="mx-auto max-w-xl px-5">
 
-          {/* Summary card — always visible */}
           {resultType === "ambiguous" ? (
-            <AmbiguousSummaryCard result={result} intake={intake} onScanAnother={handleScanAnother} />
+            <AmbiguousView result={result} intake={intake} onScanAnother={handleScanAnother} />
           ) : resultType === "outside_scope" ? (
-            <OutsideScopeSummaryCard result={result} intake={intake} onScanAnother={handleScanAnother} />
+            <OutsideScopeView result={result} intake={intake} onScanAnother={handleScanAnother} />
           ) : (
-            <StandardSummaryCard result={result} intake={intake} />
-          )}
-
-          {/* Low confidence banner — shown for low_confidence results */}
-          {resultType === "low_confidence" && (
-            <LowConfidenceBanner result={result} />
-          )}
-
-          {/* For ambiguous and outside_scope, show simplified next steps only */}
-          {(resultType === "ambiguous" || resultType === "outside_scope") ? (
-            <div className="space-y-3">
-              {resultType === "outside_scope" && result.what_it_is && (
-                <div className="rounded-[14px] bg-card p-5">
-                  <p className="label-text mb-2">WHAT WE CAN TELL YOU</p>
-                  <p className="text-[15px] text-foreground leading-relaxed">{result.what_it_is}</p>
-                </div>
-              )}
-              <NextStepsCard
-                onScanAnother={handleScanAnother}
-                onSaveReport={handleSaveReport}
-                onShowDigest={() => setShowDigest(true)}
-                saved={saved}
-                user={user}
-                isSubscribed={isSubscribed}
-                isOpen={true}
-                onToggle={() => {}}
-                alwaysOpen
-              />
-            </div>
-          ) : (
-            <>
-              {/* Normal / low_confidence — full report cards */}
-              <div className="flex justify-end">
-                <button
-                  onClick={toggleAll}
-                  className="text-[12px] hover:underline transition-colors"
-                  style={{ color: "#9AA898" }}
-                >
-                  {allExpanded ? "Collapse all" : "Expand all"}
-                </button>
-              </div>
-
-              {/* Card 1 — What this is */}
-              <CollapsibleCard
-                label="WHAT THIS IS"
-                previewText={firstSentence(result.what_it_is)}
-                isOpen={openCards.whatThisIs}
-                onToggle={() => toggleCard("whatThisIs")}
-              >
-                <h2 className="text-xl font-medium text-foreground mb-3">{intake.query}</h2>
-                <p className="text-[15px] text-foreground leading-relaxed mb-2">{result.what_it_is}</p>
-                <p className="text-[13px] text-muted-foreground leading-relaxed mb-5">{result.platform_context}</p>
-
-                {/* Spectrum track */}
-                <div className="mb-4">
-                  <div className="relative h-2 rounded-full bg-gradient-to-r from-risk-low via-risk-concerning to-risk-high mb-2">
-                    <div
-                      className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-foreground border-2 border-background"
-                      style={{ left: `${SPECTRUM_POSITIONS[result.spectrum_label]}%`, transform: "translate(-50%, -50%)" }}
-                    />
-                  </div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Badge className={SPECTRUM_COLORS[result.spectrum_label]}>
-                      {result.spectrum_label}
-                    </Badge>
-                  </div>
-                  <p className="label-text mt-2 mb-1">WHY THIS CLASSIFICATION</p>
-                  <p className="text-[13px] text-muted-foreground leading-relaxed">{result.spectrum_reasoning}</p>
-                </div>
-
-                {/* Confidence */}
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Badge className={CONFIDENCE_COLORS[result.confidence]}>
-                      {result.confidence} confidence
-                    </Badge>
-                  </div>
-                  <p className="label-text mt-2 mb-1">WHY THIS CONFIDENCE LEVEL</p>
-                  <p className="text-[13px] text-hint leading-relaxed">{result.confidence_note}</p>
-                  {resultType === "low_confidence" && result.limitations_note && (
-                    <div className="mt-3 rounded-[10px] border border-risk-concerning/30 bg-risk-concerning/10 p-3">
-                      <p className="text-[13px] text-foreground leading-relaxed">{result.limitations_note}</p>
-                    </div>
-                  )}
-                </div>
-              </CollapsibleCard>
-
-              {/* Card 2 — Why it appeals */}
-              <CollapsibleCard
-                label="WHY YOUNG PEOPLE WATCH THIS"
-                previewText={firstSentence(result.why_it_appeals)}
-                isOpen={openCards.whyItAppeals}
-                onToggle={() => toggleCard("whyItAppeals")}
-              >
-                <p className="text-[15px] text-foreground leading-relaxed">{result.why_it_appeals}</p>
-                {result.pipeline_context && (
-                  <div className="mt-4 border-l-[3px] border-risk-concerning-foreground rounded-r-[10px] bg-risk-concerning/30 p-4">
-                    <p className="label-text mb-1">PART OF A LARGER PATTERN</p>
-                    <p className="text-[13px] text-foreground leading-relaxed">{result.pipeline_context}</p>
-                  </div>
-                )}
-              </CollapsibleCard>
-
-              {/* Card 3 — Values it may promote */}
-              <CollapsibleCard
-                label="VALUES IT MAY PROMOTE"
-                previewText={firstSentence(result.values_promoted[0] || "")}
-                isOpen={openCards.valuesPromoted}
-                onToggle={() => toggleCard("valuesPromoted")}
-              >
-                <ul className="space-y-2">
-                  {result.values_promoted.map((v, i) => (
-                    <li key={i} className="flex items-start gap-3 text-[15px] text-foreground leading-relaxed">
-                      <span className="mt-[9px] h-[5px] w-[5px] rounded-full bg-muted-foreground shrink-0" />
-                      <span className="flex-1">{v}</span>
-                    </li>
-                  ))}
-                </ul>
-                {result.age_specific_note && intake.age && (
-                  <div className="mt-4 rounded-[10px] bg-background border p-4">
-                    <p className="label-text mb-1">NOTE FOR PARENTS OF {intake.age}-YEAR-OLDS</p>
-                    <p className="text-[13px] text-muted-foreground leading-relaxed">{result.age_specific_note}</p>
-                  </div>
-                )}
-              </CollapsibleCard>
-
-              {/* Card 4 — Warning signs */}
-              <CollapsibleCard
-                label="WHAT TO WATCH FOR"
-                previewText={firstSentence(result.warning_signs[0] || "")}
-                isOpen={openCards.watchFor}
-                onToggle={() => toggleCard("watchFor")}
-              >
-                <p className="text-[13px] text-muted-foreground mb-3">Signs of deeper engagement — observable without monitoring their device</p>
-                <ul className="space-y-2 mb-4">
-                  {result.warning_signs.map((s, i) => (
-                    <li key={i} className="flex items-start gap-3 text-[15px] text-foreground leading-relaxed">
-                      <span className="mt-[9px] h-[5px] w-[5px] rounded-full bg-muted-foreground shrink-0" />
-                      <span className="flex-1">{s}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="border-t pt-4">
-                  <p className="text-[13px] text-muted-foreground mb-3">Signs things may be improving</p>
-                  <ul className="space-y-2">
-                    {result.return_signals.map((s, i) => (
-                      <li key={i} className="flex items-start gap-3 text-[15px] leading-relaxed" style={{ color: "#3B6D11" }}>
-                        <span className="mt-[9px] h-[5px] w-[5px] rounded-full shrink-0" style={{ backgroundColor: "#3B6D11" }} />
-                        <span className="flex-1">{s}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </CollapsibleCard>
-
-              {/* Card 5 — For parents */}
-              <CollapsibleCard
-                label="FOR PARENTS"
-                previewText={firstSentence(result.what_not_to_do[0] || "")}
-                isOpen={openCards.forParents}
-                onToggle={() => toggleCard("forParents")}
-              >
-                <p className="text-[13px] text-muted-foreground mb-3">What tends to backfire</p>
-                <ul className="space-y-2 mb-4">
-                  {result.what_not_to_do.map((s, i) => (
-                    <li key={i} className="flex items-start gap-3 text-[15px] text-foreground leading-relaxed">
-                      <span className="mt-[9px] h-[5px] w-[5px] rounded-full bg-muted-foreground shrink-0" />
-                      <span className="flex-1">{s}</span>
-                    </li>
-                  ))}
-                </ul>
-                <div className="border-t pt-4">
-                  <p className="text-[13px] text-muted-foreground mb-3">One way to open the conversation</p>
-                  <div className="border-l-[3px] pl-4" style={{ borderColor: "#3B5438" }}>
-                    <p className="text-[15px] text-foreground italic leading-relaxed">{result.opening_question}</p>
-                  </div>
-                  <p className="text-[12px] text-hint mt-3 leading-relaxed">
-                    This is a suggestion, not a script. The most effective conversations start with your own words and genuine curiosity.
-                  </p>
-                </div>
-              </CollapsibleCard>
-
-              {/* Card 6 — Next steps */}
-              <NextStepsCard
-                onScanAnother={handleScanAnother}
-                onSaveReport={handleSaveReport}
-                onShowDigest={() => setShowDigest(true)}
-                saved={saved}
-                user={user}
-                isSubscribed={isSubscribed}
-                isOpen={openCards.nextSteps}
-                onToggle={() => toggleCard("nextSteps")}
-              />
-            </>
+            <BriefingView
+              result={result}
+              intake={intake}
+              onScanAnother={handleScanAnother}
+              onSaveReport={handleSaveReport}
+              onShowDigest={() => setShowDigest(true)}
+              saved={saved}
+              user={user}
+              isSubscribed={isSubscribed}
+            />
           )}
 
         </div>
@@ -604,45 +386,270 @@ function ResultsPage() {
   );
 }
 
-/* ─── Sub-components for result states ─── */
+/* ─── Briefing view — the editorial report ─── */
 
-function StandardSummaryCard({ result, intake }: { result: ScanResult; intake: IntakeData }) {
+function BriefingView({
+  result,
+  intake,
+  onScanAnother,
+  onSaveReport,
+  onShowDigest,
+  saved,
+  user,
+  isSubscribed,
+}: {
+  result: ScanResult;
+  intake: IntakeData;
+  onScanAnother: () => void;
+  onSaveReport: () => void;
+  onShowDigest: () => void;
+  saved: boolean;
+  user: any;
+  isSubscribed: boolean;
+}) {
+  const isLowConfidence = result.result_type === "low_confidence";
+
   return (
-    <div className="rounded-[14px] p-6" style={{ backgroundColor: "#F5F2EC" }}>
-      <p className="text-[18px] font-medium leading-relaxed text-center" style={{ color: "#2C3B2A" }}>
-        {result.summary_verdict || result.what_it_is}
-      </p>
-      <div className="flex items-center justify-center gap-3 mt-4">
-        <Badge className={SPECTRUM_COLORS[result.spectrum_label]}>
-          {result.spectrum_label}
-        </Badge>
+    <article className="space-y-0">
+
+      {/* ── Header block ── */}
+      <header className="pb-8">
+        <p className="label-text mb-4">PARENT BRIEFING</p>
+        <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-3">
+          {result.summary_verdict || result.what_it_is}
+        </h1>
+        <p className="text-[14px] text-hint leading-relaxed">
+          You looked up <span className="text-foreground font-medium">{intake.query}</span>
+          {intake.age && <> · age {intake.age}</>}
+        </p>
+
+        {/* Classification + Confidence — prominent, not buried */}
+        <div className="mt-5 flex flex-wrap items-center gap-2">
+          <Badge className={SPECTRUM_COLORS[result.spectrum_label]}>
+            {result.spectrum_label}
+          </Badge>
+          <Badge className={CONFIDENCE_COLORS[result.confidence]}>
+            {result.confidence} confidence
+          </Badge>
+        </div>
+      </header>
+
+      {/* ── Low confidence notice ── */}
+      {isLowConfidence && (
+        <div className="border-l-[3px] border-risk-concerning-foreground/40 pl-4 pb-8">
+          <p className="text-[14px] font-medium text-foreground mb-1">
+            A note on this result
+          </p>
+          <p className="text-[14px] text-muted-foreground leading-relaxed">
+            {result.limitations_note || result.confidence_note || "This term may be used in multiple contexts, or there isn't enough public information for us to be certain. The information below is our best understanding — treat it as a starting point rather than a definitive answer."}
+          </p>
+        </div>
+      )}
+
+      <Divider />
+
+      {/* ── What this is ── */}
+      <Section label="What this is">
+        <p className="text-[15px] text-foreground leading-relaxed">{result.what_it_is}</p>
+        {result.platform_context && (
+          <p className="text-[14px] text-muted-foreground leading-relaxed mt-3">{result.platform_context}</p>
+        )}
+      </Section>
+
+      <Divider />
+
+      {/* ── Classification reasoning ── */}
+      <Section label="Why this classification">
+        <div className="mb-4">
+          <div className="relative h-[6px] rounded-full bg-gradient-to-r from-risk-low via-risk-concerning to-risk-high">
+            <div
+              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-foreground border-2 border-background"
+              style={{ left: `${SPECTRUM_POSITIONS[result.spectrum_label]}%`, transform: "translate(-50%, -50%)" }}
+            />
+          </div>
+        </div>
+        <p className="text-[14px] text-foreground leading-relaxed">{result.spectrum_reasoning}</p>
+      </Section>
+
+      <Divider />
+
+      {/* ── Confidence reasoning ── */}
+      <Section label="Why this confidence level">
+        <p className="text-[14px] text-foreground leading-relaxed">{result.confidence_note}</p>
+      </Section>
+
+      <Divider />
+
+      {/* ── Why it appeals ── */}
+      <Section label="Why this may appeal to young people">
+        <p className="text-[14px] text-foreground leading-relaxed">{result.why_it_appeals}</p>
+      </Section>
+
+      {/* ── Pipeline context ── */}
+      {result.pipeline_context && (
+        <>
+          <Divider />
+          <Section label="Part of a larger pattern">
+            <div className="border-l-[3px] border-risk-concerning-foreground/30 pl-4">
+              <p className="text-[14px] text-foreground leading-relaxed">{result.pipeline_context}</p>
+            </div>
+          </Section>
+        </>
+      )}
+
+      {/* ── Age note ── */}
+      {result.age_specific_note && intake.age && (
+        <>
+          <Divider />
+          <Section label={`For parents of ${intake.age}-year-olds`}>
+            <p className="text-[14px] text-foreground leading-relaxed">{result.age_specific_note}</p>
+          </Section>
+        </>
+      )}
+
+      {/* ── Values it may promote ── */}
+      {result.values_promoted?.length > 0 && (
+        <>
+          <Divider />
+          <Section label="Values it may promote">
+            <ul className="space-y-2">
+              {result.values_promoted.map((v, i) => (
+                <li key={i} className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
+                  <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
+                  <span className="flex-1">{v}</span>
+                </li>
+              ))}
+            </ul>
+          </Section>
+        </>
+      )}
+
+      <Divider />
+
+      {/* ── What to watch for ── */}
+      <Section label="What to watch for">
+        <p className="text-[13px] text-hint mb-3">Signs of deeper engagement — things you might notice without monitoring their device</p>
+        <ul className="space-y-2">
+          {result.warning_signs.map((s, i) => (
+            <li key={i} className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
+              <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
+              <span className="flex-1">{s}</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      {/* ── Signs of improvement ── */}
+      {result.return_signals?.length > 0 && (
+        <>
+          <Divider />
+          <Section label="Signs things may be improving">
+            <ul className="space-y-2">
+              {result.return_signals.map((s, i) => (
+                <li key={i} className="flex items-start gap-3 text-[14px] leading-relaxed" style={{ color: "#3B6D11" }}>
+                  <span className="mt-[8px] h-[5px] w-[5px] rounded-full shrink-0" style={{ backgroundColor: "#3B6D11" }} />
+                  <span className="flex-1">{s}</span>
+                </li>
+              ))}
+            </ul>
+          </Section>
+        </>
+      )}
+
+      <Divider />
+
+      {/* ── What tends to backfire ── */}
+      <Section label="What tends to backfire">
+        <ul className="space-y-2">
+          {result.what_not_to_do.map((s, i) => (
+            <li key={i} className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
+              <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
+              <span className="flex-1">{s}</span>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Divider />
+
+      {/* ── Opening question — careful framing ── */}
+      <Section label="One way to open the conversation">
+        <div className="rounded-[12px] bg-card border px-5 py-4 mb-3">
+          <p className="text-[15px] text-foreground italic leading-relaxed">
+            "{result.opening_question}"
+          </p>
+        </div>
+        <p className="text-[13px] text-hint leading-relaxed">
+          This is a suggestion, not a script. You know your child best. The most effective conversations start with genuine curiosity and your own words — not a rehearsed question.
+        </p>
+      </Section>
+
+      {/* ── Trust footer ── */}
+      <div className="pt-8 pb-2">
+        <div className="border-t border-border" />
+        <div className="pt-6">
+          <p className="text-[12px] text-hint leading-relaxed">
+            This briefing is not a diagnosis. It does not monitor your child or their devices. It is based on limited information you chose to share, combined with publicly available knowledge about online culture and communities. Use your own judgment, your relationship with your child, and professional guidance when needed. Built by a nonprofit. No ads. No data sold.
+          </p>
+        </div>
       </div>
-      <p className="text-[13px] text-center mt-2" style={{ color: "#9AA898" }}>
-        {intake.query}
-      </p>
-    </div>
+
+      {/* ── Next steps — secondary, not a hard sell ── */}
+      <div className="pt-4 pb-2 space-y-3">
+        <p className="label-text">NEXT</p>
+
+        <button
+          onClick={onScanAnother}
+          className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
+        >
+          <p className="text-[14px] font-medium text-foreground">Look up something else</p>
+        </button>
+
+        <button
+          onClick={onSaveReport}
+          className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
+        >
+          <p className="text-[14px] font-medium text-foreground">
+            {saved ? "✓ Report saved" : "Save this report"}
+          </p>
+          <p className="text-[12px] text-hint mt-0.5">
+            {!user ? "Sign in to save" : !isSubscribed ? "Available with ongoing support" : "Access it anytime from your history"}
+          </p>
+        </button>
+
+        <button
+          onClick={onShowDigest}
+          className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
+        >
+          <p className="text-[14px] font-medium text-foreground">Get the monthly digest</p>
+          <p className="text-[12px] text-hint mt-0.5">
+            Free — what's trending in your child's age group, sent monthly.
+          </p>
+        </button>
+      </div>
+
+    </article>
   );
 }
 
-function LowConfidenceBanner({ result }: { result: ScanResult }) {
+/* ─── Layout primitives ─── */
+
+function Divider() {
+  return <div className="py-6"><div className="border-t border-border" /></div>;
+}
+
+function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-[14px] border border-risk-concerning/30 bg-risk-concerning/10 p-4 flex items-start gap-3">
-      <Info className="h-5 w-5 shrink-0 mt-0.5 text-risk-concerning-foreground" />
-      <div>
-        <p className="text-[14px] font-medium text-foreground mb-1">
-          We're not highly confident in this result
-        </p>
-        <p className="text-[13px] text-muted-foreground leading-relaxed">
-          {result.limitations_note || result.confidence_note || "This term may be used in multiple contexts, or there isn't enough public information for us to be certain. The information below is our best understanding, but please treat it as a starting point rather than a definitive answer."}
-        </p>
-      </div>
-    </div>
+    <section>
+      <p className="label-text mb-3">{label.toUpperCase()}</p>
+      {children}
+    </section>
   );
 }
 
-function AmbiguousSummaryCard({ result, intake, onScanAnother }: { result: ScanResult; intake: IntakeData; onScanAnother: () => void }) {
-  const navigate = useNavigate();
+/* ─── Ambiguous view ─── */
 
+function AmbiguousView({ result, intake, onScanAnother }: { result: ScanResult; intake: IntakeData; onScanAnother: () => void }) {
   const handleTrySpecific = (term: string) => {
     const stored = sessionStorage.getItem("scanIntake");
     if (stored) {
@@ -654,89 +661,133 @@ function AmbiguousSummaryCard({ result, intake, onScanAnother }: { result: ScanR
   };
 
   return (
-    <div className="rounded-[14px] p-6 space-y-5" style={{ backgroundColor: "#F5F2EC" }}>
-      <div className="flex items-start gap-3">
-        <HelpCircle className="h-6 w-6 shrink-0 mt-0.5" style={{ color: "#9AA898" }} />
-        <div>
-          <p className="text-[18px] font-medium leading-relaxed" style={{ color: "#2C3B2A" }}>
-            {result.summary_verdict || "This could refer to a few different things — we need a bit more context to give you a useful answer."}
-          </p>
-          <p className="text-[13px] mt-2" style={{ color: "#9AA898" }}>
-            You searched: {intake.query}
-          </p>
+    <article className="space-y-0">
+      <header className="pb-8">
+        <p className="label-text mb-4">PARENT BRIEFING</p>
+        <div className="flex items-start gap-3">
+          <HelpCircle className="h-5 w-5 shrink-0 mt-1 text-hint" />
+          <div>
+            <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
+              {result.summary_verdict || "This could mean a few different things"}
+            </h1>
+            <p className="text-[14px] text-hint">
+              You looked up <span className="text-foreground font-medium">{intake.query}</span>
+            </p>
+          </div>
         </div>
-      </div>
+      </header>
 
       {result.what_it_is && (
-        <p className="text-[14px] text-foreground leading-relaxed">
-          {result.what_it_is}
-        </p>
+        <>
+          <Divider />
+          <Section label="What we know">
+            <p className="text-[14px] text-foreground leading-relaxed">{result.what_it_is}</p>
+          </Section>
+        </>
       )}
 
       {result.disambiguation_options && result.disambiguation_options.length > 0 && (
-        <div>
-          <p className="label-text mb-2">DID YOU MEAN ONE OF THESE?</p>
-          <div className="space-y-2">
-            {result.disambiguation_options.map((option, i) => (
-              <button
-                key={i}
-                onClick={() => handleTrySpecific(option)}
-                className="w-full rounded-[10px] border bg-background p-3 text-left hover:bg-accent transition-colors"
-              >
-                <p className="text-[14px] text-foreground">{option}</p>
-              </button>
-            ))}
-          </div>
-        </div>
+        <>
+          <Divider />
+          <Section label="Did you mean one of these?">
+            <div className="space-y-2">
+              {result.disambiguation_options.map((option, i) => (
+                <button
+                  key={i}
+                  onClick={() => handleTrySpecific(option)}
+                  className="w-full rounded-[10px] border bg-card p-3.5 text-left hover:bg-accent/50 transition-colors"
+                >
+                  <p className="text-[14px] text-foreground">{option}</p>
+                </button>
+              ))}
+            </div>
+          </Section>
+        </>
       )}
 
-      <div className="rounded-[10px] bg-background/60 p-4">
-        <p className="text-[13px] text-muted-foreground leading-relaxed">
-          <strong className="text-foreground">Tip:</strong> Try being more specific — for example, include the platform name, the creator's full name, or describe what your child was doing when you noticed it.
+      <Divider />
+      <div className="pb-2">
+        <p className="text-[13px] text-hint leading-relaxed">
+          <span className="text-foreground font-medium">Tip:</span> Try being more specific — include the platform name, the creator's full handle, or describe the behavior you noticed.
         </p>
       </div>
-    </div>
+
+      <TrustFooter />
+    </article>
   );
 }
 
-function OutsideScopeSummaryCard({ result, intake, onScanAnother }: { result: ScanResult; intake: IntakeData; onScanAnother: () => void }) {
-  return (
-    <div className="rounded-[14px] p-6 space-y-5" style={{ backgroundColor: "#F5F2EC" }}>
-      <div className="flex items-start gap-3">
-        <Search className="h-6 w-6 shrink-0 mt-0.5" style={{ color: "#9AA898" }} />
-        <div>
-          <p className="text-[18px] font-medium leading-relaxed" style={{ color: "#2C3B2A" }}>
-            {result.summary_verdict || "This doesn't fall within the areas we're currently equipped to assess."}
-          </p>
-          <p className="text-[13px] mt-2" style={{ color: "#9AA898" }}>
-            You searched: {intake.query}
-          </p>
-        </div>
-      </div>
+/* ─── Outside scope view ─── */
 
-      {result.scope_note && (
-        <div className="rounded-[10px] bg-background/60 p-4">
-          <p className="label-text mb-2">WHAT WE CURRENTLY COVER</p>
-          <p className="text-[13px] text-muted-foreground leading-relaxed">{result.scope_note}</p>
+function OutsideScopeView({ result, intake, onScanAnother }: { result: ScanResult; intake: IntakeData; onScanAnother: () => void }) {
+  return (
+    <article className="space-y-0">
+      <header className="pb-8">
+        <p className="label-text mb-4">PARENT BRIEFING</p>
+        <div className="flex items-start gap-3">
+          <Search className="h-5 w-5 shrink-0 mt-1 text-hint" />
+          <div>
+            <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
+              {result.summary_verdict || "This doesn't fall within the areas we cover right now"}
+            </h1>
+            <p className="text-[14px] text-hint">
+              You looked up <span className="text-foreground font-medium">{intake.query}</span>
+            </p>
+          </div>
         </div>
+      </header>
+
+      {result.what_it_is && (
+        <>
+          <Divider />
+          <Section label="What we can tell you">
+            <p className="text-[14px] text-foreground leading-relaxed">{result.what_it_is}</p>
+          </Section>
+        </>
       )}
 
-      <div className="rounded-[10px] bg-background/60 p-4 space-y-2">
-        <p className="text-[14px] font-medium text-foreground">Things you can try</p>
-        <ul className="space-y-1.5">
-          <li className="flex items-start gap-2 text-[13px] text-muted-foreground leading-relaxed">
-            <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-muted-foreground shrink-0" />
+      {result.scope_note && (
+        <>
+          <Divider />
+          <Section label="What we currently cover">
+            <p className="text-[14px] text-muted-foreground leading-relaxed">{result.scope_note}</p>
+          </Section>
+        </>
+      )}
+
+      <Divider />
+      <Section label="Things you can try">
+        <ul className="space-y-2">
+          <li className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
+            <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
             <span>Use a more specific term, like the name of a creator or community</span>
           </li>
-          <li className="flex items-start gap-2 text-[13px] text-muted-foreground leading-relaxed">
-            <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-muted-foreground shrink-0" />
+          <li className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
+            <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
             <span>Describe a behavior you've noticed instead of a general topic</span>
           </li>
-          <li className="flex items-start gap-2 text-[13px] text-muted-foreground leading-relaxed">
-            <span className="mt-[7px] h-[5px] w-[5px] rounded-full bg-muted-foreground shrink-0" />
+          <li className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
+            <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
             <span>Check back as we expand our coverage over time</span>
           </li>
         </ul>
+      </Section>
+
+      <TrustFooter />
+    </article>
+  );
+}
+
+/* ─── Shared components ─── */
+
+function TrustFooter() {
+  return (
+    <div className="pt-8 pb-2">
+      <div className="border-t border-border" />
+      <div className="pt-6">
+        <p className="text-[12px] text-hint leading-relaxed">
+          This briefing is not a diagnosis. It does not monitor your child or their devices. It is based on limited information you chose to share. Use your own judgment and your relationship with your child. Built by a nonprofit. No ads. No data sold.
+        </p>
       </div>
     </div>
   );
@@ -744,107 +795,36 @@ function OutsideScopeSummaryCard({ result, intake, onScanAnother }: { result: Sc
 
 function ErrorFallbackView({ error, onRetry }: { error: string; onRetry: () => void }) {
   return (
-    <div className="rounded-[14px] p-6 space-y-5" style={{ backgroundColor: "#F5F2EC" }}>
-      <div className="flex items-start gap-3">
-        <AlertTriangle className="h-6 w-6 shrink-0 mt-0.5" style={{ color: "#C4854C" }} />
-        <div>
-          <p className="text-[18px] font-medium leading-relaxed" style={{ color: "#2C3B2A" }}>
-            We weren't able to complete this lookup
-          </p>
-          <p className="text-[14px] mt-2 leading-relaxed" style={{ color: "#5C6B5A" }}>
-            This isn't your fault — something went wrong on our end. Your question is still a good one.
-          </p>
+    <article className="space-y-0">
+      <header className="pb-8">
+        <p className="label-text mb-4">PARENT BRIEFING</p>
+        <div className="flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 shrink-0 mt-1" style={{ color: "#C4854C" }} />
+          <div>
+            <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
+              We weren't able to complete this lookup
+            </h1>
+            <p className="text-[14px] text-muted-foreground leading-relaxed">
+              This isn't your fault — something went wrong on our end. Your question is still a good one.
+            </p>
+          </div>
         </div>
-      </div>
+      </header>
 
-      <div className="rounded-[10px] bg-background/60 p-4">
-        <p className="text-[13px] text-muted-foreground leading-relaxed mb-1">
-          <strong className="text-foreground">What happened:</strong> {error}
-        </p>
-        <p className="text-[13px] text-muted-foreground leading-relaxed">
+      <Divider />
+
+      <Section label="What happened">
+        <p className="text-[14px] text-muted-foreground leading-relaxed mb-1">{error}</p>
+        <p className="text-[14px] text-muted-foreground leading-relaxed">
           You can try again — sometimes it just takes a second attempt. If this keeps happening, the term may be too broad or unusual for us to analyze right now.
         </p>
+      </Section>
+
+      <div className="pt-8">
+        <Button onClick={onRetry}>Try again</Button>
       </div>
 
-      <div className="flex gap-3">
-        <Button onClick={onRetry} className="flex-1">Try again</Button>
-      </div>
-    </div>
-  );
-}
-
-function NextStepsCard({
-  onScanAnother,
-  onSaveReport,
-  onShowDigest,
-  saved,
-  user,
-  isSubscribed,
-  isOpen,
-  onToggle,
-  alwaysOpen,
-}: {
-  onScanAnother: () => void;
-  onSaveReport: () => void;
-  onShowDigest: () => void;
-  saved: boolean;
-  user: any;
-  isSubscribed: boolean;
-  isOpen: boolean;
-  onToggle: () => void;
-  alwaysOpen?: boolean;
-}) {
-  const content = (
-    <div className="grid grid-cols-1 gap-3">
-      <button
-        onClick={onScanAnother}
-        className="rounded-[10px] border bg-background p-4 text-left hover:bg-accent transition-colors"
-      >
-        <p className="text-[15px] font-medium text-foreground">Look up something else</p>
-        <p className="text-[13px] text-muted-foreground">Analyze another creator, game, or term</p>
-      </button>
-
-      <button
-        onClick={onSaveReport}
-        className="rounded-[10px] border bg-background p-4 text-left hover:bg-accent transition-colors"
-      >
-        <p className="text-[15px] font-medium text-foreground">
-          {saved ? "✓ Report saved" : "Save this report"}
-        </p>
-        <p className="text-[13px] text-muted-foreground">
-          {!user ? "Sign in to save" : !isSubscribed ? "Available with ongoing support" : "Access it anytime from your account"}
-        </p>
-      </button>
-
-      <button
-        onClick={onShowDigest}
-        className="rounded-[10px] border bg-background p-4 text-left hover:bg-accent transition-colors"
-      >
-        <p className="text-[15px] font-medium text-foreground">Get the monthly digest</p>
-        <p className="text-[13px] text-muted-foreground">
-          Free for everyone — what's trending in your child's age group, sent monthly.
-        </p>
-      </button>
-    </div>
-  );
-
-  if (alwaysOpen) {
-    return (
-      <div className="rounded-[14px] bg-card p-5">
-        <p className="label-text mb-3">NEXT STEPS</p>
-        {content}
-      </div>
-    );
-  }
-
-  return (
-    <CollapsibleCard
-      label="NEXT STEPS"
-      previewText="Look up something else, save this report, or get the monthly digest"
-      isOpen={isOpen}
-      onToggle={onToggle}
-    >
-      {content}
-    </CollapsibleCard>
+      <TrustFooter />
+    </article>
   );
 }
