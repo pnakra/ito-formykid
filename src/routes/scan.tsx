@@ -80,7 +80,8 @@ function ScanPage() {
   const [scanCount, setScanCount] = useState<number | null>(null);
   const [isSubscribed, setIsSubscribed] = useState(false);
 
-  const hasCompletedFirstScan = typeof window !== "undefined" && localStorage.getItem("itook_first_scan_done") === "true";
+  // Payments temporarily disabled — allow unlimited scans without account
+  const hasCompletedFirstScan = false;
 
   useEffect(() => {
     if (!authLoading && !user && hasCompletedFirstScan) {
@@ -104,7 +105,8 @@ function ScanPage() {
     }
   }, [user]);
 
-  const canScan = !user ? !hasCompletedFirstScan : (isSubscribed || (scanCount !== null && scanCount < 3));
+  // Payments temporarily disabled — always allow scanning
+  const canScan = true;
 
   const canAdvance = () => {
     if (step === 1) return true;
