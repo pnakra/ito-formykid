@@ -9,17 +9,20 @@ export function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
         <Link to="/" className="text-[15px] font-medium text-foreground">
           is this ok?
         </Link>
-        <nav className="flex items-center gap-3">
+        <nav className="flex items-center gap-1">
           {isLoggedIn ? (
             <>
-              <Link to="/scan">
-                <Button variant="ghost" size="sm">Scan</Button>
+              <Link to="/home" search={{ tab: "understand" }}>
+                <Button variant="ghost" size="sm" className="text-[13px]">Understand now</Button>
+              </Link>
+              <Link to="/home" search={{ tab: "stay_ahead" }}>
+                <Button variant="ghost" size="sm" className="text-[13px]">Stay ahead</Button>
               </Link>
               <Link to="/history">
-                <Button variant="ghost" size="sm">History</Button>
+                <Button variant="ghost" size="sm" className="text-[13px]">History</Button>
               </Link>
               <Link to="/account">
-                <Button variant="ghost" size="sm">Account</Button>
+                <Button variant="ghost" size="sm" className="text-[13px]">Account</Button>
               </Link>
             </>
           ) : (
