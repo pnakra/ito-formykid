@@ -188,7 +188,14 @@ function ResultsPage() {
           risk_level: scanResult.spectrum_label,
           summary: scanResult.what_it_is,
           guidance: scanResult.why_it_appeals,
-        });
+          domain_category: scanResult.result_type === "outside_scope" ? "outside_scope" : null,
+          confidence: scanResult.confidence,
+          age_context: intakeData.age || null,
+          concern_areas: intakeData.concerns.length > 0 ? intakeData.concerns : null,
+          spectrum_label: scanResult.spectrum_label,
+          summary_verdict: scanResult.summary_verdict,
+          status: "watching",
+        } as any);
 
         const currentCount = scanCount ?? 0;
         const newCount = currentCount + 1;
