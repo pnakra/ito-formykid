@@ -80,7 +80,7 @@ function SignupPage() {
             Create your account
           </h1>
           <p className="text-sm text-muted-foreground mb-6 text-center">
-            3 free scans included. No credit card required.
+            Free lookups to start. No credit card required.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
