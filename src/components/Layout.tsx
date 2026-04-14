@@ -58,7 +58,7 @@ export function Footer() {
             </a>
           </p>
           <p className="text-xs text-hint">
-            Not a monitoring tool. An orientation tool.
+            A nonprofit orientation tool — not a monitoring tool.
           </p>
         </div>
       </div>

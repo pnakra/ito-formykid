@@ -14,7 +14,7 @@ export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
       { title: "Account — is this ok?" },
-      { name: "description", content: "Manage your is this ok? account and subscription." },
+      { name: "description", content: "Manage your account, saved reports, and monthly digest settings." },
     ],
   }),
   component: AccountPage,
@@ -318,7 +318,7 @@ function AccountPage() {
               <div className="rounded-[14px] border bg-card p-5 text-center">
                 <p className="text-muted-foreground">No saved reports yet.</p>
                 <Link to="/scan">
-                  <Button size="sm" className="mt-3">Run a scan to get started</Button>
+                  <Button size="sm" className="mt-3">Look something up</Button>
                 </Link>
               </div>
             ) : (
