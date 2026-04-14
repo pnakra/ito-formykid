@@ -117,6 +117,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          linked_situation_id: string | null
           note_text: string
           scan_id: string
           user_id: string
@@ -124,6 +125,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          linked_situation_id?: string | null
           note_text: string
           scan_id: string
           user_id: string
@@ -131,11 +133,19 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          linked_situation_id?: string | null
           note_text?: string
           scan_id?: string
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "scan_notes_linked_situation_id_fkey"
+            columns: ["linked_situation_id"]
+            isOneToOne: false
+            referencedRelation: "situation_log"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "scan_notes_scan_id_fkey"
             columns: ["scan_id"]
@@ -147,33 +157,57 @@ export type Database = {
       }
       scans: {
         Row: {
+          age_context: string | null
+          concern_areas: string[] | null
+          confidence: string | null
           created_at: string
+          domain_category: string | null
           guidance: string
           id: string
           input_content: string
           input_type: string
           risk_level: string
+          spectrum_label: string | null
+          status: string
+          status_updated_at: string | null
           summary: string
+          summary_verdict: string | null
           user_id: string
         }
         Insert: {
+          age_context?: string | null
+          concern_areas?: string[] | null
+          confidence?: string | null
           created_at?: string
+          domain_category?: string | null
           guidance: string
           id?: string
           input_content: string
           input_type: string
           risk_level: string
+          spectrum_label?: string | null
+          status?: string
+          status_updated_at?: string | null
           summary: string
+          summary_verdict?: string | null
           user_id: string
         }
         Update: {
+          age_context?: string | null
+          concern_areas?: string[] | null
+          confidence?: string | null
           created_at?: string
+          domain_category?: string | null
           guidance?: string
           id?: string
           input_content?: string
           input_type?: string
           risk_level?: string
+          spectrum_label?: string | null
+          status?: string
+          status_updated_at?: string | null
           summary?: string
+          summary_verdict?: string | null
           user_id?: string
         }
         Relationships: []
