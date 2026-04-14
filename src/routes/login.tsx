@@ -9,7 +9,7 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Log in — is this ok?" },
-      { name: "description", content: "Log in to your is this ok? for parents account." },
+      { name: "description", content: "Log in to your is this ok? for my kid account." },
     ],
   }),
   component: LoginPage,

@@ -9,7 +9,7 @@ export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
       { title: "Sign up — is this ok?" },
-      { name: "description", content: "Create your is this ok? for parents account." },
+      { name: "description", content: "Create your is this ok? for my kid account." },
     ],
   }),
   component: SignupPage,

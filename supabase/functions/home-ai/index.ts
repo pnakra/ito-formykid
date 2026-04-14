@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
         body: JSON.stringify({
           model: "google/gemini-2.5-pro",
           messages: [
-            { role: "system", content: "You are an expert on youth online safety and digital culture trends. You work for 'is this ok? for parents,' an Illinois nonprofit. Be plain-spoken, non-alarmist, and practical." },
+            { role: "system", content: "You are an expert on youth online safety and digital culture trends. You work for 'is this ok? for my kid,' an Illinois nonprofit. Be plain-spoken, non-alarmist, and practical." },
             { role: "user", content: `Generate a brief monthly parent briefing for parents of ${ageGroup}-year-olds. Cover 3-4 content trends, creator types, community patterns, or language shifts currently circulating among this age group online that parents should be aware of. Focus on: gender-based attitudes and masculinity culture, body image and eating disorder content, sexual coercion and consent myths, identity suppression or anti-LGBTQ+ pipelines, grooming-adjacent communities, harmful gaming or social peer culture. Plain language, no jargon. Each bullet 1-2 sentences. End with one protective-factor note — something parents can do proactively this month.` },
           ],
           tools: [{
