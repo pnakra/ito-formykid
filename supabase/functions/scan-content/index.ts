@@ -24,7 +24,17 @@ Grooming-adjacent and exploitative communities (gaming communities with document
 
 Harmful peer culture in gaming and social spaces (specific Roblox games or experiences, gaming communities with documented toxicity toward minors)
 
-If a query falls outside these domains, acknowledge what the content is in what_it_is, set spectrum_label to 'Mainstream' or note it is outside your current coverage, set confidence to 'Low', and explain briefly what domains you are currently equipped to assess. Do not attempt to classify content outside these domains with false confidence.
+RESULT TYPE CLASSIFICATION — you MUST set result_type to one of these values:
+
+"normal" — You have enough context and confidence to provide a structured assessment. Use this for clear, well-known content within your domains.
+
+"low_confidence" — You can provide some analysis, but your confidence is low. Reasons include: the term is used in multiple contexts, evidence is mixed, the content is evolving rapidly, or there isn't enough public information to be certain. You MUST still fill in all fields, but use cautious language throughout and explain limitations in confidence_note.
+
+"ambiguous" — The query could refer to multiple distinct things (e.g., a word with both harmless and harmful meanings, a name shared by multiple creators). Set this when you cannot determine which interpretation the parent means. Fill in what_it_is with a description of the ambiguity, and list possible interpretations in disambiguation_options (2-4 options). Other fields should reflect the ambiguity.
+
+"outside_scope" — The query falls outside your supported content domains. This includes general parenting questions, academic concerns, physical health, content that is clearly benign and mainstream with no youth harm angle, or topics you lack expertise to assess. Fill in what_it_is with a brief explanation of what the content appears to be, and explain in scope_note why it falls outside current coverage and what domains you do cover.
+
+IMPORTANT: Be honest about uncertainty. Never inflate confidence to appear more useful. Parents trust this tool MORE when it is transparent about what it doesn't know. A low-confidence or ambiguous result that is honest is far better than a high-confidence result that is wrong.
 
 Mandatory rules:
 
@@ -36,7 +46,7 @@ Calibrate all output to child's age and observed signals.
 
 If LGBTQ+ specific risks are relevant given the signals, acknowledge that dimension.
 
-If input is unrecognizable, set confidence to Low and explain in what_it_is.
+If input is unrecognizable, set result_type to "low_confidence" or "ambiguous" as appropriate, set confidence to Low, and explain in what_it_is.
 
 Distinguish clearly between mainstream self-help, edgy humor, pickup content, grievance content, and overt hate.
 
@@ -48,9 +58,16 @@ The what_not_to_do items must be consistent with the spectrum_label. If the spec
 
 summary_verdict: One plain-language sentence that tells a non-technical parent the single most important thing to know about this content. Write it as if speaking directly to a worried grandparent. No jargon. No spectrum labels. No confidence language. Just the honest one-sentence takeaway. Examples of the right tone: 'This is content that teaches boys their worth is based on how they look, and it can lead to more harmful ideas over time.' or 'This appears to be a harmless gaming term, but it's worth knowing the context.' or 'This is a community that actively tries to pull young people away from the adults in their life — it deserves your attention.'
 
+For "ambiguous" results, summary_verdict should acknowledge the ambiguity: e.g. 'This term can mean several different things — we need a bit more context to give you a useful answer.'
+
+For "outside_scope" results, summary_verdict should be honest: e.g. 'This doesn't fall within the areas we're currently equipped to assess, but here's what we can tell you.'
+
+For "low_confidence" results, summary_verdict should be cautious: e.g. 'We found some information about this, but we're not confident enough to give you a definitive answer — here's what we do know.'
+
 You MUST respond with ONLY a valid JSON object — no markdown, no code fences, no explanation text before or after. The JSON must have exactly these fields:
 
 {
+  "result_type": "normal" | "low_confidence" | "ambiguous" | "outside_scope",
   "summary_verdict": "string — one plain-language sentence takeaway",
   "what_it_is": "string — 2-3 sentences, plain language",
   "platform_context": "string — 1-2 sentences on where this lives",
@@ -65,17 +82,18 @@ You MUST respond with ONLY a valid JSON object — no markdown, no code fences, 
   "what_not_to_do": ["string", "string", "string"] — 3 specific parental responses that backfire,
   "opening_question": "string — one curiosity-oriented question",
   "warning_signs": ["string", "string", "string"] — 3-4 observable signals,
-  "return_signals": ["string", "string"] — 2-3 signs things are improving
+  "return_signals": ["string", "string"] — 2-3 signs things are improving,
+  "disambiguation_options": ["string", "string"] or null — 2-4 possible interpretations if result_type is "ambiguous", otherwise null,
+  "scope_note": "string or null — explanation of what domains are covered if result_type is "outside_scope", otherwise null,
+  "limitations_note": "string or null — specific explanation of why confidence is limited if result_type is "low_confidence", otherwise null
 }`;
 
 function extractJson(text: string): Record<string, unknown> {
-  // Strip markdown fences
   let cleaned = text
     .replace(/```json\s*/gi, "")
     .replace(/```\s*/g, "")
     .trim();
 
-  // Find JSON boundaries
   const jsonStart = cleaned.indexOf("{");
   const jsonEnd = cleaned.lastIndexOf("}");
 
@@ -88,13 +106,68 @@ function extractJson(text: string): Record<string, unknown> {
   try {
     return JSON.parse(cleaned);
   } catch {
-    // Fix common JSON issues
     cleaned = cleaned
       .replace(/,\s*}/g, "}")
       .replace(/,\s*]/g, "]")
       .replace(/[\x00-\x1F\x7F]/g, " ");
     return JSON.parse(cleaned);
   }
+}
+
+// Post-process: ensure result_type is set consistently
+function classifyResult(result: Record<string, unknown>): Record<string, unknown> {
+  // If the AI already set a valid result_type, trust it
+  const validTypes = ["normal", "low_confidence", "ambiguous", "outside_scope"];
+  if (result.result_type && validTypes.includes(result.result_type as string)) {
+    return result;
+  }
+
+  // Fallback classification based on signals
+  const confidence = (result.confidence as string) || "";
+  const spectrumLabel = (result.spectrum_label as string) || "";
+  const whatItIs = (result.what_it_is as string) || "";
+  const disambiguationOptions = result.disambiguation_options as string[] | null;
+
+  // Check for ambiguity signals
+  if (disambiguationOptions && disambiguationOptions.length > 1) {
+    result.result_type = "ambiguous";
+    return result;
+  }
+
+  // Check for outside-scope signals
+  const scopeNote = result.scope_note as string | null;
+  if (scopeNote && scopeNote.length > 10) {
+    result.result_type = "outside_scope";
+    return result;
+  }
+
+  // Check for low confidence
+  if (confidence === "Low") {
+    result.result_type = "low_confidence";
+    return result;
+  }
+
+  // Check content for uncertainty language
+  const uncertaintyPatterns = [
+    /outside.*(?:scope|coverage|domain)/i,
+    /not.*(?:equipped|able|designed)/i,
+    /cannot.*(?:determine|assess|evaluate)/i,
+    /multiple.*(?:meanings|interpretations|contexts)/i,
+  ];
+
+  for (const pattern of uncertaintyPatterns) {
+    if (pattern.test(whatItIs)) {
+      if (disambiguationOptions) {
+        result.result_type = "ambiguous";
+      } else {
+        result.result_type = "low_confidence";
+      }
+      return result;
+    }
+  }
+
+  result.result_type = "normal";
+  return result;
 }
 
 serve(async (req) => {
@@ -131,7 +204,7 @@ serve(async (req) => {
             { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content },
           ],
-          max_tokens: 3000,
+          max_tokens: 3500,
         }),
       }
     );
@@ -157,7 +230,6 @@ serve(async (req) => {
     const aiData = await response.json();
     const message = aiData.choices?.[0]?.message;
 
-    // Try tool_calls first (in case model uses them), then content
     let result;
     const toolCall = message?.tool_calls?.[0];
 
@@ -169,6 +241,9 @@ serve(async (req) => {
       console.error("AI response structure:", JSON.stringify(aiData).substring(0, 1000));
       throw new Error("No usable response from AI");
     }
+
+    // Ensure result_type is always set
+    result = classifyResult(result);
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
