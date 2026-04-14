@@ -3,20 +3,22 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronRight, Plus } from "lucide-react";
+import { Loader2, ChevronRight, Plus, Search, TrendingUp, BookOpen, Shield, MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
     meta: [
       { title: "Home — is this ok?" },
-      { name: "description", content: "Your parenting dashboard for understanding online content." },
+      { name: "description", content: "Understand something worrying right now, or stay ahead of harmful online influence over time." },
     ],
   }),
   component: HomePage,
+  validateSearch: (search: Record<string, unknown>) => ({
+    tab: (search.tab as string) || undefined,
+  }),
 });
 
 const SPECTRUM_COLORS: Record<string, string> = {
@@ -50,13 +52,16 @@ type FactorStatus = "good" | "needs_attention" | "not_sure";
 function HomePage() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const { tab: searchTab } = Route.useSearch();
 
   const [profile, setProfile] = useState<{
     scan_count: number;
     digest_age_group: string | null;
   } | null>(null);
 
-  const [defaultTab, setDefaultTab] = useState<string>("stay_ahead");
+  const [activeMode, setActiveMode] = useState<"understand" | "stay_ahead">(
+    (searchTab as "understand" | "stay_ahead") || "stay_ahead"
+  );
   const [query, setQuery] = useState("");
 
   // Recent scans
@@ -85,6 +90,13 @@ function HomePage() {
   const [factorSuggestions, setFactorSuggestions] = useState<Record<string, string>>({});
   const [factorsLoading, setFactorsLoading] = useState(false);
 
+  // Sync search param to active mode
+  useEffect(() => {
+    if (searchTab === "understand" || searchTab === "stay_ahead") {
+      setActiveMode(searchTab);
+    }
+  }, [searchTab]);
+
   useEffect(() => {
     if (!authLoading && !user) {
       navigate({ to: "/login" });
@@ -103,7 +115,7 @@ function HomePage() {
         if (data) {
           setProfile(data);
           // New user = 0 scans → default to Understand now
-          if (data.scan_count === 0) setDefaultTab("understand");
+          if (data.scan_count === 0 && !searchTab) setActiveMode("understand");
         }
       });
 
@@ -331,7 +343,6 @@ function HomePage() {
 
   const handleScanSubmit = () => {
     if (!query.trim()) return;
-    // Pre-populate child context from profile
     const intakeData = {
       age: "",
       gender: "",
@@ -339,7 +350,6 @@ function HomePage() {
       observations: [],
       query: query.trim(),
     };
-    // If profile has age group, extract approximate age
     if (profile?.digest_age_group) {
       const ageMap: Record<string, string> = {
         "11-13": "12",
@@ -370,14 +380,36 @@ function HomePage() {
 
       <main className="flex-1 py-8">
         <div className="mx-auto max-w-xl px-5">
-          <Tabs defaultValue={defaultTab} className="w-full">
-            <TabsList className="w-full mb-6">
-              <TabsTrigger value="understand" className="flex-1">Understand now</TabsTrigger>
-              <TabsTrigger value="stay_ahead" className="flex-1">Stay ahead</TabsTrigger>
-            </TabsList>
 
-            {/* ─── UNDERSTAND NOW ─── */}
-            <TabsContent value="understand">
+          {/* Mode switcher */}
+          <div className="flex rounded-[10px] bg-muted p-1 mb-8">
+            <button
+              onClick={() => setActiveMode("understand")}
+              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[14px] font-medium transition-all ${
+                activeMode === "understand"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Search className="h-3.5 w-3.5" />
+              Understand now
+            </button>
+            <button
+              onClick={() => setActiveMode("stay_ahead")}
+              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[14px] font-medium transition-all ${
+                activeMode === "stay_ahead"
+                  ? "bg-background text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <TrendingUp className="h-3.5 w-3.5" />
+              Stay ahead
+            </button>
+          </div>
+
+          {/* ─── UNDERSTAND NOW ─── */}
+          {activeMode === "understand" && (
+            <div>
               <div className="rounded-[14px] bg-card p-5 mb-6">
                 <h2 className="text-xl font-medium text-foreground mb-1">What do you want to understand?</h2>
                 <p className="text-[13px] text-hint mb-4">
@@ -417,6 +449,7 @@ function HomePage() {
               {/* Recent scans */}
               {recentScans.length > 0 && (
                 <div>
+                  <p className="label-text mb-2">RECENT LOOKUPS</p>
                   <div className="space-y-2">
                     {recentScans.map((scan) => {
                       const term = extractQuery(scan.input_content);
@@ -444,15 +477,37 @@ function HomePage() {
                       );
                     })}
                   </div>
-                  <Link to="/account" className="block mt-3 text-sm text-foreground underline underline-offset-4 text-center">
+                  <Link to="/history" className="block mt-3 text-sm text-foreground underline underline-offset-4 text-center">
                     See all saved reports →
                   </Link>
                 </div>
               )}
-            </TabsContent>
 
-            {/* ─── STAY AHEAD ─── */}
-            <TabsContent value="stay_ahead" className="space-y-8">
+              {/* Nudge to Stay Ahead */}
+              <div className="mt-8 rounded-[14px] border border-dashed p-5 text-center">
+                <p className="text-[14px] text-muted-foreground leading-relaxed mb-3">
+                  Looking things up is important — but staying ahead is even better. Track patterns, get monthly briefings, and strengthen what protects your child over time.
+                </p>
+                <button
+                  onClick={() => setActiveMode("stay_ahead")}
+                  className="text-[13px] font-medium text-foreground underline underline-offset-4"
+                >
+                  Explore Stay ahead →
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ─── STAY AHEAD ─── */}
+          {activeMode === "stay_ahead" && (
+            <div className="space-y-8">
+
+              {/* Intro */}
+              <div className="text-center">
+                <p className="text-[14px] text-muted-foreground leading-relaxed">
+                  You don't need a crisis to use this. These tools help you notice patterns, stay informed, and strengthen the things that keep your child resilient.
+                </p>
+              </div>
 
               {/* Section 1: Monthly briefing */}
               <section>
@@ -500,7 +555,7 @@ function HomePage() {
               <section>
                 <p className="label-text mb-1">YOUR SITUATION LOG</p>
                 <p className="text-[13px] text-hint mb-4">
-                  Track signals over time. You don't need a crisis to use this.
+                  Track what you notice over time. Even small observations add up to a clearer picture.
                 </p>
 
                 <div className="rounded-[14px] bg-card p-5 mb-4">
@@ -576,7 +631,7 @@ function HomePage() {
               <section>
                 <p className="label-text mb-1">PROTECTIVE FACTORS</p>
                 <p className="text-[13px] text-hint mb-4">
-                  Research shows these reduce vulnerability to harmful online influence.
+                  Research shows these reduce vulnerability to harmful online influence. Reflect on where your family stands.
                 </p>
 
                 <div className="space-y-3">
@@ -632,8 +687,22 @@ function HomePage() {
                   Based on research into what reduces adolescent vulnerability to harmful online influence. Not a clinical assessment.
                 </p>
               </section>
-            </TabsContent>
-          </Tabs>
+
+              {/* Nudge to Understand Now */}
+              <div className="rounded-[14px] border border-dashed p-5 text-center">
+                <p className="text-[14px] text-muted-foreground leading-relaxed mb-3">
+                  Something worrying you right now? Look up a creator, term, or behavior and get a plain-language report in seconds.
+                </p>
+                <button
+                  onClick={() => setActiveMode("understand")}
+                  className="text-[13px] font-medium text-foreground underline underline-offset-4"
+                >
+                  Go to Understand now →
+                </button>
+              </div>
+            </div>
+          )}
+
         </div>
       </main>
 

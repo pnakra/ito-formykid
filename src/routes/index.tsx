@@ -2,14 +2,15 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Search, TrendingUp, BookOpen, Shield, MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "is this ok? for parents — understand what your child sees online" },
-      { name: "description", content: "Something doesn't feel right about what your child is seeing online. Type in a name, a word, or a behavior — and we'll help you understand what's going on." },
+      { name: "description", content: "Two ways to protect your child online: understand something worrying right now, or stay ahead of harmful influence over time. For parents and grandparents." },
       { property: "og:title", content: "is this ok? for parents" },
-      { property: "og:description", content: "Something doesn't feel right. We can help you figure out what's going on." },
+      { property: "og:description", content: "Understand something worrying right now. Stay ahead of harmful online influence over time." },
     ],
   }),
   component: LandingPage,
@@ -45,16 +46,43 @@ function LandingPage() {
         <section className="py-12 md:py-24">
           <div className="mx-auto max-w-2xl px-5">
             <h1 className="text-[24px] md:text-[32px] font-medium text-foreground leading-[1.35] mb-4">
-              Something doesn't feel right. We can help you figure out what's going on.
+              Two ways to keep your child safer online
             </h1>
-            <p className="text-[15px] md:text-[16px] text-hint leading-relaxed mb-7">
-              Parents and grandparents use is this ok? when they hear something from a child that worries them — a word, a name, a video, a change in how they're acting. Type it in and we'll tell you what it is, why young people are drawn to it, and how to talk about it without pushing them away.
+            <p className="text-[15px] md:text-[16px] text-hint leading-relaxed mb-8">
+              When something worries you, we help you understand it. When nothing's wrong yet, we help you stay ahead of it. No monitoring. No device access. Just a calmer way to stay connected.
             </p>
-            <Link to="/scan">
-              <Button size="lg" className="w-full sm:w-auto">Try it free — no account needed</Button>
-            </Link>
-            <p className="mt-3 text-[12px] text-hint">
-              First look is free. $9/month after that.
+
+            {/* Two modes */}
+            <div className="grid gap-4 md:grid-cols-2 mb-8">
+              <div className="rounded-[14px] border bg-card p-5">
+                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-[10px] bg-accent">
+                  <Search className="h-4 w-4 text-foreground" />
+                </div>
+                <h2 className="text-[16px] font-medium text-foreground mb-2">Understand now</h2>
+                <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
+                  You heard something, saw something, or just have a feeling. Type it in — a creator, a word, a game, a behavior — and get a plain-language report on what it is, why young people are drawn to it, and how to talk about it.
+                </p>
+                <Link to="/scan">
+                  <Button size="sm" className="w-full">Look something up</Button>
+                </Link>
+              </div>
+
+              <div className="rounded-[14px] border bg-card p-5">
+                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-[10px] bg-accent">
+                  <TrendingUp className="h-4 w-4 text-foreground" />
+                </div>
+                <h2 className="text-[16px] font-medium text-foreground mb-2">Stay ahead</h2>
+                <p className="text-[14px] text-muted-foreground leading-relaxed mb-4">
+                  Don't wait for a crisis. Get a monthly briefing on what kids are seeing, track patterns in what you notice at home, and strengthen the factors that research shows protect young people.
+                </p>
+                <Link to="/signup">
+                  <Button variant="outline" size="sm" className="w-full">Create a free account</Button>
+                </Link>
+              </div>
+            </div>
+
+            <p className="text-[12px] text-hint text-center">
+              First lookup is free. $9/month after that — includes both modes.
             </p>
           </div>
         </section>
@@ -62,6 +90,9 @@ function LandingPage() {
         {/* Moment cards */}
         <section className="py-12 border-t">
           <div className="mx-auto max-w-3xl px-5">
+            <h2 className="text-xl font-medium text-foreground mb-6 text-center">
+              Parents come to us in moments like these
+            </h2>
             <div className="grid gap-4 md:grid-cols-3">
               <div className="rounded-[14px] bg-card p-5">
                 <p className="text-[15px] text-foreground leading-relaxed">
@@ -85,11 +116,12 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* How it works */}
+        {/* How Understand Now works */}
         <section className="py-12 border-t">
           <div className="mx-auto max-w-xl px-5">
+            <p className="label-text mb-2">UNDERSTAND NOW</p>
             <h2 className="text-xl font-medium text-foreground mb-6">
-              Here's how it works
+              How it works when something worries you
             </h2>
             <div className="space-y-5">
               <div className="flex gap-4">
@@ -111,8 +143,53 @@ function LandingPage() {
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* How Stay Ahead works */}
+        <section className="py-12 border-t">
+          <div className="mx-auto max-w-xl px-5">
+            <p className="label-text mb-2">STAY AHEAD</p>
+            <h2 className="text-xl font-medium text-foreground mb-6">
+              How it works when nothing's wrong yet
+            </h2>
+            <div className="space-y-5">
+              <div className="flex gap-4">
+                <div className="shrink-0 mt-1">
+                  <BookOpen className="h-4 w-4 text-hint" />
+                </div>
+                <div>
+                  <p className="text-[15px] font-medium text-foreground mb-1">Monthly briefing</p>
+                  <p className="text-[14px] text-muted-foreground leading-relaxed">
+                    A plain-language summary of what kids your child's age are seeing online right now — and what to watch for.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="shrink-0 mt-1">
+                  <MessageCircle className="h-4 w-4 text-hint" />
+                </div>
+                <div>
+                  <p className="text-[15px] font-medium text-foreground mb-1">Situation log & pattern tracking</p>
+                  <p className="text-[14px] text-muted-foreground leading-relaxed">
+                    Write down what you notice — a comment, a mood shift, a new friend group. After a few entries, we surface patterns you might not see on your own.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="shrink-0 mt-1">
+                  <Shield className="h-4 w-4 text-hint" />
+                </div>
+                <div>
+                  <p className="text-[15px] font-medium text-foreground mb-1">Protective factors check-in</p>
+                  <p className="text-[14px] text-muted-foreground leading-relaxed">
+                    Research shows five things reduce a young person's vulnerability to harmful online influence. We help you reflect on where your family stands — and offer practical, specific ideas for the areas that need attention.
+                  </p>
+                </div>
+              </div>
+            </div>
             <p className="text-[14px] text-muted-foreground mt-6 leading-relaxed">
-              We don't monitor your child's devices. We don't need access to their accounts. You just tell us what you saw or heard.
+              We don't monitor your child's devices. We don't need access to their accounts. This is a companion for you — not surveillance software.
             </p>
           </div>
         </section>
