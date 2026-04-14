@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "is this ok? — understand what your child sees online" },
       { name: "description", content: "A nonprofit orientation tool for parents and grandparents. Understand something worrying right now, or stay ahead of harmful online influence over time." },
-      { property: "og:title", content: "is this ok? for parents" },
+      { property: "og:title", content: "is this ok? for my kid" },
       { property: "og:description", content: "Understand something worrying right now. Stay ahead of harmful online influence over time." },
     ],
   }),
@@ -32,7 +32,7 @@ function LandingPage() {
       <header className="border-b">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-5">
           <Link to="/" className="text-[13px] font-medium tracking-[0.06em] text-hint">
-            is this ok? for parents
+            is this ok? for my kid
           </Link>
           <div className="flex items-center gap-4">
             <Link to="/login" className="text-[13px] text-hint hover:text-foreground transition-colors">
@@ -303,7 +303,7 @@ function LandingPage() {
       {/* ═══ Footer ═══ */}
       <footer className="border-t py-10 md:py-14">
         <div className="mx-auto max-w-2xl px-5">
-          <p className="text-[13px] font-medium text-foreground mb-3">is this ok? for parents</p>
+          <p className="text-[13px] font-medium text-foreground mb-3">is this ok? for my kid</p>
           <p className="text-[13px] text-hint leading-[1.75] mb-4">
             Made by Override Labs, a nonprofit working to keep young people safer online and in their relationships. We don't access your child's devices or accounts. We are not affiliated with any social media platform, creator, or advertiser.
           </p>

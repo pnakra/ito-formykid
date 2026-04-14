@@ -9,7 +9,7 @@ export const Route = createFileRoute("/checkout")({
   head: () => ({
     meta: [
       { title: "Subscribe — is this ok?" },
-      { name: "description", content: "Subscribe to is this ok? for parents — ongoing support, saved reports, and monthly briefings." },
+      { name: "description", content: "Subscribe to is this ok? for my kid — ongoing support, saved reports, and monthly briefings." },
     ],
   }),
   component: CheckoutPage,
