@@ -3,14 +3,13 @@ import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
       { title: "Sign up — is this ok?" },
-      { name: "description", content: "Create your is this ok? for parents account. 3 free scans included." },
+      { name: "description", content: "Create your is this ok? for parents account." },
     ],
   }),
   component: SignupPage,
@@ -54,36 +53,52 @@ function SignupPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Header isLoggedIn={false} />
-        <main className="flex-1 flex items-center justify-center py-16">
-          <div className="mx-auto max-w-sm px-5 text-center">
-            <h1 className="text-2xl font-medium text-foreground mb-2">
+      <div className="min-h-screen flex flex-col bg-background">
+        <header className="px-6 md:px-10 py-6">
+          <Link to="/" className="text-[15px] text-muted-foreground hover:text-foreground transition-colors">
+            ← Back
+          </Link>
+        </header>
+        <main className="flex-1 flex items-start justify-center pt-[12vh] pb-16 px-6 md:px-10">
+          <div className="w-full max-w-sm">
+            <h1
+              className="text-[26px] md:text-[30px] text-foreground leading-[1.25] mb-3"
+              style={{ fontFamily: "var(--font-serif)", fontWeight: 400 }}
+            >
               Check your email
             </h1>
-            <p className="text-muted-foreground">
-              We sent a confirmation link to <span className="text-foreground">{email}</span>. Click it to activate your account.
+            <p className="text-[15px] text-muted-foreground leading-relaxed">
+              We sent a confirmation link to{" "}
+              <span className="text-foreground">{email}</span>.
+              Click it to activate your account.
             </p>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header isLoggedIn={false} />
-      <main className="flex-1 flex items-center justify-center py-16">
-        <div className="mx-auto w-full max-w-sm px-5">
-          <h1 className="text-2xl font-medium text-foreground mb-1 text-center">
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="px-6 md:px-10 py-6">
+        <Link to="/" className="text-[15px] text-muted-foreground hover:text-foreground transition-colors">
+          ← Back
+        </Link>
+      </header>
+
+      <main className="flex-1 flex items-start justify-center pt-[12vh] pb-16 px-6 md:px-10">
+        <div className="w-full max-w-sm">
+          <h1
+            className="text-[26px] md:text-[30px] text-foreground leading-[1.25] mb-2"
+            style={{ fontFamily: "var(--font-serif)", fontWeight: 400 }}
+          >
             Create your account
           </h1>
-          <p className="text-sm text-muted-foreground mb-6 text-center">
-            Free lookups to start. No credit card required.
+          <p className="text-[14px] text-muted-foreground leading-relaxed mb-8">
+            Save reports, track patterns over time, and stay ahead of what your child encounters online.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="label-text mb-1.5 block">Email</label>
               <Input
@@ -111,19 +126,29 @@ function SignupPage() {
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Creating account…" : "Get started"}
+              {loading ? "Creating account…" : "Get started — it's free"}
             </Button>
           </form>
 
-          <p className="mt-4 text-center text-sm text-muted-foreground">
+          <p className="mt-6 text-[14px] text-muted-foreground">
             Already have an account?{" "}
             <Link to="/login" className="text-foreground underline underline-offset-4">
               Log in
             </Link>
           </p>
+
+          <p className="mt-8 text-[12px] text-hint leading-relaxed">
+            Your first lookups are free. You always control your data, and you can delete your account at any time.
+          </p>
         </div>
       </main>
-      <Footer />
+
+      <footer className="px-6 md:px-10 py-8 border-t border-border">
+        <p className="text-[12px] text-hint leading-relaxed max-w-md">
+          is this ok? is a nonprofit orientation tool for parents. We do not monitor
+          devices, track children, or share your data.
+        </p>
+      </footer>
     </div>
   );
 }

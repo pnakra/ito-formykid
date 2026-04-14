@@ -3,7 +3,6 @@ import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/login")({
@@ -48,18 +47,26 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header isLoggedIn={false} />
-      <main className="flex-1 flex items-center justify-center py-16">
-        <div className="mx-auto w-full max-w-sm px-5">
-          <h1 className="text-2xl font-medium text-foreground mb-1 text-center">
+    <div className="min-h-screen flex flex-col bg-background">
+      <header className="px-6 md:px-10 py-6">
+        <Link to="/" className="text-[15px] text-muted-foreground hover:text-foreground transition-colors">
+          ← Back
+        </Link>
+      </header>
+
+      <main className="flex-1 flex items-start justify-center pt-[12vh] pb-16 px-6 md:px-10">
+        <div className="w-full max-w-sm">
+          <h1
+            className="text-[26px] md:text-[30px] text-foreground leading-[1.25] mb-2"
+            style={{ fontFamily: "var(--font-serif)", fontWeight: 400 }}
+          >
             Welcome back
           </h1>
-          <p className="text-sm text-muted-foreground mb-6 text-center">
-            Log in to your account
+          <p className="text-[14px] text-muted-foreground leading-relaxed mb-8">
+            Pick up where you left off.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="label-text mb-1.5 block">Email</label>
               <Input
@@ -90,7 +97,7 @@ function LoginPage() {
             </Button>
           </form>
 
-          <p className="mt-4 text-center text-sm text-muted-foreground">
+          <p className="mt-6 text-[14px] text-muted-foreground">
             Don't have an account?{" "}
             <Link to="/signup" className="text-foreground underline underline-offset-4">
               Sign up
@@ -98,7 +105,13 @@ function LoginPage() {
           </p>
         </div>
       </main>
-      <Footer />
+
+      <footer className="px-6 md:px-10 py-8 border-t border-border">
+        <p className="text-[12px] text-hint leading-relaxed max-w-md">
+          is this ok? is a nonprofit orientation tool for parents. We do not monitor
+          devices, track children, or share your data.
+        </p>
+      </footer>
     </div>
   );
 }
