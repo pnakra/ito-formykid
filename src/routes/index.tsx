@@ -54,7 +54,7 @@ function LandingPage() {
               className="text-[28px] md:text-[38px] leading-[1.25] mb-6 text-foreground"
               style={{ fontFamily: "var(--font-serif)", fontWeight: 400 }}
             >
-              The internet your child sees is not the one you know.
+              The internet your kids see is not the one you know.
             </h1>
             <p className="text-[16px] md:text-[17px] text-muted-foreground leading-[1.7] mb-10 max-w-lg">
               A word your child used. A creator they follow. A shift in how they talk or who they spend time with. You don't need to know exactly what it is to start understanding it.
