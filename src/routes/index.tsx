@@ -54,8 +54,7 @@ function LandingPage() {
               className="text-[28px] md:text-[38px] leading-[1.25] mb-6 text-foreground"
               style={{ fontFamily: "var(--font-serif)", fontWeight: 400 }}
             >
-              Something doesn't feel right.<br />
-              You're not sure what it is yet.
+              You don't know what your child is doing online.
             </h1>
             <p className="text-[16px] md:text-[17px] text-muted-foreground leading-[1.7] mb-10 max-w-lg">
               A word your child used. A creator they follow. A shift in how they talk or who they spend time with. You don't need to know exactly what it is to start understanding it.
