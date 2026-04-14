@@ -17,8 +17,8 @@ export const Route = createFileRoute("/home")({
   }),
   component: HomePage,
   validateSearch: (search: Record<string, unknown>) => ({
-    tab: (search.tab as string) || undefined,
-  }),
+    tab: (search.tab as string) ?? undefined,
+  }) as { tab?: string },
 });
 
 const SPECTRUM_COLORS: Record<string, string> = {
