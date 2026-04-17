@@ -172,7 +172,7 @@ export type Database = {
           status_updated_at: string | null
           summary: string
           summary_verdict: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           age_context?: string | null
@@ -190,7 +190,7 @@ export type Database = {
           status_updated_at?: string | null
           summary: string
           summary_verdict?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           age_context?: string | null
@@ -208,7 +208,7 @@ export type Database = {
           status_updated_at?: string | null
           summary?: string
           summary_verdict?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
