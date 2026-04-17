@@ -135,7 +135,12 @@ function ResultsPage() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session?.access_token ?? import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
           },
-          body: JSON.stringify({ content, inputType: "text" }),
+          body: JSON.stringify({
+            content,
+            inputType: "text",
+            intake: intakeData,
+            userId: user?.id ?? null,
+          }),
         }
       );
 
@@ -152,23 +157,9 @@ function ResultsPage() {
 
       localStorage.setItem("itook_first_scan_done", "true");
 
+      // Scan persistence now happens server-side in the edge function so that
+      // anonymous scans are also stored. For signed-in users we still bump scan_count.
       if (user) {
-        await supabase.from("scans").insert({
-          user_id: user.id,
-          input_type: "text",
-          input_content: content,
-          risk_level: scanResult.spectrum_label,
-          summary: scanResult.what_it_is,
-          guidance: scanResult.why_it_appeals,
-          domain_category: scanResult.result_type === "outside_scope" ? "outside_scope" : null,
-          confidence: scanResult.confidence,
-          age_context: intakeData.age || null,
-          concern_areas: intakeData.concerns.length > 0 ? intakeData.concerns : null,
-          spectrum_label: scanResult.spectrum_label,
-          summary_verdict: scanResult.summary_verdict,
-          status: "watching",
-        } as any);
-
         const currentCount = scanCount ?? 0;
         const newCount = currentCount + 1;
         await supabase

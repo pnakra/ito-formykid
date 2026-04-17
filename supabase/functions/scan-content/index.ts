@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -176,7 +177,7 @@ serve(async (req) => {
   }
 
   try {
-    const { content, inputType } = await req.json();
+    const { content, inputType, intake, userId } = await req.json();
 
     if (!content || typeof content !== "string" || content.length > 10000) {
       return new Response(
@@ -244,6 +245,41 @@ serve(async (req) => {
 
     // Ensure result_type is always set
     result = classifyResult(result);
+
+    // Persist the scan server-side using the service role.
+    // Works for both authenticated users (user_id set) and anonymous scans (user_id null).
+    try {
+      const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+      const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+      if (SUPABASE_URL && SERVICE_ROLE_KEY) {
+        const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+          auth: { persistSession: false, autoRefreshToken: false },
+        });
+        const intakeData = intake ?? {};
+        await admin.from("scans").insert({
+          user_id: userId ?? null,
+          input_type: inputType || "text",
+          input_content: content,
+          risk_level: (result as any).spectrum_label ?? "Unknown",
+          summary: (result as any).what_it_is ?? "",
+          guidance: (result as any).why_it_appeals ?? "",
+          domain_category:
+            (result as any).result_type === "outside_scope" ? "outside_scope" : null,
+          confidence: (result as any).confidence ?? null,
+          age_context: intakeData.age || null,
+          concern_areas:
+            Array.isArray(intakeData.concerns) && intakeData.concerns.length > 0
+              ? intakeData.concerns
+              : null,
+          spectrum_label: (result as any).spectrum_label ?? null,
+          summary_verdict: (result as any).summary_verdict ?? null,
+          status: "watching",
+        });
+      }
+    } catch (persistErr) {
+      // Don't fail the request if persistence fails — log and move on.
+      console.error("Failed to persist scan:", persistErr);
+    }
 
     return new Response(JSON.stringify(result), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
