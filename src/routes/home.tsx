@@ -449,31 +449,89 @@ function HomePage() {
               <div className="rounded-[14px] bg-card p-5 mb-6">
                 <h2 className="text-xl font-medium text-foreground mb-1">What do you want to understand?</h2>
                 <p className="text-[13px] text-hint mb-4">
-                  A creator, term, game, community, or something your child said.
+                  Describe what you noticed, or look up a specific creator, term, or community.
                 </p>
 
-                <Textarea
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder='e.g. Andrew Tate, "sigma male", Fresh & Fit, "looksmaxxing"...'
-                  className="min-h-[80px] mb-3"
-                />
-
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {AUTOFILL_CHIPS.map((chip) => (
-                    <button
-                      key={chip}
-                      type="button"
-                      onClick={() => setQuery(query ? `${query}, ${chip}` : chip)}
-                      className="rounded-[20px] border border-border bg-background px-3 py-1 text-sm text-secondary-foreground hover:bg-accent transition-colors"
-                    >
-                      {chip}
-                    </button>
-                  ))}
+                {/* Mode toggle — typographic, minimal */}
+                <div className="flex items-center gap-6 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => handleModeChange("describe")}
+                    className={`text-[14px] pb-1 transition-colors ${
+                      inputMode === "describe"
+                        ? "text-foreground font-medium border-b border-foreground"
+                        : "text-hint hover:text-foreground"
+                    }`}
+                  >
+                    Something happened
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleModeChange("lookup")}
+                    className={`text-[14px] pb-1 transition-colors ${
+                      inputMode === "lookup"
+                        ? "text-foreground font-medium border-b border-foreground"
+                        : "text-hint hover:text-foreground"
+                    }`}
+                  >
+                    Look something up
+                  </button>
                 </div>
 
-                <Button onClick={handleScanSubmit} disabled={!query.trim()} className="w-full">
-                  Get my report
+                {inputMode === "describe" ? (
+                  <>
+                    <Textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Describe what you noticed — a comment, an attitude shift, a change in behavior, something they said..."
+                      className="min-h-[120px] mb-3"
+                    />
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {DESCRIBE_EXAMPLES.map((example) => (
+                        <button
+                          key={example}
+                          type="button"
+                          onClick={() =>
+                            setDescription(
+                              description ? `${description.trimEnd()} ${example}` : example
+                            )
+                          }
+                          className="rounded-[6px] border border-border bg-background px-3 py-1.5 text-[13px] text-secondary-foreground hover:bg-accent transition-colors text-left"
+                        >
+                          {example}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Textarea
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder='e.g. Andrew Tate, "sigma male", Fresh & Fit, "looksmaxxing"...'
+                      className="min-h-[80px] mb-3"
+                    />
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {AUTOFILL_CHIPS.map((chip) => (
+                        <button
+                          key={chip}
+                          type="button"
+                          onClick={() => setQuery(query ? `${query}, ${chip}` : chip)}
+                          className="rounded-[20px] border border-border bg-background px-3 py-1 text-sm text-secondary-foreground hover:bg-accent transition-colors"
+                        >
+                          {chip}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                <Button
+                  onClick={handleScanSubmit}
+                  disabled={inputMode === "describe" ? !description.trim() : !query.trim()}
+                  className="w-full"
+                >
+                  {inputMode === "describe" ? "Understand this" : "Get my report"}
                 </Button>
 
                 <p className="text-[12px] text-hint mt-3 text-center">
