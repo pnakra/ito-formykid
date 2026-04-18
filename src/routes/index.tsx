@@ -57,11 +57,11 @@ function LandingPage() {
               The internet your kids see is not the one you know.
             </h1>
             <p className="text-[16px] md:text-[17px] text-muted-foreground leading-[1.7] mb-10 max-w-lg">
-              A word your child used. A creator they follow. A shift in how they talk or who they spend time with. You don't need to know exactly what it is to start understanding it.
+              You don't need to know the right words. Describe what you noticed — a comment, a shift in attitude, a word you didn't recognize, a change in how they're acting — and we'll help you make sense of it.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link to="/scan">
-                <Button size="lg" className="text-[14px] px-6">Look something up</Button>
+                <Button size="lg" className="text-[14px] px-6">Describe what you noticed</Button>
               </Link>
               <Link to="/signup">
                 <Button variant="outline" size="lg" className="text-[14px] px-6">Create a free account</Button>
