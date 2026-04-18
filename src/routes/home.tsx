@@ -368,13 +368,22 @@ function HomePage() {
   };
 
   const handleScanSubmit = () => {
-    if (!query.trim()) return;
-    const intakeData = {
+    const text = inputMode === "describe" ? description.trim() : query.trim();
+    if (!text) return;
+    const intakeData: {
+      age: string;
+      gender: string;
+      concerns: string[];
+      observations: string[];
+      query: string;
+      inputMode: InputMode;
+    } = {
       age: "",
       gender: "",
       concerns: [],
       observations: [],
-      query: query.trim(),
+      query: text,
+      inputMode,
     };
     if (profile?.digest_age_group) {
       const ageMap: Record<string, string> = {
@@ -386,6 +395,7 @@ function HomePage() {
       intakeData.age = ageMap[profile.digest_age_group] || "";
     }
     sessionStorage.setItem("scanIntake", JSON.stringify(intakeData));
+    sessionStorage.setItem("itok_input_mode", inputMode);
     navigate({ to: "/results" });
   };
 
