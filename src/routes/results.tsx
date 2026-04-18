@@ -114,16 +114,22 @@ function ResultsPage() {
     }
   }, [user]);
 
-  const runScan = async (intakeData: IntakeData) => {
+  const runScan = async (intakeData: IntakeData & { inputMode?: "describe" | "lookup" }) => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
+
+      const isDescribe = intakeData.inputMode === "describe";
 
       const contextParts: string[] = [];
       if (intakeData.age) contextParts.push(`Child's age: ${intakeData.age}`);
       if (intakeData.gender) contextParts.push(`Gender identity: ${intakeData.gender}`);
-      if (intakeData.concerns.length) contextParts.push(`Type of content concerned about: ${intakeData.concerns.join(", ")}`);
-      if (intakeData.observations.length) contextParts.push(`Behavioral signals noticed: ${intakeData.observations.join(", ")}`);
-      contextParts.push(`Specific thing to analyze: ${intakeData.query.trim()}`);
+      if (!isDescribe) {
+        if (intakeData.concerns.length) contextParts.push(`Type of content concerned about: ${intakeData.concerns.join(", ")}`);
+        if (intakeData.observations.length) contextParts.push(`Behavioral signals noticed: ${intakeData.observations.join(", ")}`);
+        contextParts.push(`Specific thing to analyze: ${intakeData.query.trim()}`);
+      } else {
+        contextParts.push(`Parent's description of what they noticed: ${intakeData.query.trim()}`);
+      }
 
       const content = contextParts.join("\n");
 
@@ -137,7 +143,7 @@ function ResultsPage() {
           },
           body: JSON.stringify({
             content,
-            inputType: "text",
+            inputType: isDescribe ? "description" : "text",
             intake: intakeData,
             userId: user?.id ?? null,
           }),
