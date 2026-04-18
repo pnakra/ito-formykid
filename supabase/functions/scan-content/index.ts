@@ -225,7 +225,13 @@ serve(async (req) => {
           model: "google/gemini-2.5-flash",
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content },
+            {
+              role: "user",
+              content:
+                inputType === "description"
+                  ? `INPUT TYPE: behavioral description\n\nPARENT'S DESCRIPTION:\n${content}\n\nCHILD CONTEXT:\nAge: ${intake?.age || "not provided"}\nGender: ${intake?.gender || "not provided"}\nObservations checked: ${(intake?.observations || []).join(", ") || "none"}`
+                  : `INPUT TYPE: lookup\n\nSEARCH TERM: ${content}\n\nCHILD CONTEXT:\nAge: ${intake?.age || "not provided"}\nGender: ${intake?.gender || "not provided"}\nConcerns: ${(intake?.concerns || []).join(", ") || "none"}\nObservations: ${(intake?.observations || []).join(", ") || "none"}`,
+            },
           ],
           max_tokens: 3500,
         }),
