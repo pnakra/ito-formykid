@@ -103,10 +103,15 @@ function LandingPage() {
                   Your grandchild uses words online you've never heard. When you ask, they brush you off. You just have a feeling something is off.
                 </p>
               </div>
+              <div className="border-l-[3px] border-border pl-5">
+                <p className="text-[15px] text-foreground leading-[1.7]">
+                  Your son came home from school and told you he doesn't have to listen to his female teacher. When you pushed back, he just shrugged.
+                </p>
+              </div>
             </div>
 
             <p className="text-[14px] text-hint mt-8 leading-relaxed">
-              You don't need to know the right words. Just describe what you noticed and we'll help you make sense of it.
+              These are the moments that bring parents here. Not a creator name — a feeling. You can start with that.
             </p>
           </div>
         </section>
