@@ -57,11 +57,11 @@ function LandingPage() {
               The internet your kids see is not the one you know.
             </h1>
             <p className="text-[16px] md:text-[17px] text-muted-foreground leading-[1.7] mb-10 max-w-lg">
-              A word your child used. A creator they follow. A shift in how they talk or who they spend time with. You don't need to know exactly what it is to start understanding it.
+              You don't need to know the right words. Describe what you noticed — a comment, a shift in attitude, a word you didn't recognize, a change in how they're acting — and we'll help you make sense of it.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link to="/scan">
-                <Button size="lg" className="text-[14px] px-6">Look something up</Button>
+                <Button size="lg" className="text-[14px] px-6">Describe what you noticed</Button>
               </Link>
               <Link to="/signup">
                 <Button variant="outline" size="lg" className="text-[14px] px-6">Create a free account</Button>
@@ -103,10 +103,15 @@ function LandingPage() {
                   Your grandchild uses words online you've never heard. When you ask, they brush you off. You just have a feeling something is off.
                 </p>
               </div>
+              <div className="border-l-[3px] border-border pl-5">
+                <p className="text-[15px] text-foreground leading-[1.7]">
+                  Your son came home from school and told you he doesn't have to listen to his female teacher. When you pushed back, he just shrugged.
+                </p>
+              </div>
             </div>
 
             <p className="text-[14px] text-hint mt-8 leading-relaxed">
-              You don't need to know the right words. Just describe what you noticed and we'll help you make sense of it.
+              These are the moments that bring parents here. Not a creator name — a feeling. You can start with that.
             </p>
           </div>
         </section>
