@@ -72,6 +72,23 @@ function HomePage() {
     (searchTab as "understand" | "stay_ahead") || "stay_ahead"
   );
   const [query, setQuery] = useState("");
+  const [description, setDescription] = useState("");
+  const [inputMode, setInputMode] = useState<InputMode>(() => {
+    if (typeof window === "undefined") return "describe";
+    const stored = sessionStorage.getItem("itok_input_mode");
+    return stored === "lookup" ? "lookup" : "describe";
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem("itok_input_mode", inputMode);
+  }, [inputMode]);
+
+  const handleModeChange = (next: InputMode) => {
+    if (next === inputMode) return;
+    if (inputMode === "describe") setDescription("");
+    else setQuery("");
+    setInputMode(next);
+  };
 
   // Recent scans
   const [recentScans, setRecentScans] = useState<any[]>([]);
