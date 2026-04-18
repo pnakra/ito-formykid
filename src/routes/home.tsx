@@ -30,6 +30,15 @@ const SPECTRUM_COLORS: Record<string, string> = {
 
 const AUTOFILL_CHIPS = ["Andrew Tate", "looksmaxxing", "Fresh & Fit", "redpill"];
 
+const DESCRIBE_EXAMPLES = [
+  "He started calling girls 'females'",
+  "She stopped eating and started talking about her body differently",
+  "He dismissed his female teacher",
+  "His whole attitude toward women changed",
+];
+
+type InputMode = "describe" | "lookup";
+
 const LOG_CATEGORIES = [
   "Language shift",
   "Attitude change",
