@@ -254,7 +254,28 @@ function ResultsPage() {
     );
   }
 
+  if (escalation) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header isLoggedIn={!!user} />
+        <main className="flex-1 py-10">
+          <div className="mx-auto max-w-xl px-5">
+            <EscalationResult
+              result={escalation}
+              onScanAnother={() => {
+                sessionStorage.removeItem("scanIntake");
+                navigate({ to: "/scan" });
+              }}
+            />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   if (!result || !intake) return null;
+
 
   const resultType = result.result_type;
 
