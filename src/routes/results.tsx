@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { EscalationResult, type EscalationResultData } from "@/components/EscalationResult";
+import { IdentityResult, type IdentityResultData } from "@/components/IdentityResult";
 
 
 export const Route = createFileRoute("/results")({
