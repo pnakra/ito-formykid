@@ -603,7 +603,7 @@ function BriefingView({
             {saved ? "✓ Report saved" : "Save this report"}
           </p>
           <p className="text-[12px] text-hint mt-0.5">
-            {!user ? "Sign in to save" : !isSubscribed ? "Available with ongoing support" : "Access it anytime from your history"}
+            {user ? "Access it anytime from your history" : "Sign in to save"}
           </p>
         </button>
 
