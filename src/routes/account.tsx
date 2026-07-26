@@ -218,46 +218,8 @@ function AccountPage() {
                 <p className="text-[15px] text-foreground">{profile?.email ?? user.email}</p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <p className="label-text">Subscription</p>
-                {profile?.is_subscribed ? (
-                  <Badge variant="low" className="text-[11px]">Active</Badge>
-                ) : (
-                  <Badge variant="chip" className="text-[11px]">Inactive</Badge>
-                )}
-              </div>
 
-              {profile?.is_subscribed && subscription?.current_period_end && (
-                <p className="text-sm text-muted-foreground">
-                  {subscription.cancel_at_period_end
-                    ? `Access until ${new Date(subscription.current_period_end).toLocaleDateString()}`
-                    : `Renews ${new Date(subscription.current_period_end).toLocaleDateString()}`}
-                </p>
-              )}
 
-              {profile?.is_subscribed ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleManageSubscription}
-                  disabled={loadingPortal}
-                >
-                  {loadingPortal ? (
-                    <><Loader2 className="h-3 w-3 animate-spin" /> Opening…</>
-                  ) : (
-                    "Manage subscription"
-                  )}
-                </Button>
-              ) : (
-                <>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Get ongoing support: saved reports, situation tracking, monthly briefings, and protective factors guidance.
-                  </p>
-                  <Button size="sm" onClick={() => navigate({ to: "/checkout" })}>
-                    Continue with support — $9/month
-                  </Button>
-                </>
-              )}
 
               <div className="pt-2">
                 <Button
