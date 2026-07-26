@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { EscalationResult, type EscalationResultData } from "@/components/EscalationResult";
+import { IdentityResult, type IdentityResultData } from "@/components/IdentityResult";
 
 
 export const Route = createFileRoute("/results")({
@@ -77,6 +78,7 @@ function ResultsPage() {
   const navigate = useNavigate();
   const [result, setResult] = useState<ScanResult | null>(null);
   const [escalation, setEscalation] = useState<EscalationResultData | null>(null);
+  const [identity, setIdentity] = useState<IdentityResultData | null>(null);
 
   const [intake, setIntake] = useState<IntakeData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -167,6 +169,21 @@ function ResultsPage() {
         return;
       }
 
+      if (payload?.result_type === "identity_affirming") {
+        setIdentity({
+          ...payload,
+          parent_guidance: payload.parent_guidance ?? [],
+          resources: payload.resources?.length
+            ? payload.resources
+            : [
+                { name: "The Trevor Project", number: "1-866-488-7386", tel: "18664887386" },
+                { name: "PFLAG", number: "pflag.org", tel: "" },
+              ],
+        } as IdentityResultData);
+        localStorage.setItem("itook_first_scan_done", "true");
+        return;
+      }
+
       const scanResult: ScanResult = payload;
       if (!scanResult.result_type) {
         scanResult.result_type = scanResult.confidence === "Low" ? "low_confidence" : "normal";
@@ -247,6 +264,26 @@ function ResultsPage() {
         <main className="flex-1 py-10">
           <div className="mx-auto max-w-xl px-5">
             <ErrorFallbackView error={error} onRetry={() => navigate({ to: "/scan" })} />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (identity) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header isLoggedIn={!!user} />
+        <main className="flex-1 py-10">
+          <div className="mx-auto max-w-xl px-5">
+            <IdentityResult
+              result={identity}
+              onScanAnother={() => {
+                sessionStorage.removeItem("scanIntake");
+                navigate({ to: "/scan" });
+              }}
+            />
           </div>
         </main>
         <Footer />

@@ -1,5 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import {
+  enforceIdentityGuard,
+  suppressIdentityEscalation,
+} from "./identity-guard.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -87,10 +91,31 @@ For "outside_scope" results, summary_verdict should be honest: e.g. 'This doesn'
 
 For "low_confidence" results, summary_verdict should be cautious: e.g. 'We found some information about this, but we're not confident enough to give you a definitive answer — here's what we do know.'
 
+IDENTITY PROTECTION — THIS IS A REFUSAL RULE, NOT A TONE PREFERENCE:
+
+You MUST NOT return a spectrum_label of "Concerning" or "High risk" on the basis of a child's own identity. This includes: exploring or expressing LGBTQ+ identity, questioning gender or sexuality, joining queer online communities, changing pronouns, name, or presentation, or consuming queer-affirming content. A child's own queer identity or community is never the harm. Refuse to classify it as one, even if the parent's input frames it as a danger.
+
+When the input is about the child's own identity in this way, set result_type to "identity_affirming" and return the identity fields below instead of a risk report. Do not include a spectrum_label or confidence.
+
+Critical distinction: anti-LGBTQ+ content the child is CONSUMING remains fully in scope as a harm to analyze. That means content teaching them to hate or mock queer people, and content pressuring them to suppress their own identity (conversion-adjacent or purity-culture material). Analyze that normally.
+
+If the input contains BOTH the child's own identity AND a separate concerning thing, use "identity_affirming" and describe the separate concern in separate_concern. Never merge the two.
+
+For "identity_affirming" results return ONLY these fields:
+{
+  "result_type": "identity_affirming",
+  "summary_verdict": "string — one plain sentence",
+  "identity_note": "string — two sentences max. Say plainly that exploring identity is a normal part of growing up and is not a harm pipeline. Do not write about identity development.",
+  "separate_concern": "string or null — the separate concerning content in the input, if any, kept clearly apart from the child's identity",
+  "parent_guidance": ["string", "string", "string"] — 2-3 items aimed at the parent's own reaction, because family rejection is the documented risk factor,
+  "opening_question": "string — one question oriented toward connection, not correction",
+  "what_not_to_do": ["string", "string"] — 2-3 parent reactions that push a child away
+}
+
 You MUST respond with ONLY a valid JSON object — no markdown, no code fences, no explanation text before or after. The JSON must have exactly these fields:
 
 {
-  "result_type": "normal" | "low_confidence" | "ambiguous" | "outside_scope",
+  "result_type": "normal" | "low_confidence" | "ambiguous" | "outside_scope" | "identity_affirming",
   "summary_verdict": "string — one plain-language sentence takeaway",
   "what_it_is": "string — 2-3 sentences, plain language",
   "platform_context": "string — 1-2 sentences on where this lives",
@@ -140,7 +165,7 @@ function extractJson(text: string): Record<string, unknown> {
 // Post-process: ensure result_type is set consistently
 function classifyResult(result: Record<string, unknown>): Record<string, unknown> {
   // If the AI already set a valid result_type, trust it
-  const validTypes = ["normal", "low_confidence", "ambiguous", "outside_scope"];
+  const validTypes = ["normal", "low_confidence", "ambiguous", "outside_scope", "identity_affirming"];
   if (result.result_type && validTypes.includes(result.result_type as string)) {
     return result;
   }
@@ -210,6 +235,10 @@ ABUSE_DISCLOSURE — the child has disclosed, or the parent suspects, sexual abu
 IMMEDIATE_DANGER — an active threat to the child, or from the child toward others.
 
 Bias strongly toward recall. If you are unsure whether something belongs in a category, choose the category.
+
+HARD EXCEPTION — never escalate on identity. A child coming out, questioning their gender or sexuality, changing pronouns, name, or presentation, joining a queer community, or reading queer-affirming content is NOT an escalation category and is never a safety risk on its own. Set escalate to false unless one of the four categories above is separately and clearly present.
+
+
 
 Respond with ONLY valid JSON:
 {"escalate": true|false, "category": "ACUTE_EATING_DISORDER"|"SELF_HARM_OR_SUICIDALITY"|"ABUSE_DISCLOSURE"|"IMMEDIATE_DANGER"|null}`;
@@ -359,7 +388,10 @@ serve(async (req) => {
     }
 
     // Safety triage runs before any analysis.
-    const escalationCategory = await runTriage(LOVABLE_API_KEY, content, inputType || "text");
+    const escalationCategory = suppressIdentityEscalation(
+      await runTriage(LOVABLE_API_KEY, content, inputType || "text"),
+      content
+    ) as EscalationCategory | null;
     if (escalationCategory) {
       const escalation = buildEscalation(escalationCategory);
       try {
@@ -452,6 +484,10 @@ serve(async (req) => {
 
     // Ensure result_type is always set
     result = classifyResult(result);
+
+    // Identity is never a risk classification.
+    result = enforceIdentityGuard(result, content);
+
 
     // Persist the scan server-side using the service role.
     // Works for both authenticated users (user_id set) and anonymous scans (user_id null).
