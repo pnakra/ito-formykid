@@ -41,6 +41,8 @@ interface Scan {
   status: string;
   status_updated_at: string | null;
   concern_areas: string[] | null;
+  escalated?: boolean | null;
+
   scan_notes: ScanNote[];
 }
 
