@@ -161,7 +161,7 @@ function extractJson(text: string): Record<string, unknown> {
 // Post-process: ensure result_type is set consistently
 function classifyResult(result: Record<string, unknown>): Record<string, unknown> {
   // If the AI already set a valid result_type, trust it
-  const validTypes = ["normal", "low_confidence", "ambiguous", "outside_scope"];
+  const validTypes = ["normal", "low_confidence", "ambiguous", "outside_scope", "identity_affirming"];
   if (result.result_type && validTypes.includes(result.result_type as string)) {
     return result;
   }
