@@ -297,7 +297,9 @@ function ResultsPage() {
       <main className="flex-1 py-10">
         <div className="mx-auto max-w-xl px-5">
 
-          {resultType === "ambiguous" ? (
+          {resultType === "not_enough_signal" ? (
+            <NotEnoughSignalView result={result} intake={intake} onScanAnother={handleScanAnother} />
+          ) : resultType === "ambiguous" ? (
             <AmbiguousView result={result} intake={intake} onScanAnother={handleScanAnother} />
           ) : resultType === "outside_scope" ? (
             <OutsideScopeView result={result} intake={intake} onScanAnother={handleScanAnother} />
