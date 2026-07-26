@@ -159,11 +159,20 @@ function ResultsPage() {
         throw new Error(errData.error || "Scan failed");
       }
 
-      const scanResult: ScanResult = await response.json();
+      const payload = await response.json();
+
+      if (payload?.result_type === "escalation") {
+        setEscalation(payload as EscalationResultData);
+        localStorage.setItem("itook_first_scan_done", "true");
+        return;
+      }
+
+      const scanResult: ScanResult = payload;
       if (!scanResult.result_type) {
         scanResult.result_type = scanResult.confidence === "Low" ? "low_confidence" : "normal";
       }
       setResult(scanResult);
+
 
       localStorage.setItem("itook_first_scan_done", "true");
 
