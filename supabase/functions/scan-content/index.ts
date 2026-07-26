@@ -111,7 +111,7 @@ For "identity_affirming" results return ONLY these fields:
 You MUST respond with ONLY a valid JSON object — no markdown, no code fences, no explanation text before or after. The JSON must have exactly these fields:
 
 {
-  "result_type": "normal" | "low_confidence" | "ambiguous" | "outside_scope",
+  "result_type": "normal" | "low_confidence" | "ambiguous" | "outside_scope" | "identity_affirming",
   "summary_verdict": "string — one plain-language sentence takeaway",
   "what_it_is": "string — 2-3 sentences, plain language",
   "platform_context": "string — 1-2 sentences on where this lives",
