@@ -224,24 +224,8 @@ function ScanPage() {
             </button>
           </div>
 
-          {/* Scan count notice */}
-          {user && !isSubscribed && scanCount !== null && (
-            <div className="mb-6 text-[13px] text-hint">
-              {scanCount < 3
-                ? `${3 - scanCount} free lookup${3 - scanCount === 1 ? "" : "s"} remaining`
-                : (
-                  <>
-                    You've used your free lookups.{" "}
-                    <button
-                      onClick={() => navigate({ to: "/account" })}
-                      className="text-foreground underline underline-offset-4"
-                    >
-                      Subscribe to continue
-                    </button>
-                  </>
-                )}
-            </div>
-          )}
+
+
 
           {mode === "describe" ? (
             <DescribeMode
