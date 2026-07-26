@@ -388,7 +388,6 @@ function BriefingView({
   onShowDigest,
   saved,
   user,
-  isSubscribed,
 }: {
   result: ScanResult;
   intake: IntakeData;
@@ -397,7 +396,6 @@ function BriefingView({
   onShowDigest: () => void;
   saved: boolean;
   user: any;
-  isSubscribed: boolean;
 }) {
   const isLowConfidence = result.result_type === "low_confidence";
 
