@@ -618,6 +618,12 @@ function BriefingView({
         </button>
       </div>
 
+      <p className="mt-6 text-[13px] text-hint">
+        Free. Built by a nonprofit. We never see your child's phone.
+      </p>
+
+
+
     </article>
   );
 }
