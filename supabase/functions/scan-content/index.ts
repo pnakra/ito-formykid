@@ -63,6 +63,10 @@ Use "Concerning" only when there is a specific, nameable pattern of harm, not a 
 
 When the behavior described is developmentally typical for the child's age, you MUST say so plainly in age_specific_note, even when the parent sounds alarmed. Name the age range and say the behavior is common at that age.
 
+Always fill normalization_line. It is one short sentence telling the parent whether this is common for a child that age. Plain words, no hedging, no jargon.
+
+what_not_to_do items are the most important part of the report. Each item is one line, with an optional short reason after a dash. Keep every item under 20 words.
+
 Use "Not enough signal" whenever the input is too thin, too vague, or too common to classify. This is a normal, useful result — not a failure.
 
 RESULT TYPE CLASSIFICATION — you MUST set result_type to one of these values:
@@ -142,15 +146,16 @@ You MUST respond with ONLY a valid JSON object — no markdown, no code fences, 
 {
   "result_type": "normal" | "low_confidence" | "ambiguous" | "outside_scope" | "not_enough_signal" | "identity_affirming",
   "summary_verdict": "string — one plain-language sentence takeaway",
-  "what_it_is": "string — 2-3 sentences, plain language",
+  "what_it_is": "string — 3 sentences max, plain language, grade 6 reading level",
   "platform_context": "string — 1-2 sentences on where this lives",
   "spectrum_label": "Mainstream" | "Edgy but benign" | "Concerning" | "High risk" | "Not enough signal",
   "spectrum_reasoning": "string — one sentence explaining classification",
   "confidence": "Low" | "Medium" | "High",
   "confidence_note": "string — one sentence explaining confidence level",
-  "why_it_appeals": "string — 2-3 sentences",
+  "why_it_appeals": "string — 2 sentences max",
   "pipeline_context": "string or null — 1-2 sentences if part of a harm pipeline, otherwise null",
   "values_promoted": ["string", "string", "string"] — 3-5 items using 'may promote' framing,
+  "normalization_line": "string — ONE sentence saying whether this is common for a child of this age, in plain words",
   "age_specific_note": "string or null — if the behavior is common at this age, say so plainly here",
   "what_not_to_do": ["string", "string", "string"] — 3 specific parental responses that backfire,
   "opening_question": "string — one curiosity-oriented question",
