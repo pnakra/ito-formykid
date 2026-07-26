@@ -403,26 +403,13 @@ function BriefingView({
           You looked up <span className="text-foreground font-medium">{intake.query}</span>
           {intake.age && <> · age {intake.age}</>}
         </p>
-
-        {/* Classification + Confidence — prominent, not buried */}
-        <div className="mt-5 flex flex-wrap items-center gap-2">
-          <Badge className={SPECTRUM_COLORS[result.spectrum_label]}>
-            {result.spectrum_label}
-          </Badge>
-          <Badge className={CONFIDENCE_COLORS[result.confidence]}>
-            {result.confidence} confidence
-          </Badge>
-        </div>
       </header>
 
       {/* ── Low confidence notice ── */}
       {isLowConfidence && (
-        <div className="border-l-[3px] border-risk-concerning-foreground/40 pl-4 pb-8">
-          <p className="text-[14px] font-medium text-foreground mb-1">
-            A note on this result
-          </p>
+        <div className="border-l-[3px] border-border pl-4 pb-8">
           <p className="text-[14px] text-muted-foreground leading-relaxed">
-            {result.limitations_note || result.confidence_note || "This term may be used in multiple contexts, or there isn't enough public information for us to be certain. The information below is our best understanding — treat it as a starting point rather than a definitive answer."}
+            {result.limitations_note || result.confidence_note || "There isn't enough public information for us to be sure. Treat this as a starting point."}
           </p>
         </div>
       )}
@@ -439,25 +426,25 @@ function BriefingView({
 
       <Divider />
 
-      {/* ── Classification reasoning ── */}
-      <Section label="Why this classification">
+      {/* ── Where it sits — always paired with reasoning and confidence ── */}
+      <Section label="Where this sits">
         <div className="mb-4">
-          <div className="relative h-[6px] rounded-full bg-gradient-to-r from-risk-low via-risk-concerning to-risk-high">
-            <div
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-foreground border-2 border-background"
-              style={{ left: `${SPECTRUM_POSITIONS[result.spectrum_label]}%`, transform: "translate(-50%, -50%)" }}
-            />
+          <div className="relative h-[3px] rounded-full bg-border">
+            {result.spectrum_label !== "Not enough signal" && (
+              <div
+                className="absolute top-1/2 w-[9px] h-[9px] rounded-full bg-foreground"
+                style={{ left: `${SPECTRUM_POSITIONS[result.spectrum_label] ?? 0}%`, transform: "translate(-50%, -50%)" }}
+              />
+            )}
           </div>
         </div>
-        <p className="text-[14px] text-foreground leading-relaxed">{result.spectrum_reasoning}</p>
+        <p className="text-[15px] font-medium text-foreground">{result.spectrum_label}</p>
+        <p className="text-[14px] text-foreground leading-relaxed mt-2">{result.spectrum_reasoning}</p>
+        <p className="text-[13px] text-hint leading-relaxed mt-3">
+          {result.confidence} confidence. {result.confidence_note}
+        </p>
       </Section>
 
-      <Divider />
-
-      {/* ── Confidence reasoning ── */}
-      <Section label="Why this confidence level">
-        <p className="text-[14px] text-foreground leading-relaxed">{result.confidence_note}</p>
-      </Section>
 
       <Divider />
 
