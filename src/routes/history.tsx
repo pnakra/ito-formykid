@@ -190,7 +190,7 @@ function HistoryPage() {
                       </div>
 
                       <div className="flex items-center gap-2 flex-wrap">
-                        {spectrumLabel && SPECTRUM_COLORS[spectrumLabel] && (
+                        {!scan.escalated && spectrumLabel && SPECTRUM_COLORS[spectrumLabel] && (
                           <Badge className={SPECTRUM_COLORS[spectrumLabel]}>
                             {spectrumLabel}
                           </Badge>
