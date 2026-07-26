@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EscalationResult, type EscalationResultData } from "@/components/EscalationResult";
 import { IdentityResult, type IdentityResultData } from "@/components/IdentityResult";
+import { RefinementPanel, type RefinementValues } from "@/components/RefinementPanel";
 
 
 export const Route = createFileRoute("/results")({
@@ -80,6 +81,7 @@ function ResultsPage() {
   const [digestName, setDigestName] = useState("");
   const [digestSubmitted, setDigestSubmitted] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [refining, setRefining] = useState(false);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("scanIntake");
@@ -115,9 +117,9 @@ function ResultsPage() {
       const contextParts: string[] = [];
       if (intakeData.age) contextParts.push(`Child's age: ${intakeData.age}`);
       if (intakeData.gender) contextParts.push(`Gender identity: ${intakeData.gender}`);
+      if (intakeData.concerns?.length) contextParts.push(`Type of content concerned about: ${intakeData.concerns.join(", ")}`);
+      if (intakeData.observations?.length) contextParts.push(`Behavioral signals noticed: ${intakeData.observations.join(", ")}`);
       if (!isDescribe) {
-        if (intakeData.concerns.length) contextParts.push(`Type of content concerned about: ${intakeData.concerns.join(", ")}`);
-        if (intakeData.observations.length) contextParts.push(`Behavioral signals noticed: ${intakeData.observations.join(", ")}`);
         contextParts.push(`Specific thing to analyze: ${intakeData.query.trim()}`);
       } else {
         contextParts.push(`Parent's description of what they noticed: ${intakeData.query.trim()}`);
@@ -195,6 +197,18 @@ function ResultsPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRefine = async (next: RefinementValues) => {
+    if (!intake) return;
+    const stored = sessionStorage.getItem("scanIntake");
+    const inputMode = stored ? (JSON.parse(stored).inputMode ?? "describe") : "describe";
+    const updated = { ...intake, ...next, inputMode };
+    setIntake(updated);
+    sessionStorage.setItem("scanIntake", JSON.stringify(updated));
+    setRefining(true);
+    await runScan(updated);
+    setRefining(false);
   };
 
   const handleScanAnother = () => {
@@ -314,6 +328,17 @@ function ResultsPage() {
               user={user}
             />
           )}
+
+          <RefinementPanel
+            values={{
+              age: intake.age ?? "",
+              gender: intake.gender ?? "",
+              concerns: intake.concerns ?? [],
+              observations: intake.observations ?? [],
+            }}
+            onChange={handleRefine}
+            busy={refining}
+          />
 
         </div>
       </main>
