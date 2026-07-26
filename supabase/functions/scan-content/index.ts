@@ -256,19 +256,15 @@ type EscalationCategory =
 const TRIAGE_PROMPT = `You are a safety triage classifier for a parenting support tool. You read what a parent wrote about their child and decide whether the situation needs professional help right now, rather than a content explainer.
 
 Categories:
-ACUTE_EATING_DISORDER — restriction, purging, rapid weight loss, food rituals, compulsive exercise, body checking.
-SELF_HARM_OR_SUICIDALITY — any reference to self-injury, suicidal statements, or giving away possessions.
-ABUSE_DISCLOSURE — the child has disclosed, or the parent suspects, sexual abuse, exploitation, sextortion, or an adult grooming the child.
-IMMEDIATE_DANGER — an active threat to the child, or from the child toward others.
+${ESCALATION_CATEGORIES}
 
 Bias strongly toward recall. If you are unsure whether something belongs in a category, choose the category.
 
-HARD EXCEPTION — never escalate on identity. A child coming out, questioning their gender or sexuality, changing pronouns, name, or presentation, joining a queer community, or reading queer-affirming content is NOT an escalation category and is never a safety risk on its own. Set escalate to false unless one of the four categories above is separately and clearly present.
-
-
+${IDENTITY_GUARD_TRIAGE}
 
 Respond with ONLY valid JSON:
 {"escalate": true|false, "category": "ACUTE_EATING_DISORDER"|"SELF_HARM_OR_SUICIDALITY"|"ABUSE_DISCLOSURE"|"IMMEDIATE_DANGER"|null}`;
+
 
 const RESOURCES: Record<EscalationCategory, { name: string; number: string; tel: string }[]> = {
   ACUTE_EATING_DISORDER: [
