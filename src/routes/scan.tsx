@@ -107,12 +107,6 @@ function ScanPage() {
     }
   }, []);
 
-
-
-
-  // Payments temporarily disabled — always allow scanning
-  const canScan = true;
-
   const canAdvance = () => {
     if (step === 1) return true;
     if (step === 2) return data.concerns.length > 0;
@@ -126,10 +120,6 @@ function ScanPage() {
 
   const handleSubmitLookup = () => {
     if (!data.query.trim()) return;
-    if (!canScan) {
-      setError("You've used your free lookups. Subscribe for ongoing access and support.");
-      return;
-    }
     sessionStorage.setItem(
       "scanIntake",
       JSON.stringify({ ...data, inputMode: "lookup" })
@@ -139,10 +129,7 @@ function ScanPage() {
 
   const handleSubmitDescribe = () => {
     if (!description.trim()) return;
-    if (!canScan) {
-      setError("You've used your free lookups. Subscribe for ongoing access and support.");
-      return;
-    }
+
     // Store the free-text description as the query, preserve any prior age/gender
     const intake = {
       age: data.age,
