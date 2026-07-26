@@ -131,32 +131,6 @@ function AccountPage() {
     navigate({ to: "/" });
   };
 
-  const handleManageSubscription = async () => {
-    setLoadingPortal(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-portal-session`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.access_token}`,
-          },
-          body: JSON.stringify({
-            returnUrl: window.location.href,
-            environment: getStripeEnvironment() === "sandbox" ? "sandbox" : "live",
-          }),
-        }
-      );
-      const { url } = await res.json();
-      if (url) window.open(url, "_blank");
-    } catch {
-      // silently fail
-    } finally {
-      setLoadingPortal(false);
-    }
-  };
 
   const handleDigestToggle = async (enabled: boolean) => {
     if (!user || !profile) return;
