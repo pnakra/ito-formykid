@@ -384,7 +384,10 @@ serve(async (req) => {
     }
 
     // Safety triage runs before any analysis.
-    const escalationCategory = await runTriage(LOVABLE_API_KEY, content, inputType || "text");
+    const escalationCategory = suppressIdentityEscalation(
+      await runTriage(LOVABLE_API_KEY, content, inputType || "text"),
+      content
+    ) as EscalationCategory | null;
     if (escalationCategory) {
       const escalation = buildEscalation(escalationCategory);
       try {
