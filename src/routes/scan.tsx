@@ -99,7 +99,7 @@ function ScanPage() {
             <button
               type="button"
               onClick={() => handleModeChange("describe")}
-              className={`text-[14px] pb-1 transition-colors ${
+              className={`text-[17px] pb-1 transition-colors ${
                 mode === "describe"
                   ? "text-foreground font-medium border-b border-foreground"
                   : "text-hint hover:text-foreground"
@@ -110,7 +110,7 @@ function ScanPage() {
             <button
               type="button"
               onClick={() => handleModeChange("lookup")}
-              className={`text-[14px] pb-1 transition-colors ${
+              className={`text-[17px] pb-1 transition-colors ${
                 mode === "lookup"
                   ? "text-foreground font-medium border-b border-foreground"
                   : "text-hint hover:text-foreground"
@@ -132,14 +132,14 @@ function ScanPage() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="A comment, an attitude shift, something they said…"
-              className="min-h-[160px] text-[15px] leading-relaxed rounded-[8px]"
+              className="min-h-[160px] text-[18px] leading-relaxed rounded-[8px]"
             />
           ) : (
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="A creator, term, game, or community"
-              className="h-12 text-[15px] rounded-[8px]"
+              className="h-12 text-[18px] rounded-[8px]"
             />
           )}
 
@@ -149,7 +149,7 @@ function ScanPage() {
                 key={example}
                 type="button"
                 onClick={() => appendExample(example)}
-                className="rounded-[6px] border border-border bg-background px-3 py-1.5 text-[13px] text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors text-left"
+                className="rounded-[6px] border border-border bg-background px-3 py-1.5 text-[15px] text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors text-left"
               >
                 {example}
               </button>
@@ -159,12 +159,12 @@ function ScanPage() {
           {/* Optional age */}
           <div className="mt-8">
             <div className="flex items-center gap-3">
-              <label className="text-[13px] text-foreground" htmlFor="child-age">Their age</label>
+              <label className="text-[15px] text-foreground" htmlFor="child-age">Their age</label>
               <select
                 id="child-age"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
-                className="h-9 rounded-[8px] border border-input bg-background px-3 text-[14px] text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                className="h-9 rounded-[8px] border border-input bg-background px-3 text-[17px] text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               >
                 <option value="">—</option>
                 {AGE_OPTIONS.map((a) => (
@@ -172,7 +172,7 @@ function ScanPage() {
                 ))}
               </select>
             </div>
-            <p className="text-[12px] text-hint mt-2">Optional — helps us be specific.</p>
+            <p className="text-[13px] text-hint mt-2">Optional — helps us be specific.</p>
           </div>
 
           <div className="mt-8">
@@ -180,7 +180,7 @@ function ScanPage() {
               onClick={handleSubmit}
               disabled={!value.trim()}
               size="lg"
-              className="text-[14px] px-6"
+              className="text-[17px] px-6"
             >
               Get context
             </Button>

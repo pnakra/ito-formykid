@@ -236,8 +236,8 @@ function ResultsPage() {
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="h-6 w-6 animate-spin mx-auto mb-3 text-muted-foreground" />
-            <p className="text-[15px] text-foreground mb-1">Preparing your briefing…</p>
-            <p className="text-[13px] text-hint">This usually takes 10–15 seconds.</p>
+            <p className="text-[18px] text-foreground mb-1">Preparing your briefing…</p>
+            <p className="text-[15px] text-hint">This usually takes 10–15 seconds.</p>
           </div>
         </main>
         <Footer />
@@ -381,7 +381,7 @@ function ResultsPage() {
                 </form>
                 <button
                   onClick={() => setShowDigest(false)}
-                  className="mt-3 w-full text-center text-[13px] text-hint hover:text-muted-foreground transition-colors"
+                  className="mt-3 w-full text-center text-[15px] text-hint hover:text-muted-foreground transition-colors"
                 >
                   No thanks
                 </button>
@@ -426,7 +426,7 @@ function BriefingView({
         <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-3">
           {result.summary_verdict || result.what_it_is}
         </h1>
-        <p className="text-[14px] text-hint leading-relaxed">
+        <p className="text-[17px] text-hint leading-relaxed">
           You looked up <span className="text-foreground font-medium">{intake.query}</span>
           {intake.age && <> · age {intake.age}</>}
         </p>
@@ -435,7 +435,7 @@ function BriefingView({
       {/* ── Low confidence notice ── */}
       {isLowConfidence && (
         <div className="border-l-[3px] border-border pl-4 pb-8">
-          <p className="text-[14px] text-muted-foreground leading-relaxed">
+          <p className="text-[17px] text-muted-foreground leading-relaxed">
             {result.limitations_note || result.confidence_note || "There isn't enough public information for us to be sure. Treat this as a starting point."}
           </p>
         </div>
@@ -445,13 +445,13 @@ function BriefingView({
 
       {/* 1 — What this is */}
       <Section label="What this is">
-        <p className="text-[15px] text-foreground leading-relaxed">{result.what_it_is}</p>
+        <p className="text-[18px] text-foreground leading-relaxed">{result.what_it_is}</p>
       </Section>
 
       {/* 2 — Normalization line */}
       {(result.normalization_line || result.age_specific_note) && (
         <div className="pt-4">
-          <p className="text-[15px] text-foreground leading-relaxed">
+          <p className="text-[18px] text-foreground leading-relaxed">
             {result.normalization_line || result.age_specific_note}
           </p>
         </div>
@@ -463,7 +463,7 @@ function BriefingView({
       <Section label="What not to do">
         <ul className="space-y-2">
           {result.what_not_to_do.map((s, i) => (
-            <li key={i} className="flex items-start gap-3 text-[15px] text-foreground leading-relaxed">
+            <li key={i} className="flex items-start gap-3 text-[18px] text-foreground leading-relaxed">
               <span className="mt-[9px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
               <span className="flex-1">{s}</span>
             </li>
@@ -476,18 +476,18 @@ function BriefingView({
       {/* 4 — Opening question */}
       <Section label="One way to start">
         <div className="rounded-[12px] bg-card border px-5 py-4">
-          <p className="text-[15px] text-foreground italic leading-relaxed">
+          <p className="text-[18px] text-foreground italic leading-relaxed">
             "{result.opening_question}"
           </p>
         </div>
-        <p className="text-[13px] text-hint leading-relaxed mt-3">Use your own words.</p>
+        <p className="text-[15px] text-hint leading-relaxed mt-3">Use your own words.</p>
       </Section>
 
       <Divider />
 
       {/* 5 — Why it appeals */}
       <Section label="Why it appeals">
-        <p className="text-[14px] text-foreground leading-relaxed">{result.why_it_appeals}</p>
+        <p className="text-[17px] text-foreground leading-relaxed">{result.why_it_appeals}</p>
       </Section>
 
       <Divider />
@@ -504,9 +504,9 @@ function BriefingView({
             )}
           </div>
         </div>
-        <p className="text-[15px] font-medium text-foreground">{result.spectrum_label}</p>
-        <p className="text-[14px] text-foreground leading-relaxed mt-2">{result.spectrum_reasoning}</p>
-        <p className="text-[13px] text-hint leading-relaxed mt-3">
+        <p className="text-[18px] font-medium text-foreground">{result.spectrum_label}</p>
+        <p className="text-[17px] text-foreground leading-relaxed mt-2">{result.spectrum_reasoning}</p>
+        <p className="text-[15px] text-hint leading-relaxed mt-3">
           {result.confidence} confidence. {result.confidence_note}
         </p>
       </Section>
@@ -517,18 +517,18 @@ function BriefingView({
       <Expander label="More context">
         <div className="space-y-5">
           {result.platform_context && (
-            <p className="text-[14px] text-foreground leading-relaxed">{result.platform_context}</p>
+            <p className="text-[17px] text-foreground leading-relaxed">{result.platform_context}</p>
           )}
           {result.pipeline_context && (
-            <p className="text-[14px] text-foreground leading-relaxed">{result.pipeline_context}</p>
+            <p className="text-[17px] text-foreground leading-relaxed">{result.pipeline_context}</p>
           )}
           {result.age_specific_note && intake.age && (
-            <p className="text-[14px] text-foreground leading-relaxed">{result.age_specific_note}</p>
+            <p className="text-[17px] text-foreground leading-relaxed">{result.age_specific_note}</p>
           )}
           {result.values_promoted?.length > 0 && (
             <ul className="space-y-2">
               {result.values_promoted.map((v, i) => (
-                <li key={i} className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
+                <li key={i} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
                   <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
                   <span className="flex-1">{v}</span>
                 </li>
@@ -544,13 +544,13 @@ function BriefingView({
       <Expander label="What to watch for">
         <ul className="space-y-2">
           {result.warning_signs.map((s, i) => (
-            <li key={i} className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
+            <li key={i} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
               <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
               <span className="flex-1">{s}</span>
             </li>
           ))}
           {result.return_signals?.map((s, i) => (
-            <li key={`r-${i}`} className="flex items-start gap-3 text-[14px] leading-relaxed" style={{ color: "#3B6D11" }}>
+            <li key={`r-${i}`} className="flex items-start gap-3 text-[17px] leading-relaxed" style={{ color: "#3B6D11" }}>
               <span className="mt-[8px] h-[5px] w-[5px] rounded-full shrink-0" style={{ backgroundColor: "#3B6D11" }} />
               <span className="flex-1">{s}</span>
             </li>
@@ -563,7 +563,7 @@ function BriefingView({
       <div className="pt-8 pb-2">
         <div className="border-t border-border" />
         <div className="pt-6">
-          <p className="text-[12px] text-hint leading-relaxed">
+          <p className="text-[13px] text-hint leading-relaxed">
             This briefing is not a diagnosis. It does not monitor your child or their devices. It is based on limited information you chose to share, combined with publicly available knowledge about online culture and communities. Use your own judgment, your relationship with your child, and professional guidance when needed. Built by a nonprofit. No ads. No data sold.
           </p>
         </div>
@@ -577,17 +577,17 @@ function BriefingView({
           onClick={onScanAnother}
           className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
         >
-          <p className="text-[14px] font-medium text-foreground">Look up something else</p>
+          <p className="text-[17px] font-medium text-foreground">Look up something else</p>
         </button>
 
         <button
           onClick={onSaveReport}
           className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
         >
-          <p className="text-[14px] font-medium text-foreground">
+          <p className="text-[17px] font-medium text-foreground">
             {saved ? "✓ Report saved" : "Save this report"}
           </p>
-          <p className="text-[12px] text-hint mt-0.5">
+          <p className="text-[13px] text-hint mt-0.5">
             {user ? "Access it anytime from your history" : "Sign in to save"}
           </p>
         </button>
@@ -596,14 +596,14 @@ function BriefingView({
           onClick={onShowDigest}
           className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
         >
-          <p className="text-[14px] font-medium text-foreground">Get the monthly digest</p>
-          <p className="text-[12px] text-hint mt-0.5">
+          <p className="text-[17px] font-medium text-foreground">Get the monthly digest</p>
+          <p className="text-[13px] text-hint mt-0.5">
             Free — what's trending in your child's age group, sent monthly.
           </p>
         </button>
       </div>
 
-      <p className="mt-6 text-[13px] text-hint">
+      <p className="mt-6 text-[15px] text-hint">
         Free. Built by a nonprofit. We never see your child's phone.
       </p>
 
@@ -628,7 +628,7 @@ function Expander({ label, children }: { label: string; children: React.ReactNod
         className="flex w-full items-center justify-between text-left"
       >
         <span className="label-text">{label.toUpperCase()}</span>
-        <span className="text-[13px] text-hint">{open ? "Hide" : "Show"}</span>
+        <span className="text-[15px] text-hint">{open ? "Hide" : "Show"}</span>
       </button>
       {open && <div className="mt-4">{children}</div>}
     </section>
@@ -667,7 +667,7 @@ function AmbiguousView({ result, intake, onScanAnother }: { result: ScanResult; 
             <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
               {result.summary_verdict || "This could mean a few different things"}
             </h1>
-            <p className="text-[14px] text-hint">
+            <p className="text-[17px] text-hint">
               You looked up <span className="text-foreground font-medium">{intake.query}</span>
             </p>
           </div>
@@ -678,7 +678,7 @@ function AmbiguousView({ result, intake, onScanAnother }: { result: ScanResult; 
         <>
           <Divider />
           <Section label="What we know">
-            <p className="text-[14px] text-foreground leading-relaxed">{result.what_it_is}</p>
+            <p className="text-[17px] text-foreground leading-relaxed">{result.what_it_is}</p>
           </Section>
         </>
       )}
@@ -694,7 +694,7 @@ function AmbiguousView({ result, intake, onScanAnother }: { result: ScanResult; 
                   onClick={() => handleTrySpecific(option)}
                   className="w-full rounded-[10px] border bg-card p-3.5 text-left hover:bg-accent/50 transition-colors"
                 >
-                  <p className="text-[14px] text-foreground">{option}</p>
+                  <p className="text-[17px] text-foreground">{option}</p>
                 </button>
               ))}
             </div>
@@ -704,7 +704,7 @@ function AmbiguousView({ result, intake, onScanAnother }: { result: ScanResult; 
 
       <Divider />
       <div className="pb-2">
-        <p className="text-[13px] text-hint leading-relaxed">
+        <p className="text-[15px] text-hint leading-relaxed">
           <span className="text-foreground font-medium">Tip:</span> Try being more specific — include the platform name, the creator's full handle, or describe the behavior you noticed.
         </p>
       </div>
@@ -724,7 +724,7 @@ function NotEnoughSignalView({ result, intake, onScanAnother }: { result: ScanRe
         <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
           Not enough signal yet
         </h1>
-        <p className="text-[14px] text-hint">
+        <p className="text-[17px] text-hint">
           You looked up <span className="text-foreground font-medium">{intake.query}</span>
         </p>
       </header>
@@ -732,7 +732,7 @@ function NotEnoughSignalView({ result, intake, onScanAnother }: { result: ScanRe
       <Divider />
 
       <Section label="What we can say">
-        <p className="text-[15px] text-foreground leading-relaxed">
+        <p className="text-[18px] text-foreground leading-relaxed">
           {result.what_we_can_say || result.summary_verdict || result.what_it_is}
         </p>
       </Section>
@@ -740,7 +740,7 @@ function NotEnoughSignalView({ result, intake, onScanAnother }: { result: ScanRe
       <Divider />
 
       <Section label="What would help">
-        <p className="text-[15px] text-foreground leading-relaxed">
+        <p className="text-[18px] text-foreground leading-relaxed">
           {result.what_would_help || "Write down the next thing you notice — the exact words, and when it happened."}
         </p>
       </Section>
@@ -750,7 +750,7 @@ function NotEnoughSignalView({ result, intake, onScanAnother }: { result: ScanRe
           <Divider />
           <Section label="One way to open the conversation">
             <div className="rounded-[12px] bg-card border px-5 py-4">
-              <p className="text-[15px] text-foreground italic leading-relaxed">
+              <p className="text-[18px] text-foreground italic leading-relaxed">
                 "{result.opening_question}"
               </p>
             </div>
@@ -763,7 +763,7 @@ function NotEnoughSignalView({ result, intake, onScanAnother }: { result: ScanRe
           onClick={onScanAnother}
           className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
         >
-          <p className="text-[14px] font-medium text-foreground">Look up something else</p>
+          <p className="text-[17px] font-medium text-foreground">Look up something else</p>
         </button>
       </div>
     </article>
@@ -781,7 +781,7 @@ function OutsideScopeView({ result, intake, onScanAnother }: { result: ScanResul
             <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
               {result.summary_verdict || "This doesn't fall within the areas we cover right now"}
             </h1>
-            <p className="text-[14px] text-hint">
+            <p className="text-[17px] text-hint">
               You looked up <span className="text-foreground font-medium">{intake.query}</span>
             </p>
           </div>
@@ -792,7 +792,7 @@ function OutsideScopeView({ result, intake, onScanAnother }: { result: ScanResul
         <>
           <Divider />
           <Section label="What we can tell you">
-            <p className="text-[14px] text-foreground leading-relaxed">{result.what_it_is}</p>
+            <p className="text-[17px] text-foreground leading-relaxed">{result.what_it_is}</p>
           </Section>
         </>
       )}
@@ -801,7 +801,7 @@ function OutsideScopeView({ result, intake, onScanAnother }: { result: ScanResul
         <>
           <Divider />
           <Section label="What we currently cover">
-            <p className="text-[14px] text-muted-foreground leading-relaxed">{result.scope_note}</p>
+            <p className="text-[17px] text-muted-foreground leading-relaxed">{result.scope_note}</p>
           </Section>
         </>
       )}
@@ -809,15 +809,15 @@ function OutsideScopeView({ result, intake, onScanAnother }: { result: ScanResul
       <Divider />
       <Section label="Things you can try">
         <ul className="space-y-2">
-          <li className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
+          <li className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
             <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
             <span>Use a more specific term, like the name of a creator or community</span>
           </li>
-          <li className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
+          <li className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
             <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
             <span>Describe a behavior you've noticed instead of a general topic</span>
           </li>
-          <li className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
+          <li className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
             <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
             <span>Check back as we expand our coverage over time</span>
           </li>
@@ -836,7 +836,7 @@ function TrustFooter() {
     <div className="pt-8 pb-2">
       <div className="border-t border-border" />
       <div className="pt-6">
-        <p className="text-[12px] text-hint leading-relaxed">
+        <p className="text-[13px] text-hint leading-relaxed">
           This briefing is not a diagnosis. It does not monitor your child or their devices. It is based on limited information you chose to share. Use your own judgment and your relationship with your child. Built by a nonprofit. No ads. No data sold.
         </p>
       </div>
@@ -855,7 +855,7 @@ function ErrorFallbackView({ error, onRetry }: { error: string; onRetry: () => v
             <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
               We weren't able to complete this lookup
             </h1>
-            <p className="text-[14px] text-muted-foreground leading-relaxed">
+            <p className="text-[17px] text-muted-foreground leading-relaxed">
               This isn't your fault — something went wrong on our end. Your question is still a good one.
             </p>
           </div>
@@ -865,8 +865,8 @@ function ErrorFallbackView({ error, onRetry }: { error: string; onRetry: () => v
       <Divider />
 
       <Section label="What happened">
-        <p className="text-[14px] text-muted-foreground leading-relaxed mb-1">{error}</p>
-        <p className="text-[14px] text-muted-foreground leading-relaxed">
+        <p className="text-[17px] text-muted-foreground leading-relaxed mb-1">{error}</p>
+        <p className="text-[17px] text-muted-foreground leading-relaxed">
           You can try again — sometimes it just takes a second attempt. If this keeps happening, the term may be too broad or unusual for us to analyze right now.
         </p>
       </Section>

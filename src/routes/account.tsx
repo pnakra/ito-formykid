@@ -166,7 +166,7 @@ function AccountPage() {
             <div className="rounded-[14px] border bg-card p-5 space-y-4">
               <div>
                 <p className="label-text mb-1">Email</p>
-                <p className="text-[15px] text-foreground">{profile?.email ?? user.email}</p>
+                <p className="text-[18px] text-foreground">{profile?.email ?? user.email}</p>
               </div>
 
 
@@ -190,7 +190,7 @@ function AccountPage() {
             <div className="rounded-[14px] border bg-card p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[15px] text-foreground">Send me the monthly digest</p>
+                  <p className="text-[18px] text-foreground">Send me the monthly digest</p>
                 </div>
                 <Switch
                   checked={profile?.digest_enabled ?? true}
@@ -253,7 +253,7 @@ function AccountPage() {
                         }}
                       >
                         <div className="flex-1 min-w-0">
-                          <p className="text-[15px] text-foreground font-medium truncate">
+                          <p className="text-[18px] text-foreground font-medium truncate">
                             {query}
                           </p>
                           <div className="flex items-center gap-2 mt-1">

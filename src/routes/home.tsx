@@ -421,7 +421,7 @@ function HomePage() {
           <div className="flex rounded-[10px] bg-muted p-1 mb-8">
             <button
               onClick={() => setActiveMode("understand")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[14px] font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[17px] font-medium transition-all ${
                 activeMode === "understand"
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -432,7 +432,7 @@ function HomePage() {
             </button>
             <button
               onClick={() => setActiveMode("stay_ahead")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[14px] font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[17px] font-medium transition-all ${
                 activeMode === "stay_ahead"
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -448,7 +448,7 @@ function HomePage() {
             <div>
               <div className="rounded-[14px] bg-card p-5 mb-6">
                 <h2 className="text-xl font-medium text-foreground mb-1">What do you want to understand?</h2>
-                <p className="text-[13px] text-hint mb-4">
+                <p className="text-[15px] text-hint mb-4">
                   Describe what you noticed, or look up a specific creator, term, or community.
                 </p>
 
@@ -457,7 +457,7 @@ function HomePage() {
                   <button
                     type="button"
                     onClick={() => handleModeChange("describe")}
-                    className={`text-[14px] pb-1 transition-colors ${
+                    className={`text-[17px] pb-1 transition-colors ${
                       inputMode === "describe"
                         ? "text-foreground font-medium border-b border-foreground"
                         : "text-hint hover:text-foreground"
@@ -468,7 +468,7 @@ function HomePage() {
                   <button
                     type="button"
                     onClick={() => handleModeChange("lookup")}
-                    className={`text-[14px] pb-1 transition-colors ${
+                    className={`text-[17px] pb-1 transition-colors ${
                       inputMode === "lookup"
                         ? "text-foreground font-medium border-b border-foreground"
                         : "text-hint hover:text-foreground"
@@ -496,7 +496,7 @@ function HomePage() {
                               description ? `${description.trimEnd()} ${example}` : example
                             )
                           }
-                          className="rounded-[6px] border border-border bg-background px-3 py-1.5 text-[13px] text-secondary-foreground hover:bg-accent transition-colors text-left"
+                          className="rounded-[6px] border border-border bg-background px-3 py-1.5 text-[15px] text-secondary-foreground hover:bg-accent transition-colors text-left"
                         >
                           {example}
                         </button>
@@ -534,7 +534,7 @@ function HomePage() {
                   {inputMode === "describe" ? "Understand this" : "Get my report"}
                 </Button>
 
-                <p className="text-[12px] text-hint mt-3 text-center">
+                <p className="text-[13px] text-hint mt-3 text-center">
                   Your child's profile is saved. Update it anytime in{" "}
                   <Link to="/account" className="text-foreground underline underline-offset-4">Account</Link>.
                 </p>
@@ -558,7 +558,7 @@ function HomePage() {
                           }}
                         >
                           <div className="flex-1 min-w-0">
-                            <p className="text-[15px] text-foreground font-medium truncate">{term}</p>
+                            <p className="text-[18px] text-foreground font-medium truncate">{term}</p>
                             <div className="flex items-center gap-2 mt-1">
                               <Badge variant={badgeVariant} className="text-[11px]">{scan.risk_level}</Badge>
                               <span className="text-xs text-hint">
@@ -579,12 +579,12 @@ function HomePage() {
 
               {/* Nudge to Stay Ahead */}
               <div className="mt-8 rounded-[14px] border border-dashed p-5 text-center">
-                <p className="text-[14px] text-muted-foreground leading-relaxed mb-3">
+                <p className="text-[17px] text-muted-foreground leading-relaxed mb-3">
                   Looking things up is important — but staying ahead is even better. Track patterns, get monthly briefings, and strengthen what protects your child over time.
                 </p>
                 <button
                   onClick={() => setActiveMode("stay_ahead")}
-                  className="text-[13px] font-medium text-foreground underline underline-offset-4"
+                  className="text-[15px] font-medium text-foreground underline underline-offset-4"
                 >
                   Explore Stay ahead →
                 </button>
@@ -598,7 +598,7 @@ function HomePage() {
 
               {/* Intro */}
               <div>
-                <p className="text-[14px] text-muted-foreground leading-relaxed">
+                <p className="text-[17px] text-muted-foreground leading-relaxed">
                   You don't need a crisis to use this. These tools help you notice patterns, stay informed, and strengthen the things that keep your child resilient.
                 </p>
               </div>
@@ -621,7 +621,7 @@ function HomePage() {
                         <div className="rounded-[14px] bg-card p-5">
                           <ul className="space-y-3">
                             {briefing.bullets.map((bullet, i) => (
-                              <li key={i} className="text-[15px] text-foreground leading-relaxed flex gap-2">
+                              <li key={i} className="text-[18px] text-foreground leading-relaxed flex gap-2">
                                 <span className="text-hint mt-0.5 shrink-0">•</span>
                                 <span>{bullet}</span>
                               </li>
@@ -648,7 +648,7 @@ function HomePage() {
               {/* Section 2: Situation log */}
               <section>
                 <p className="label-text mb-1">YOUR SITUATION LOG</p>
-                <p className="text-[13px] text-hint mb-4">
+                <p className="text-[15px] text-hint mb-4">
                   Track what you notice over time. Even small observations add up to a clearer picture.
                 </p>
 
@@ -665,7 +665,7 @@ function HomePage() {
                         key={cat}
                         type="button"
                         onClick={() => setLogCategory(logCategory === cat ? null : cat)}
-                        className={`rounded-[20px] border px-3 py-1 text-[12px] transition-colors ${
+                        className={`rounded-[20px] border px-3 py-1 text-[13px] transition-colors ${
                           logCategory === cat
                             ? "bg-primary text-primary-foreground border-transparent"
                             : "bg-background text-secondary-foreground border-border"
@@ -724,7 +724,7 @@ function HomePage() {
               {/* Section 3: Protective factors */}
               <section>
                 <p className="label-text mb-1">PROTECTIVE FACTORS</p>
-                <p className="text-[13px] text-hint mb-4">
+                <p className="text-[15px] text-hint mb-4">
                   Research shows these reduce vulnerability to harmful online influence. Reflect on where your family stands.
                 </p>
 
@@ -734,7 +734,7 @@ function HomePage() {
                     const suggestion = factorSuggestions[factor.key];
                     return (
                       <div key={factor.key} className="rounded-[14px] border bg-card px-4 py-3">
-                        <p className="text-[14px] text-foreground mb-2">{factor.label}</p>
+                        <p className="text-[17px] text-foreground mb-2">{factor.label}</p>
                         <div className="flex gap-2">
                           {(["good", "needs_attention", "not_sure"] as const).map((opt) => {
                             const labels: Record<string, string> = {
@@ -746,7 +746,7 @@ function HomePage() {
                               <button
                                 key={opt}
                                 onClick={() => handleFactorChange(factor.key, opt)}
-                                className={`rounded-[20px] border px-3 py-1 text-[12px] transition-colors ${
+                                className={`rounded-[20px] border px-3 py-1 text-[13px] transition-colors ${
                                   status === opt
                                     ? opt === "good"
                                       ? "bg-risk-low text-risk-low-foreground border-transparent"
@@ -762,7 +762,7 @@ function HomePage() {
                           })}
                         </div>
                         {suggestion && status === "needs_attention" && (
-                          <p className="text-[13px] text-risk-low-foreground mt-2 leading-relaxed">
+                          <p className="text-[15px] text-risk-low-foreground mt-2 leading-relaxed">
                             {suggestion}
                           </p>
                         )}
@@ -777,19 +777,19 @@ function HomePage() {
                   </div>
                 )}
 
-                <p className="text-[12px] text-hint mt-4 leading-relaxed">
+                <p className="text-[13px] text-hint mt-4 leading-relaxed">
                   Based on research into what reduces adolescent vulnerability to harmful online influence. Not a clinical assessment.
                 </p>
               </section>
 
               {/* Nudge to Understand Now */}
               <div className="rounded-[14px] border border-dashed p-5 text-center">
-                <p className="text-[14px] text-muted-foreground leading-relaxed mb-3">
+                <p className="text-[17px] text-muted-foreground leading-relaxed mb-3">
                   Something worrying you right now? Look up a creator, term, or behavior and get a plain-language report in seconds.
                 </p>
                 <button
                   onClick={() => setActiveMode("understand")}
-                  className="text-[13px] font-medium text-foreground underline underline-offset-4"
+                  className="text-[15px] font-medium text-foreground underline underline-offset-4"
                 >
                   Go to Understand now →
                 </button>
