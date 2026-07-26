@@ -368,18 +368,13 @@ function ResultsPage() {
           <div className="w-full max-w-md rounded-[14px] bg-background p-6 border">
             {digestSubmitted ? (
               <div className="text-center">
-                <h2 className="text-xl font-medium text-foreground mb-2">You're signed up!</h2>
-                <p className="text-sm text-muted-foreground mb-4">
-                  We'll send the monthly digest to your inbox.
-                </p>
+                <h2 className="text-xl font-medium text-foreground mb-4">You're signed up.</h2>
                 <Button variant="outline" onClick={() => setShowDigest(false)}>Close</Button>
               </div>
             ) : (
               <>
-                <h2 className="text-xl font-medium text-foreground mb-1">Get the monthly digest</h2>
-                <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                  What's trending in your child's age group, new communities to watch, and signals other parents are noticing. Free, monthly.
-                </p>
+                <h2 className="text-xl font-medium text-foreground mb-1">Get a monthly email</h2>
+                <p className="text-[15px] text-hint mb-4">One email a month. Free.</p>
                 <form onSubmit={handleDigestSubmit} className="space-y-3">
                   <Input
                     placeholder="Your name"
@@ -394,7 +389,7 @@ function ResultsPage() {
                     onChange={(e) => setDigestEmail(e.target.value)}
                     required
                   />
-                  <Button type="submit" className="w-full">Subscribe to the digest</Button>
+                  <Button type="submit" className="w-full">Sign up</Button>
                 </form>
                 <button
                   onClick={() => setShowDigest(false)}
@@ -439,7 +434,7 @@ function BriefingView({
 
       {/* ── Header block ── */}
       <header className="pb-8">
-        <p className="label-text mb-4">PARENT BRIEFING</p>
+        <p className="label-text mb-4">WHAT WE FOUND</p>
         <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-3">
           {result.summary_verdict || result.what_it_is}
         </h1>
@@ -456,7 +451,7 @@ function BriefingView({
       {isLowConfidence && (
         <div className="border-l-[3px] border-border pl-4 pb-8">
           <p className="text-[17px] text-muted-foreground leading-relaxed">
-            {result.limitations_note || result.confidence_note || "There isn't enough public information for us to be sure. Treat this as a starting point."}
+            {result.limitations_note || result.confidence_note || "We aren't sure yet. Treat this as a starting point."}
           </p>
         </div>
       )}
@@ -500,7 +495,7 @@ function BriefingView({
             "{result.opening_question}"
           </p>
         </div>
-        <p className="text-[15px] text-hint leading-relaxed mt-3">Use your own words.</p>
+        <p className="text-[15px] text-hint mt-3">Use your own words.</p>
       </Section>
 
       <Divider />
@@ -579,55 +574,20 @@ function BriefingView({
       </Expander>
 
 
-      {/* ── Trust footer ── */}
-      <div className="pt-8 pb-2">
-        <div className="border-t border-border" />
-        <div className="pt-6">
-          <p className="text-[13px] text-hint leading-relaxed">
-            This briefing is not a diagnosis. It does not monitor your child or their devices. It is based on limited information you chose to share, combined with publicly available knowledge about online culture and communities. Use your own judgment, your relationship with your child, and professional guidance when needed. Built by a nonprofit. No ads. No data sold.
-          </p>
-        </div>
+      <div className="pt-12">
+        <Button onClick={onScanAnother} size="lg">Ask about something else</Button>
       </div>
 
-      {/* ── Next steps — secondary, not a hard sell ── */}
-      <div className="pt-4 pb-2 space-y-3">
-        <p className="label-text">NEXT</p>
-
-        <button
-          onClick={onScanAnother}
-          className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
-        >
-          <p className="text-[17px] font-medium text-foreground">Look up something else</p>
+      <div className="pt-6 flex flex-col gap-3 items-start">
+        <button onClick={onSaveReport} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
+          {saved ? "Saved" : user ? "Save this" : "Sign in to save this"}
         </button>
-
-        <button
-          onClick={onSaveReport}
-          className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
-        >
-          <p className="text-[17px] font-medium text-foreground">
-            {saved ? "✓ Report saved" : "Save this report"}
-          </p>
-          <p className="text-[13px] text-hint mt-0.5">
-            {user ? "Access it anytime from your history" : "Sign in to save"}
-          </p>
-        </button>
-
-        <button
-          onClick={onShowDigest}
-          className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
-        >
-          <p className="text-[17px] font-medium text-foreground">Get the monthly digest</p>
-          <p className="text-[13px] text-hint mt-0.5">
-            Free — what's trending in your child's age group, sent monthly.
-          </p>
+        <button onClick={onShowDigest} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
+          Get a monthly email
         </button>
       </div>
 
-      <p className="mt-6 text-[15px] text-hint">
-        Free. Built by a nonprofit. We never see your child's phone.
-      </p>
-
-
+      <TrustFooter />
 
     </article>
   );
@@ -680,18 +640,13 @@ function AmbiguousView({ result, intake, onScanAnother }: { result: ScanResult; 
   return (
     <article className="space-y-0">
       <header className="pb-8">
-        <p className="label-text mb-4">PARENT BRIEFING</p>
-        <div className="flex items-start gap-3">
-          <HelpCircle className="h-5 w-5 shrink-0 mt-1 text-hint" />
-          <div>
-            <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
-              {result.summary_verdict || "This could mean a few different things"}
-            </h1>
-            <p className="text-[17px] text-hint">
-              You looked up <span className="text-foreground font-medium">{intake.query}</span>
-            </p>
-          </div>
-        </div>
+        <p className="label-text mb-4">WHAT WE FOUND</p>
+        <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-2">
+          {result.summary_verdict || "This could mean a few things"}
+        </h1>
+        <p className="text-[15px] text-hint">
+          You asked about <span className="text-foreground font-medium">{intake.query}</span>
+        </p>
       </header>
 
       {result.what_it_is && (
@@ -725,7 +680,7 @@ function AmbiguousView({ result, intake, onScanAnother }: { result: ScanResult; 
       <Divider />
       <div className="pb-2">
         <p className="text-[15px] text-hint leading-relaxed">
-          <span className="text-foreground font-medium">Tip:</span> Try being more specific — include the platform name, the creator's full handle, or describe the behavior you noticed.
+          Try adding the app name, or describe what you saw them do.
         </p>
       </div>
 
@@ -740,12 +695,12 @@ function NotEnoughSignalView({ result, intake, onScanAnother }: { result: ScanRe
   return (
     <article className="space-y-0">
       <header className="pb-8">
-        <p className="label-text mb-4">PARENT BRIEFING</p>
-        <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
-          Not enough signal yet
+        <p className="label-text mb-4">WHAT WE FOUND</p>
+        <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-2">
+          Not enough to go on yet
         </h1>
-        <p className="text-[17px] text-hint">
-          You looked up <span className="text-foreground font-medium">{intake.query}</span>
+        <p className="text-[15px] text-hint">
+          You asked about <span className="text-foreground font-medium">{intake.query}</span>
         </p>
       </header>
 
@@ -778,13 +733,8 @@ function NotEnoughSignalView({ result, intake, onScanAnother }: { result: ScanRe
         </>
       )}
 
-      <div className="pt-8">
-        <button
-          onClick={onScanAnother}
-          className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
-        >
-          <p className="text-[17px] font-medium text-foreground">Look up something else</p>
-        </button>
+      <div className="pt-12">
+        <Button onClick={onScanAnother} size="lg">Ask about something else</Button>
       </div>
     </article>
   );
@@ -794,18 +744,13 @@ function OutsideScopeView({ result, intake, onScanAnother }: { result: ScanResul
   return (
     <article className="space-y-0">
       <header className="pb-8">
-        <p className="label-text mb-4">PARENT BRIEFING</p>
-        <div className="flex items-start gap-3">
-          <Search className="h-5 w-5 shrink-0 mt-1 text-hint" />
-          <div>
-            <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
-              {result.summary_verdict || "This doesn't fall within the areas we cover right now"}
-            </h1>
-            <p className="text-[17px] text-hint">
-              You looked up <span className="text-foreground font-medium">{intake.query}</span>
-            </p>
-          </div>
-        </div>
+        <p className="label-text mb-4">WHAT WE FOUND</p>
+        <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-2">
+          {result.summary_verdict || "We don't cover this yet"}
+        </h1>
+        <p className="text-[15px] text-hint">
+          You asked about <span className="text-foreground font-medium">{intake.query}</span>
+        </p>
       </header>
 
       {result.what_it_is && (
@@ -831,15 +776,11 @@ function OutsideScopeView({ result, intake, onScanAnother }: { result: ScanResul
         <ul className="space-y-2">
           <li className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
             <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-            <span>Use a more specific term, like the name of a creator or community</span>
+            <span>Name the person, app, or group.</span>
           </li>
           <li className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
             <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-            <span>Describe a behavior you've noticed instead of a general topic</span>
-          </li>
-          <li className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
-            <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-            <span>Check back as we expand our coverage over time</span>
+            <span>Describe what you saw them do.</span>
           </li>
         </ul>
       </Section>
@@ -857,7 +798,7 @@ function TrustFooter() {
       <div className="border-t border-border" />
       <div className="pt-6">
         <p className="text-[13px] text-hint leading-relaxed">
-          This briefing is not a diagnosis. It does not monitor your child or their devices. It is based on limited information you chose to share. Use your own judgment and your relationship with your child. Built by a nonprofit. No ads. No data sold.
+          This is not a diagnosis. Free, from a nonprofit. We never see your child's phone.
         </p>
       </div>
     </div>
@@ -868,27 +809,19 @@ function ErrorFallbackView({ error, onRetry }: { error: string; onRetry: () => v
   return (
     <article className="space-y-0">
       <header className="pb-8">
-        <p className="label-text mb-4">PARENT BRIEFING</p>
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 shrink-0 mt-1" style={{ color: "#C4854C" }} />
-          <div>
-            <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
-              We weren't able to complete this lookup
-            </h1>
-            <p className="text-[17px] text-muted-foreground leading-relaxed">
-              This isn't your fault — something went wrong on our end. Your question is still a good one.
-            </p>
-          </div>
-        </div>
+        <p className="label-text mb-4">WHAT WE FOUND</p>
+        <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-2">
+          That didn't work
+        </h1>
+        <p className="text-[17px] text-muted-foreground leading-relaxed">
+          Something went wrong on our end. Your question is still a good one.
+        </p>
       </header>
 
       <Divider />
 
       <Section label="What happened">
-        <p className="text-[17px] text-muted-foreground leading-relaxed mb-1">{error}</p>
-        <p className="text-[17px] text-muted-foreground leading-relaxed">
-          You can try again — sometimes it just takes a second attempt. If this keeps happening, the term may be too broad or unusual for us to analyze right now.
-        </p>
+        <p className="text-[17px] text-muted-foreground leading-relaxed">{error}</p>
       </Section>
 
       <div className="pt-8">
