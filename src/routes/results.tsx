@@ -5,7 +5,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, AlertTriangle, HelpCircle, Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { EscalationResult, type EscalationResultData } from "@/components/EscalationResult";
 import { IdentityResult, type IdentityResultData } from "@/components/IdentityResult";
@@ -21,14 +20,14 @@ export const Route = createFileRoute("/results")({
   component: ResultsPage,
 });
 
-type ResultType = "normal" | "low_confidence" | "ambiguous" | "outside_scope";
+type ResultType = "normal" | "low_confidence" | "ambiguous" | "outside_scope" | "not_enough_signal";
 
 interface ScanResult {
   result_type: ResultType;
   summary_verdict: string;
   what_it_is: string;
   platform_context: string;
-  spectrum_label: "Mainstream" | "Edgy but benign" | "Concerning" | "High risk";
+  spectrum_label: "Mainstream" | "Edgy but benign" | "Concerning" | "High risk" | "Not enough signal";
   spectrum_reasoning: string;
   confidence: "Low" | "Medium" | "High";
   confidence_note: string;
@@ -43,6 +42,8 @@ interface ScanResult {
   disambiguation_options: string[] | null;
   scope_note: string | null;
   limitations_note: string | null;
+  what_we_can_say?: string | null;
+  what_would_help?: string | null;
 }
 
 interface IntakeData {
@@ -58,20 +59,9 @@ const SPECTRUM_POSITIONS: Record<string, number> = {
   "Edgy but benign": 35,
   "Concerning": 65,
   "High risk": 88,
+  "Not enough signal": 0,
 };
 
-const SPECTRUM_COLORS: Record<string, string> = {
-  "Mainstream": "bg-risk-low text-risk-low-foreground",
-  "Edgy but benign": "bg-risk-neutral text-risk-neutral-foreground",
-  "Concerning": "bg-risk-concerning text-risk-concerning-foreground",
-  "High risk": "bg-risk-high text-risk-high-foreground",
-};
-
-const CONFIDENCE_COLORS: Record<string, string> = {
-  "Low": "bg-risk-concerning text-risk-concerning-foreground",
-  "Medium": "bg-risk-neutral text-risk-neutral-foreground",
-  "High": "bg-risk-low text-risk-low-foreground",
-};
 
 function ResultsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -306,7 +296,9 @@ function ResultsPage() {
       <main className="flex-1 py-10">
         <div className="mx-auto max-w-xl px-5">
 
-          {resultType === "ambiguous" ? (
+          {resultType === "not_enough_signal" ? (
+            <NotEnoughSignalView result={result} intake={intake} onScanAnother={handleScanAnother} />
+          ) : resultType === "ambiguous" ? (
             <AmbiguousView result={result} intake={intake} onScanAnother={handleScanAnother} />
           ) : resultType === "outside_scope" ? (
             <OutsideScopeView result={result} intake={intake} onScanAnother={handleScanAnother} />
@@ -412,26 +404,13 @@ function BriefingView({
           You looked up <span className="text-foreground font-medium">{intake.query}</span>
           {intake.age && <> · age {intake.age}</>}
         </p>
-
-        {/* Classification + Confidence — prominent, not buried */}
-        <div className="mt-5 flex flex-wrap items-center gap-2">
-          <Badge className={SPECTRUM_COLORS[result.spectrum_label]}>
-            {result.spectrum_label}
-          </Badge>
-          <Badge className={CONFIDENCE_COLORS[result.confidence]}>
-            {result.confidence} confidence
-          </Badge>
-        </div>
       </header>
 
       {/* ── Low confidence notice ── */}
       {isLowConfidence && (
-        <div className="border-l-[3px] border-risk-concerning-foreground/40 pl-4 pb-8">
-          <p className="text-[14px] font-medium text-foreground mb-1">
-            A note on this result
-          </p>
+        <div className="border-l-[3px] border-border pl-4 pb-8">
           <p className="text-[14px] text-muted-foreground leading-relaxed">
-            {result.limitations_note || result.confidence_note || "This term may be used in multiple contexts, or there isn't enough public information for us to be certain. The information below is our best understanding — treat it as a starting point rather than a definitive answer."}
+            {result.limitations_note || result.confidence_note || "There isn't enough public information for us to be sure. Treat this as a starting point."}
           </p>
         </div>
       )}
@@ -448,25 +427,25 @@ function BriefingView({
 
       <Divider />
 
-      {/* ── Classification reasoning ── */}
-      <Section label="Why this classification">
+      {/* ── Where it sits — always paired with reasoning and confidence ── */}
+      <Section label="Where this sits">
         <div className="mb-4">
-          <div className="relative h-[6px] rounded-full bg-gradient-to-r from-risk-low via-risk-concerning to-risk-high">
-            <div
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-foreground border-2 border-background"
-              style={{ left: `${SPECTRUM_POSITIONS[result.spectrum_label]}%`, transform: "translate(-50%, -50%)" }}
-            />
+          <div className="relative h-[3px] rounded-full bg-border">
+            {result.spectrum_label !== "Not enough signal" && (
+              <div
+                className="absolute top-1/2 w-[9px] h-[9px] rounded-full bg-foreground"
+                style={{ left: `${SPECTRUM_POSITIONS[result.spectrum_label] ?? 0}%`, transform: "translate(-50%, -50%)" }}
+              />
+            )}
           </div>
         </div>
-        <p className="text-[14px] text-foreground leading-relaxed">{result.spectrum_reasoning}</p>
+        <p className="text-[15px] font-medium text-foreground">{result.spectrum_label}</p>
+        <p className="text-[14px] text-foreground leading-relaxed mt-2">{result.spectrum_reasoning}</p>
+        <p className="text-[13px] text-hint leading-relaxed mt-3">
+          {result.confidence} confidence. {result.confidence_note}
+        </p>
       </Section>
 
-      <Divider />
-
-      {/* ── Confidence reasoning ── */}
-      <Section label="Why this confidence level">
-        <p className="text-[14px] text-foreground leading-relaxed">{result.confidence_note}</p>
-      </Section>
 
       <Divider />
 
@@ -480,7 +459,7 @@ function BriefingView({
         <>
           <Divider />
           <Section label="Part of a larger pattern">
-            <div className="border-l-[3px] border-risk-concerning-foreground/30 pl-4">
+            <div className="border-l-[3px] border-border pl-4">
               <p className="text-[14px] text-foreground leading-relaxed">{result.pipeline_context}</p>
             </div>
           </Section>
@@ -714,6 +693,60 @@ function AmbiguousView({ result, intake, onScanAnother }: { result: ScanResult; 
 }
 
 /* ─── Outside scope view ─── */
+
+function NotEnoughSignalView({ result, intake, onScanAnother }: { result: ScanResult; intake: IntakeData; onScanAnother: () => void }) {
+  return (
+    <article className="space-y-0">
+      <header className="pb-8">
+        <p className="label-text mb-4">PARENT BRIEFING</p>
+        <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
+          Not enough signal yet
+        </h1>
+        <p className="text-[14px] text-hint">
+          You looked up <span className="text-foreground font-medium">{intake.query}</span>
+        </p>
+      </header>
+
+      <Divider />
+
+      <Section label="What we can say">
+        <p className="text-[15px] text-foreground leading-relaxed">
+          {result.what_we_can_say || result.summary_verdict || result.what_it_is}
+        </p>
+      </Section>
+
+      <Divider />
+
+      <Section label="What would help">
+        <p className="text-[15px] text-foreground leading-relaxed">
+          {result.what_would_help || "Write down the next thing you notice — the exact words, and when it happened."}
+        </p>
+      </Section>
+
+      {result.opening_question && (
+        <>
+          <Divider />
+          <Section label="One way to open the conversation">
+            <div className="rounded-[12px] bg-card border px-5 py-4">
+              <p className="text-[15px] text-foreground italic leading-relaxed">
+                "{result.opening_question}"
+              </p>
+            </div>
+          </Section>
+        </>
+      )}
+
+      <div className="pt-8">
+        <button
+          onClick={onScanAnother}
+          className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
+        >
+          <p className="text-[14px] font-medium text-foreground">Look up something else</p>
+        </button>
+      </div>
+    </article>
+  );
+}
 
 function OutsideScopeView({ result, intake, onScanAnother }: { result: ScanResult; intake: IntakeData; onScanAnother: () => void }) {
   return (
