@@ -26,7 +26,7 @@ const ANTI_QUEER_PATTERNS: RegExp[] = [
   /\b(anti-?gay|anti-?trans|anti-?lgbt\w*)\b/i,
   /\b(homophobic|transphobic|homophobia|transphobia)\b/i,
   /\b(conversion therapy|pray the gay away|ex-?gay)\b/i,
-  /\b(groomer|degenerate|abomination)\b/i,
+  /\b(groomers?|degenerates?|abomination)\b/i,
   /\b(hate|hating|hatred|slurs?|disgust\w*)\b[^.]{0,40}\b(gay|queer|trans|lgbt\w*)\b/i,
   /\b(gay|queer|trans|lgbt\w*)\b[^.]{0,40}\b(slurs?|jokes? about|mock\w*|should not exist)\b/i,
   /\b(purity culture|suppress\w*|hide (?:who|what) (?:he|she|they) (?:is|are))\b/i,
