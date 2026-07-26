@@ -481,6 +481,10 @@ serve(async (req) => {
     // Ensure result_type is always set
     result = classifyResult(result);
 
+    // Identity is never a risk classification.
+    result = enforceIdentityGuard(result, content);
+
+
     // Persist the scan server-side using the service role.
     // Works for both authenticated users (user_id set) and anonymous scans (user_id null).
     try {
