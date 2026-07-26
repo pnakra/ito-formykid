@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, AlertTriangle, HelpCircle, Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EscalationResult, type EscalationResultData } from "@/components/EscalationResult";
@@ -56,6 +55,12 @@ interface IntakeData {
   query: string;
 }
 
+const PROGRESS_LINES = [
+  "This takes about 15 seconds.",
+  "Looking at what this usually means.",
+  "Writing it in plain words.",
+];
+
 const SPECTRUM_POSITIONS: Record<string, number> = {
   "Mainstream": 10,
   "Edgy but benign": 35,
@@ -82,6 +87,16 @@ function ResultsPage() {
   const [digestSubmitted, setDigestSubmitted] = useState(false);
   const [saved, setSaved] = useState(false);
   const [refining, setRefining] = useState(false);
+  const [progressStep, setProgressStep] = useState(0);
+
+  useEffect(() => {
+    if (!loading) return;
+    const timer = setInterval(() => setProgressStep((n) => Math.min(n + 1, PROGRESS_LINES.length - 1)), 4500);
+    return () => clearInterval(timer);
+  }, [loading]);
+
+  const progressLine = PROGRESS_LINES[progressStep];
+  const progressPct = ((progressStep + 1) / PROGRESS_LINES.length) * 100;
 
   useEffect(() => {
     const stored = sessionStorage.getItem("scanIntake");
@@ -233,11 +248,13 @@ function ResultsPage() {
     return (
       <div className="min-h-screen flex flex-col">
         <Header isLoggedIn={!!user} />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <Loader2 className="h-6 w-6 animate-spin mx-auto mb-3 text-muted-foreground" />
-            <p className="text-[18px] text-foreground mb-1">Preparing your briefing…</p>
-            <p className="text-[15px] text-hint">This usually takes 10–15 seconds.</p>
+        <main className="flex-1 flex items-center justify-center px-5">
+          <div className="max-w-[26rem] w-full">
+            <p className="text-[20px] text-foreground mb-3">Reading what you wrote.</p>
+            <p className="text-[17px] text-muted-foreground mb-6">{progressLine}</p>
+            <div className="h-[2px] w-full bg-border overflow-hidden rounded-full">
+              <div className="h-full bg-foreground/50 transition-all duration-700" style={{ width: `${progressPct}%` }} />
+            </div>
           </div>
         </main>
         <Footer />
@@ -249,8 +266,8 @@ function ResultsPage() {
     return (
       <div className="min-h-screen flex flex-col">
         <Header isLoggedIn={!!user} />
-        <main className="flex-1 py-10">
-          <div className="mx-auto max-w-xl px-5">
+        <main className="flex-1 py-12 md:py-16">
+          <div className="mx-auto max-w-[34rem] px-5">
             <ErrorFallbackView error={error} onRetry={() => navigate({ to: "/scan" })} />
           </div>
         </main>
@@ -263,8 +280,8 @@ function ResultsPage() {
     return (
       <div className="min-h-screen flex flex-col">
         <Header isLoggedIn={!!user} />
-        <main className="flex-1 py-10">
-          <div className="mx-auto max-w-xl px-5">
+        <main className="flex-1 py-12 md:py-16">
+          <div className="mx-auto max-w-[34rem] px-5">
             <IdentityResult
               result={identity}
               onScanAnother={() => {
@@ -283,8 +300,8 @@ function ResultsPage() {
     return (
       <div className="min-h-screen flex flex-col">
         <Header isLoggedIn={!!user} />
-        <main className="flex-1 py-10">
-          <div className="mx-auto max-w-xl px-5">
+        <main className="flex-1 py-12 md:py-16">
+          <div className="mx-auto max-w-[34rem] px-5">
             <EscalationResult
               result={escalation}
               onScanAnother={() => {
@@ -308,8 +325,8 @@ function ResultsPage() {
     <div className="min-h-screen flex flex-col">
       <Header isLoggedIn={!!user} />
 
-      <main className="flex-1 py-10">
-        <div className="mx-auto max-w-xl px-5">
+      <main className="flex-1 py-12 md:py-16">
+        <div className="mx-auto max-w-[34rem] px-5">
 
           {resultType === "not_enough_signal" ? (
             <NotEnoughSignalView result={result} intake={intake} onScanAnother={handleScanAnother} />
@@ -426,9 +443,12 @@ function BriefingView({
         <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-3">
           {result.summary_verdict || result.what_it_is}
         </h1>
-        <p className="text-[17px] text-hint leading-relaxed">
-          You looked up <span className="text-foreground font-medium">{intake.query}</span>
+        <p className="text-[15px] text-hint leading-relaxed">
+          You asked about <span className="text-foreground font-medium">{intake.query}</span>
           {intake.age && <> · age {intake.age}</>}
+        </p>
+        <p className="mt-5 text-[17px] text-muted-foreground leading-relaxed">
+          We can't tell you if your child is safe. We can tell you what this is and how to talk about it.
         </p>
       </header>
 
@@ -550,8 +570,8 @@ function BriefingView({
             </li>
           ))}
           {result.return_signals?.map((s, i) => (
-            <li key={`r-${i}`} className="flex items-start gap-3 text-[17px] leading-relaxed" style={{ color: "#3B6D11" }}>
-              <span className="mt-[8px] h-[5px] w-[5px] rounded-full shrink-0" style={{ backgroundColor: "#3B6D11" }} />
+            <li key={`r-${i}`} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
+              <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
               <span className="flex-1">{s}</span>
             </li>
           ))}
@@ -616,7 +636,7 @@ function BriefingView({
 /* ─── Layout primitives ─── */
 
 function Divider() {
-  return <div className="py-6"><div className="border-t border-border" /></div>;
+  return <div className="py-10"><div className="border-t border-border" /></div>;
 }
 
 function Expander({ label, children }: { label: string; children: React.ReactNode }) {
