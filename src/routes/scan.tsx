@@ -92,7 +92,7 @@ function ScanPage() {
       <Header isLoggedIn={!!user} />
 
       <main className="flex-1 py-10 md:py-16">
-        <div className="mx-auto max-w-xl px-5">
+        <div className="mx-auto max-w-[34rem] px-5">
 
           {/* Mode selector — typographic, minimal */}
           <div className="mb-8 flex items-center gap-6">
@@ -172,7 +172,7 @@ function ScanPage() {
                 ))}
               </select>
             </div>
-            <p className="text-[13px] text-hint mt-2">Optional — helps us be specific.</p>
+            <p className="text-[13px] text-hint mt-2">Optional.</p>
           </div>
 
           <div className="mt-8">
@@ -184,6 +184,9 @@ function ScanPage() {
             >
               Get context
             </Button>
+            <p className="mt-5 text-[15px] text-hint">
+              We never see your child's phone, accounts, or messages.
+            </p>
           </div>
 
         </div>
