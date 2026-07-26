@@ -35,6 +35,7 @@ interface ScanResult {
   pipeline_context: string | null;
   values_promoted: string[];
   age_specific_note: string | null;
+  normalization_line?: string | null;
   what_not_to_do: string[];
   opening_question: string;
   warning_signs: string[];
@@ -417,17 +418,56 @@ function BriefingView({
 
       <Divider />
 
-      {/* ── What this is ── */}
+      {/* 1 — What this is */}
       <Section label="What this is">
         <p className="text-[15px] text-foreground leading-relaxed">{result.what_it_is}</p>
-        {result.platform_context && (
-          <p className="text-[14px] text-muted-foreground leading-relaxed mt-3">{result.platform_context}</p>
-        )}
+      </Section>
+
+      {/* 2 — Normalization line */}
+      {(result.normalization_line || result.age_specific_note) && (
+        <div className="pt-4">
+          <p className="text-[15px] text-foreground leading-relaxed">
+            {result.normalization_line || result.age_specific_note}
+          </p>
+        </div>
+      )}
+
+      <Divider />
+
+      {/* 3 — What not to do */}
+      <Section label="What not to do">
+        <ul className="space-y-2">
+          {result.what_not_to_do.map((s, i) => (
+            <li key={i} className="flex items-start gap-3 text-[15px] text-foreground leading-relaxed">
+              <span className="mt-[9px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
+              <span className="flex-1">{s}</span>
+            </li>
+          ))}
+        </ul>
       </Section>
 
       <Divider />
 
-      {/* ── Where it sits — always paired with reasoning and confidence ── */}
+      {/* 4 — Opening question */}
+      <Section label="One way to start">
+        <div className="rounded-[12px] bg-card border px-5 py-4">
+          <p className="text-[15px] text-foreground italic leading-relaxed">
+            "{result.opening_question}"
+          </p>
+        </div>
+        <p className="text-[13px] text-hint leading-relaxed mt-3">Use your own words.</p>
+      </Section>
+
+      <Divider />
+
+      {/* 5 — Why it appeals */}
+      <Section label="Why it appeals">
+        <p className="text-[14px] text-foreground leading-relaxed">{result.why_it_appeals}</p>
+      </Section>
+
+      <Divider />
+
+      {/* 6 — Where this sits */}
       <Section label="Where this sits">
         <div className="mb-4">
           <div className="relative h-[3px] rounded-full bg-border">
@@ -446,41 +486,21 @@ function BriefingView({
         </p>
       </Section>
 
-
       <Divider />
 
-      {/* ── Why it appeals ── */}
-      <Section label="Why this may appeal to young people">
-        <p className="text-[14px] text-foreground leading-relaxed">{result.why_it_appeals}</p>
-      </Section>
-
-      {/* ── Pipeline context ── */}
-      {result.pipeline_context && (
-        <>
-          <Divider />
-          <Section label="Part of a larger pattern">
-            <div className="border-l-[3px] border-border pl-4">
-              <p className="text-[14px] text-foreground leading-relaxed">{result.pipeline_context}</p>
-            </div>
-          </Section>
-        </>
-      )}
-
-      {/* ── Age note ── */}
-      {result.age_specific_note && intake.age && (
-        <>
-          <Divider />
-          <Section label={`For parents of ${intake.age}-year-olds`}>
+      {/* 7 — Context, collapsed */}
+      <Expander label="More context">
+        <div className="space-y-5">
+          {result.platform_context && (
+            <p className="text-[14px] text-foreground leading-relaxed">{result.platform_context}</p>
+          )}
+          {result.pipeline_context && (
+            <p className="text-[14px] text-foreground leading-relaxed">{result.pipeline_context}</p>
+          )}
+          {result.age_specific_note && intake.age && (
             <p className="text-[14px] text-foreground leading-relaxed">{result.age_specific_note}</p>
-          </Section>
-        </>
-      )}
-
-      {/* ── Values it may promote ── */}
-      {result.values_promoted?.length > 0 && (
-        <>
-          <Divider />
-          <Section label="Values it may promote">
+          )}
+          {result.values_promoted?.length > 0 && (
             <ul className="space-y-2">
               {result.values_promoted.map((v, i) => (
                 <li key={i} className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
@@ -489,15 +509,14 @@ function BriefingView({
                 </li>
               ))}
             </ul>
-          </Section>
-        </>
-      )}
+          )}
+        </div>
+      </Expander>
 
       <Divider />
 
-      {/* ── What to watch for ── */}
-      <Section label="What to watch for">
-        <p className="text-[13px] text-hint mb-3">Signs of deeper engagement — things you might notice without monitoring their device</p>
+      {/* 8 — What to watch for, collapsed */}
+      <Expander label="What to watch for">
         <ul className="space-y-2">
           {result.warning_signs.map((s, i) => (
             <li key={i} className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
@@ -505,53 +524,15 @@ function BriefingView({
               <span className="flex-1">{s}</span>
             </li>
           ))}
-        </ul>
-      </Section>
-
-      {/* ── Signs of improvement ── */}
-      {result.return_signals?.length > 0 && (
-        <>
-          <Divider />
-          <Section label="Signs things may be improving">
-            <ul className="space-y-2">
-              {result.return_signals.map((s, i) => (
-                <li key={i} className="flex items-start gap-3 text-[14px] leading-relaxed" style={{ color: "#3B6D11" }}>
-                  <span className="mt-[8px] h-[5px] w-[5px] rounded-full shrink-0" style={{ backgroundColor: "#3B6D11" }} />
-                  <span className="flex-1">{s}</span>
-                </li>
-              ))}
-            </ul>
-          </Section>
-        </>
-      )}
-
-      <Divider />
-
-      {/* ── What tends to backfire ── */}
-      <Section label="What tends to backfire">
-        <ul className="space-y-2">
-          {result.what_not_to_do.map((s, i) => (
-            <li key={i} className="flex items-start gap-3 text-[14px] text-foreground leading-relaxed">
-              <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
+          {result.return_signals?.map((s, i) => (
+            <li key={`r-${i}`} className="flex items-start gap-3 text-[14px] leading-relaxed" style={{ color: "#3B6D11" }}>
+              <span className="mt-[8px] h-[5px] w-[5px] rounded-full shrink-0" style={{ backgroundColor: "#3B6D11" }} />
               <span className="flex-1">{s}</span>
             </li>
           ))}
         </ul>
-      </Section>
+      </Expander>
 
-      <Divider />
-
-      {/* ── Opening question — careful framing ── */}
-      <Section label="One way to open the conversation">
-        <div className="rounded-[12px] bg-card border px-5 py-4 mb-3">
-          <p className="text-[15px] text-foreground italic leading-relaxed">
-            "{result.opening_question}"
-          </p>
-        </div>
-        <p className="text-[13px] text-hint leading-relaxed">
-          This is a suggestion, not a script. You know your child best. The most effective conversations start with genuine curiosity and your own words — not a rehearsed question.
-        </p>
-      </Section>
 
       {/* ── Trust footer ── */}
       <div className="pt-8 pb-2">
@@ -611,6 +592,22 @@ function BriefingView({
 
 function Divider() {
   return <div className="py-6"><div className="border-t border-border" /></div>;
+}
+
+function Expander({ label, children }: { label: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <section>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between text-left"
+      >
+        <span className="label-text">{label.toUpperCase()}</span>
+        <span className="text-[13px] text-hint">{open ? "Hide" : "Show"}</span>
+      </button>
+      {open && <div className="mt-4">{children}</div>}
+    </section>
+  );
 }
 
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
