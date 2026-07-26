@@ -78,6 +78,7 @@ function ResultsPage() {
   const navigate = useNavigate();
   const [result, setResult] = useState<ScanResult | null>(null);
   const [escalation, setEscalation] = useState<EscalationResultData | null>(null);
+  const [identity, setIdentity] = useState<IdentityResultData | null>(null);
 
   const [intake, setIntake] = useState<IntakeData | null>(null);
   const [loading, setLoading] = useState(true);
