@@ -162,6 +162,8 @@ export type Database = {
           confidence: string | null
           created_at: string
           domain_category: string | null
+          escalated: boolean
+          escalation_category: string | null
           guidance: string
           id: string
           input_content: string
@@ -180,6 +182,8 @@ export type Database = {
           confidence?: string | null
           created_at?: string
           domain_category?: string | null
+          escalated?: boolean
+          escalation_category?: string | null
           guidance: string
           id?: string
           input_content: string
@@ -198,6 +202,8 @@ export type Database = {
           confidence?: string | null
           created_at?: string
           domain_category?: string | null
+          escalated?: boolean
+          escalation_category?: string | null
           guidance?: string
           id?: string
           input_content?: string

@@ -7,6 +7,8 @@ import { Loader2, AlertTriangle, HelpCircle, Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { EscalationResult, type EscalationResultData } from "@/components/EscalationResult";
+
 
 export const Route = createFileRoute("/results")({
   head: () => ({
@@ -74,6 +76,8 @@ function ResultsPage() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [result, setResult] = useState<ScanResult | null>(null);
+  const [escalation, setEscalation] = useState<EscalationResultData | null>(null);
+
   const [intake, setIntake] = useState<IntakeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -155,11 +159,20 @@ function ResultsPage() {
         throw new Error(errData.error || "Scan failed");
       }
 
-      const scanResult: ScanResult = await response.json();
+      const payload = await response.json();
+
+      if (payload?.result_type === "escalation") {
+        setEscalation(payload as EscalationResultData);
+        localStorage.setItem("itook_first_scan_done", "true");
+        return;
+      }
+
+      const scanResult: ScanResult = payload;
       if (!scanResult.result_type) {
         scanResult.result_type = scanResult.confidence === "Low" ? "low_confidence" : "normal";
       }
       setResult(scanResult);
+
 
       localStorage.setItem("itook_first_scan_done", "true");
 
@@ -241,7 +254,28 @@ function ResultsPage() {
     );
   }
 
+  if (escalation) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header isLoggedIn={!!user} />
+        <main className="flex-1 py-10">
+          <div className="mx-auto max-w-xl px-5">
+            <EscalationResult
+              result={escalation}
+              onScanAnother={() => {
+                sessionStorage.removeItem("scanIntake");
+                navigate({ to: "/scan" });
+              }}
+            />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   if (!result || !intake) return null;
+
 
   const resultType = result.result_type;
 

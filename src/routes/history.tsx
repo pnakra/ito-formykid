@@ -41,6 +41,8 @@ interface Scan {
   status: string;
   status_updated_at: string | null;
   concern_areas: string[] | null;
+  escalated?: boolean | null;
+
   scan_notes: ScanNote[];
 }
 
@@ -188,7 +190,7 @@ function HistoryPage() {
                       </div>
 
                       <div className="flex items-center gap-2 flex-wrap">
-                        {spectrumLabel && SPECTRUM_COLORS[spectrumLabel] && (
+                        {!scan.escalated && spectrumLabel && SPECTRUM_COLORS[spectrumLabel] && (
                           <Badge className={SPECTRUM_COLORS[spectrumLabel]}>
                             {spectrumLabel}
                           </Badge>
