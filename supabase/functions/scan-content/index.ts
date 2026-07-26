@@ -193,7 +193,152 @@ function classifyResult(result: Record<string, unknown>): Record<string, unknown
   return result;
 }
 
+// ─── Pre-analysis safety triage ───
+
+type EscalationCategory =
+  | "ACUTE_EATING_DISORDER"
+  | "SELF_HARM_OR_SUICIDALITY"
+  | "ABUSE_DISCLOSURE"
+  | "IMMEDIATE_DANGER";
+
+const TRIAGE_PROMPT = `You are a safety triage classifier for a parenting support tool. You read what a parent wrote about their child and decide whether the situation needs professional help right now, rather than a content explainer.
+
+Categories:
+ACUTE_EATING_DISORDER — restriction, purging, rapid weight loss, food rituals, compulsive exercise, body checking.
+SELF_HARM_OR_SUICIDALITY — any reference to self-injury, suicidal statements, or giving away possessions.
+ABUSE_DISCLOSURE — the child has disclosed, or the parent suspects, sexual abuse, exploitation, sextortion, or an adult grooming the child.
+IMMEDIATE_DANGER — an active threat to the child, or from the child toward others.
+
+Bias strongly toward recall. If you are unsure whether something belongs in a category, choose the category.
+
+Respond with ONLY valid JSON:
+{"escalate": true|false, "category": "ACUTE_EATING_DISORDER"|"SELF_HARM_OR_SUICIDALITY"|"ABUSE_DISCLOSURE"|"IMMEDIATE_DANGER"|null}`;
+
+const RESOURCES: Record<EscalationCategory, { name: string; number: string; tel: string }[]> = {
+  ACUTE_EATING_DISORDER: [
+    { name: "National Alliance for Eating Disorders Helpline", number: "1-866-662-1235", tel: "18666621235" },
+  ],
+  SELF_HARM_OR_SUICIDALITY: [
+    { name: "988 Suicide & Crisis Lifeline", number: "Call or text 988", tel: "988" },
+  ],
+  ABUSE_DISCLOSURE: [
+    { name: "Childhelp National Child Abuse Hotline", number: "1-800-422-4453", tel: "18004224453" },
+    { name: "RAINN", number: "1-800-656-4673", tel: "18006564673" },
+  ],
+  IMMEDIATE_DANGER: [
+    { name: "911", number: "911", tel: "911" },
+  ],
+};
+
+const ESCALATION_CONTENT: Record<
+  EscalationCategory,
+  { why_escalated: string; immediate_guidance: string[]; what_not_to_do: string[] }
+> = {
+  ACUTE_EATING_DISORDER: {
+    why_escalated: "This needs a doctor, not just a talk at home.",
+    immediate_guidance: [
+      "Call your pediatrician this week.",
+      "Call the helpline below for guidance first.",
+      "Keep meals calm and shared when you can.",
+    ],
+    what_not_to_do: [
+      "Do not comment on their weight or food.",
+      "Do not make them eat in front of you.",
+      "Do not wait to see if it passes.",
+    ],
+  },
+  SELF_HARM_OR_SUICIDALITY: {
+    why_escalated: "This needs support from a professional right away.",
+    immediate_guidance: [
+      "Call or text 988 now.",
+      "Stay close to your child today.",
+      "Ask your pediatrician for a same-week visit.",
+    ],
+    what_not_to_do: [
+      "Do not confront them in anger.",
+      "Do not take their phone before talking to a professional.",
+      "Do not promise to keep it secret.",
+    ],
+  },
+  ABUSE_DISCLOSURE: {
+    why_escalated: "This needs trained help, not a conversation alone.",
+    immediate_guidance: [
+      "Call the hotline below before confronting anyone.",
+      "Save messages and photos as they are.",
+      "Tell your child you believe them.",
+    ],
+    what_not_to_do: [
+      "Do not contact the other person yourself.",
+      "Do not delete messages or accounts yet.",
+      "Do not question your child repeatedly.",
+    ],
+  },
+  IMMEDIATE_DANGER: {
+    why_escalated: "This needs help right now, not later.",
+    immediate_guidance: [
+      "Call 911.",
+      "Stay with your child if it is safe.",
+      "Move anything dangerous out of reach.",
+    ],
+    what_not_to_do: [
+      "Do not handle this alone.",
+      "Do not confront in anger.",
+      "Do not wait to see what happens.",
+    ],
+  },
+};
+
+function buildEscalation(category: EscalationCategory) {
+  const c = ESCALATION_CONTENT[category];
+  return {
+    result_type: "escalation",
+    escalated: true,
+    escalation_category: category,
+    acknowledgment: "You were right to look this up.",
+    why_escalated: c.why_escalated,
+    immediate_guidance: c.immediate_guidance,
+    resources: RESOURCES[category].map(({ name, number, tel }) => ({ name, number, tel })),
+    what_not_to_do: c.what_not_to_do,
+  };
+}
+
+async function runTriage(
+  apiKey: string,
+  content: string,
+  inputType: string
+): Promise<EscalationCategory | null> {
+  try {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash-lite",
+        messages: [
+          { role: "system", content: TRIAGE_PROMPT },
+          { role: "user", content: `INPUT TYPE: ${inputType}\n\nPARENT INPUT:\n${content}` },
+        ],
+        max_tokens: 200,
+      }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content;
+    if (!text) return null;
+    const parsed = extractJson(text) as { escalate?: boolean; category?: string };
+    if (!parsed.escalate) return null;
+    const cat = parsed.category as EscalationCategory;
+    return cat && cat in RESOURCES ? cat : null;
+  } catch (err) {
+    console.error("triage error:", err);
+    return null;
+  }
+}
+
 serve(async (req) => {
+
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
