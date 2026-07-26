@@ -88,16 +88,26 @@ export function enforceIdentityGuard(result: Result, input: string): Result {
   };
 }
 
+// Words that indicate a real safety situation, independent of identity.
+const SAFETY_SIGNALS: RegExp[] = [
+  /\b(suicid\w*|kill (?:him|her|them)self|self-?harm|cutting|hurt (?:him|her|them)self|end (?:his|her|their) life)\b/i,
+  /\b(starv\w*|purg\w*|throwing up|not eating|skipping meals|restrict\w*)\b/i,
+  /\b(abuse\w*|groom\w*|sextortion|nudes|explicit photos|older man|older adult|predator)\b/i,
+  /\b(weapon|gun|knife|threat\w*|violence|danger)\b/i,
+  /\bgiving away (?:his|her|their) (?:things|stuff|belongings)\b/i,
+];
+
+export function hasSafetySignal(text: string): boolean {
+  return SAFETY_SIGNALS.some((p) => p.test(text));
+}
+
 /** Triage must never escalate on identity exploration alone. */
 export function suppressIdentityEscalation(
   category: string | null,
   input: string
 ): string | null {
   if (!category) return null;
-  if (category === "SELF_HARM_OR_SUICIDALITY" || category === "ABUSE_DISCLOSURE" ||
-      category === "IMMEDIATE_DANGER" || category === "ACUTE_EATING_DISORDER") {
-    // Real safety categories still fire; identity alone is not one of them.
-    return category;
-  }
-  return isIdentityExplorationOnly(input) ? null : category;
+  if (isIdentityExplorationOnly(input) && !hasSafetySignal(input)) return null;
+  return category;
 }
+
