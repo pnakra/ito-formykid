@@ -7,8 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronRight } from "lucide-react";
-import { getStripeEnvironment } from "@/lib/stripe";
+import { ChevronRight } from "lucide-react";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -41,18 +40,11 @@ function AccountPage() {
 
   const [profile, setProfile] = useState<{
     email: string;
-    is_subscribed: boolean;
     digest_enabled: boolean;
     digest_age_group: string | null;
   } | null>(null);
 
-  const [subscription, setSubscription] = useState<{
-    current_period_end: string | null;
-    cancel_at_period_end: boolean | null;
-  } | null>(null);
-
   const [scans, setScans] = useState<ScanRow[]>([]);
-  const [loadingPortal, setLoadingPortal] = useState(false);
   const [noteOpen, setNoteOpen] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
   const [savingNote, setSavingNote] = useState(false);
@@ -69,26 +61,11 @@ function AccountPage() {
     // Load profile
     supabase
       .from("profiles")
-      .select("email, is_subscribed, digest_enabled, digest_age_group")
+      .select("email, digest_enabled, digest_age_group")
       .eq("id", user.id)
       .single()
       .then(({ data }) => {
         if (data) setProfile(data as any);
-      });
-
-    // Load subscription
-    const env = getStripeEnvironment() === "sandbox" ? "sandbox" : "live";
-    supabase
-      .from("subscriptions")
-      .select("current_period_end, cancel_at_period_end")
-      .eq("user_id", user.id)
-      .eq("environment", env)
-      .in("status", ["active", "trialing"])
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single()
-      .then(({ data }) => {
-        if (data) setSubscription(data);
       });
 
     // Load scans with notes
@@ -131,32 +108,6 @@ function AccountPage() {
     navigate({ to: "/" });
   };
 
-  const handleManageSubscription = async () => {
-    setLoadingPortal(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-portal-session`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.access_token}`,
-          },
-          body: JSON.stringify({
-            returnUrl: window.location.href,
-            environment: getStripeEnvironment() === "sandbox" ? "sandbox" : "live",
-          }),
-        }
-      );
-      const { url } = await res.json();
-      if (url) window.open(url, "_blank");
-    } catch {
-      // silently fail
-    } finally {
-      setLoadingPortal(false);
-    }
-  };
 
   const handleDigestToggle = async (enabled: boolean) => {
     if (!user || !profile) return;
@@ -218,46 +169,8 @@ function AccountPage() {
                 <p className="text-[15px] text-foreground">{profile?.email ?? user.email}</p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <p className="label-text">Subscription</p>
-                {profile?.is_subscribed ? (
-                  <Badge variant="low" className="text-[11px]">Active</Badge>
-                ) : (
-                  <Badge variant="chip" className="text-[11px]">Inactive</Badge>
-                )}
-              </div>
 
-              {profile?.is_subscribed && subscription?.current_period_end && (
-                <p className="text-sm text-muted-foreground">
-                  {subscription.cancel_at_period_end
-                    ? `Access until ${new Date(subscription.current_period_end).toLocaleDateString()}`
-                    : `Renews ${new Date(subscription.current_period_end).toLocaleDateString()}`}
-                </p>
-              )}
 
-              {profile?.is_subscribed ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleManageSubscription}
-                  disabled={loadingPortal}
-                >
-                  {loadingPortal ? (
-                    <><Loader2 className="h-3 w-3 animate-spin" /> Opening…</>
-                  ) : (
-                    "Manage subscription"
-                  )}
-                </Button>
-              ) : (
-                <>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Get ongoing support: saved reports, situation tracking, monthly briefings, and protective factors guidance.
-                  </p>
-                  <Button size="sm" onClick={() => navigate({ to: "/checkout" })}>
-                    Continue with support — $9/month
-                  </Button>
-                </>
-              )}
 
               <div className="pt-2">
                 <Button

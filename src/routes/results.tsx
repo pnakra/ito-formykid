@@ -84,8 +84,6 @@ function ResultsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [scanCount, setScanCount] = useState<number | null>(null);
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
   const [showDigest, setShowDigest] = useState(false);
   const [digestEmail, setDigestEmail] = useState("");
   const [digestName, setDigestName] = useState("");
@@ -108,14 +106,11 @@ function ResultsPage() {
     if (user) {
       supabase
         .from("profiles")
-        .select("scan_count, is_subscribed")
+        .select("scan_count")
         .eq("id", user.id)
         .single()
         .then(({ data }) => {
-          if (data) {
-            setScanCount(data.scan_count);
-            setIsSubscribed(data.is_subscribed);
-          }
+          if (data) setScanCount(data.scan_count);
         });
     }
   }, [user]);
@@ -212,25 +207,13 @@ function ResultsPage() {
   };
 
   const handleScanAnother = () => {
-    if (!user) {
-      setShowPaywall(true);
-      return;
-    }
-    if (!isSubscribed && (scanCount ?? 0) >= 3) {
-      setShowPaywall(true);
-    } else {
-      sessionStorage.removeItem("scanIntake");
-      navigate({ to: "/scan" });
-    }
+    sessionStorage.removeItem("scanIntake");
+    navigate({ to: "/scan" });
   };
 
   const handleSaveReport = async () => {
     if (!user) {
-      setShowPaywall(true);
-      return;
-    }
-    if (!isSubscribed) {
-      navigate({ to: "/checkout" });
+      navigate({ to: "/signup" });
       return;
     }
     setSaved(true);
@@ -336,72 +319,13 @@ function ResultsPage() {
               onShowDigest={() => setShowDigest(true)}
               saved={saved}
               user={user}
-              isSubscribed={isSubscribed}
             />
           )}
 
         </div>
       </main>
 
-      {/* Paywall modal */}
-      {showPaywall && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-5">
-          <div className="w-full max-w-md rounded-[14px] bg-background p-6 border">
-            {!user ? (
-              <>
-                <h2 className="text-xl font-medium text-foreground mb-2">Create a free account to continue</h2>
-                <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
-                  Sign up to save reports, track situations over time, and get the monthly digest. Free lookups included.
-                </p>
-                <div className="space-y-2">
-                  <Button className="w-full" onClick={() => navigate({ to: "/signup" })}>
-                    Sign up free
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="w-full text-muted-foreground"
-                    onClick={() => navigate({ to: "/login" })}
-                  >
-                    Already have an account? Sign in
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="w-full text-muted-foreground"
-                    onClick={() => { setShowPaywall(false); setShowDigest(true); }}
-                  >
-                    Not right now
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <h2 className="text-xl font-medium text-foreground mb-2">Continue with ongoing support</h2>
-                <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
-                  For $9/month, keep this tool as a companion — not just for moments of worry, but for staying ahead over time.
-                </p>
-                <ul className="text-sm text-muted-foreground mb-5 space-y-1.5 leading-relaxed">
-                  <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Save reports and add notes over time</li>
-                  <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Track situations and see patterns</li>
-                  <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Monthly briefings for your child's age group</li>
-                  <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-muted-foreground shrink-0" />Protective factors guidance</li>
-                </ul>
-                <div className="space-y-2">
-                  <Button className="w-full" onClick={() => navigate({ to: "/checkout" })}>
-                    Subscribe
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="w-full text-muted-foreground"
-                    onClick={() => { setShowPaywall(false); setShowDigest(true); }}
-                  >
-                    Not right now
-                  </Button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+
 
       {/* Digest signup modal */}
       {showDigest && (
@@ -464,7 +388,6 @@ function BriefingView({
   onShowDigest,
   saved,
   user,
-  isSubscribed,
 }: {
   result: ScanResult;
   intake: IntakeData;
@@ -473,7 +396,6 @@ function BriefingView({
   onShowDigest: () => void;
   saved: boolean;
   user: any;
-  isSubscribed: boolean;
 }) {
   const isLowConfidence = result.result_type === "low_confidence";
 
@@ -681,7 +603,7 @@ function BriefingView({
             {saved ? "✓ Report saved" : "Save this report"}
           </p>
           <p className="text-[12px] text-hint mt-0.5">
-            {!user ? "Sign in to save" : !isSubscribed ? "Available with ongoing support" : "Access it anytime from your history"}
+            {user ? "Access it anytime from your history" : "Sign in to save"}
           </p>
         </button>
 
@@ -695,6 +617,12 @@ function BriefingView({
           </p>
         </button>
       </div>
+
+      <p className="mt-6 text-[13px] text-hint">
+        Free. Built by a nonprofit. We never see your child's phone.
+      </p>
+
+
 
     </article>
   );

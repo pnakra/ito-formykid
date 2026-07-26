@@ -88,17 +88,7 @@ function ScanPage() {
     query: "",
   });
   const [error, setError] = useState("");
-  const [scanCount, setScanCount] = useState<number | null>(null);
-  const [isSubscribed, setIsSubscribed] = useState(false);
 
-  // Payments temporarily disabled — allow unlimited scans without account
-  const hasCompletedFirstScan = false;
-
-  useEffect(() => {
-    if (!authLoading && !user && hasCompletedFirstScan) {
-      navigate({ to: "/signup" });
-    }
-  }, [user, authLoading, navigate, hasCompletedFirstScan]);
 
   // Preserve any prior context (age/gender) from a previous session
   useEffect(() => {
@@ -117,25 +107,6 @@ function ScanPage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      supabase
-        .from("profiles")
-        .select("scan_count, is_subscribed")
-        .eq("id", user.id)
-        .single()
-        .then(({ data }) => {
-          if (data) {
-            setScanCount(data.scan_count);
-            setIsSubscribed(data.is_subscribed);
-          }
-        });
-    }
-  }, [user]);
-
-  // Payments temporarily disabled — always allow scanning
-  const canScan = true;
-
   const canAdvance = () => {
     if (step === 1) return true;
     if (step === 2) return data.concerns.length > 0;
@@ -149,10 +120,6 @@ function ScanPage() {
 
   const handleSubmitLookup = () => {
     if (!data.query.trim()) return;
-    if (!canScan) {
-      setError("You've used your free lookups. Subscribe for ongoing access and support.");
-      return;
-    }
     sessionStorage.setItem(
       "scanIntake",
       JSON.stringify({ ...data, inputMode: "lookup" })
@@ -162,10 +129,7 @@ function ScanPage() {
 
   const handleSubmitDescribe = () => {
     if (!description.trim()) return;
-    if (!canScan) {
-      setError("You've used your free lookups. Subscribe for ongoing access and support.");
-      return;
-    }
+
     // Store the free-text description as the query, preserve any prior age/gender
     const intake = {
       age: data.age,
@@ -197,7 +161,7 @@ function ScanPage() {
     setMode(next);
   };
 
-  if (authLoading && hasCompletedFirstScan) return null;
+  if (authLoading) return null;
 
   const stepLabels = ["About your child", "What brought you here", "What you've noticed", "What to look up"];
 
@@ -234,31 +198,15 @@ function ScanPage() {
             </button>
           </div>
 
-          {/* Scan count notice */}
-          {user && !isSubscribed && scanCount !== null && (
-            <div className="mb-6 text-[13px] text-hint">
-              {scanCount < 3
-                ? `${3 - scanCount} free lookup${3 - scanCount === 1 ? "" : "s"} remaining`
-                : (
-                  <>
-                    You've used your free lookups.{" "}
-                    <button
-                      onClick={() => navigate({ to: "/account" })}
-                      className="text-foreground underline underline-offset-4"
-                    >
-                      Subscribe to continue
-                    </button>
-                  </>
-                )}
-            </div>
-          )}
+
+
 
           {mode === "describe" ? (
             <DescribeMode
               value={description}
               onChange={setDescription}
               onSubmit={handleSubmitDescribe}
-              canScan={canScan}
+              canScan={true}
               error={error}
             />
           ) : (
@@ -269,7 +217,7 @@ function ScanPage() {
               setStep={setStep}
               stepLabels={stepLabels}
               canAdvance={canAdvance}
-              canScan={canScan}
+              canScan={true}
               toggleItem={toggleItem}
               error={error}
               onSubmit={handleSubmitLookup}

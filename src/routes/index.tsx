@@ -281,27 +281,14 @@ function LandingPage() {
           </div>
         </section>
 
-        {/* ═══ Pricing — honest, secondary ═══ */}
         <section className="py-16 md:py-20 bg-card">
           <div className="mx-auto max-w-2xl px-5">
-            <p className="label-text mb-3">PRICING</p>
-            <div className="space-y-4">
-              <div>
-                <p className="text-[15px] text-foreground leading-[1.7]">
-                  <span className="font-medium">Free:</span> Your first lookups, the monthly digest, and enough to understand whether this tool is useful for your family.
-                </p>
-              </div>
-              <div>
-                <p className="text-[15px] text-foreground leading-[1.7]">
-                  <span className="font-medium">$9/month:</span> Saved reports, situation tracking, pattern summaries, monthly briefings, protective factors guidance, and ongoing support as a parent companion — not just a lookup tool.
-                </p>
-              </div>
-            </div>
-            <p className="text-[14px] text-hint mt-6 leading-relaxed">
-              We're a nonprofit. This price covers operating costs. There is no premium tier, no upsell, and no data monetization.
+            <p className="text-[15px] text-foreground leading-[1.7]">
+              Free. Built by a nonprofit. We never see your child's phone.
             </p>
           </div>
         </section>
+
 
       </main>
 
