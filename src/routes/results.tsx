@@ -169,6 +169,21 @@ function ResultsPage() {
         return;
       }
 
+      if (payload?.result_type === "identity_affirming") {
+        setIdentity({
+          ...payload,
+          parent_guidance: payload.parent_guidance ?? [],
+          resources: payload.resources?.length
+            ? payload.resources
+            : [
+                { name: "The Trevor Project", number: "1-866-488-7386", tel: "18664887386" },
+                { name: "PFLAG", number: "pflag.org", tel: "" },
+              ],
+        } as IdentityResultData);
+        localStorage.setItem("itook_first_scan_done", "true");
+        return;
+      }
+
       const scanResult: ScanResult = payload;
       if (!scanResult.result_type) {
         scanResult.result_type = scanResult.confidence === "Low" ? "low_confidence" : "normal";
