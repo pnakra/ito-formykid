@@ -358,6 +358,40 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
+    // Safety triage runs before any analysis.
+    const escalationCategory = await runTriage(LOVABLE_API_KEY, content, inputType || "text");
+    if (escalationCategory) {
+      const escalation = buildEscalation(escalationCategory);
+      try {
+        const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+        const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+        if (SUPABASE_URL && SERVICE_ROLE_KEY) {
+          const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+            auth: { persistSession: false, autoRefreshToken: false },
+          });
+          await admin.from("scans").insert({
+            user_id: userId ?? null,
+            input_type: inputType || "text",
+            input_content: content,
+            risk_level: "Escalated",
+            summary: escalation.why_escalated,
+            guidance: escalation.immediate_guidance.join(" "),
+            age_context: intake?.age || null,
+            status: "watching",
+            escalated: true,
+            escalation_category: escalationCategory,
+          });
+        }
+      } catch (persistErr) {
+        console.error("Failed to persist escalated scan:", persistErr);
+      }
+
+      return new Response(JSON.stringify(escalation), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+
     const response = await fetch(
       "https://ai.gateway.lovable.dev/v1/chat/completions",
       {
