@@ -329,6 +329,17 @@ function ResultsPage() {
             />
           )}
 
+          <RefinementPanel
+            values={{
+              age: intake.age ?? "",
+              gender: intake.gender ?? "",
+              concerns: intake.concerns ?? [],
+              observations: intake.observations ?? [],
+            }}
+            onChange={handleRefine}
+            busy={refining}
+          />
+
         </div>
       </main>
 
