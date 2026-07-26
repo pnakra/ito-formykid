@@ -693,6 +693,60 @@ function AmbiguousView({ result, intake, onScanAnother }: { result: ScanResult; 
 
 /* ─── Outside scope view ─── */
 
+function NotEnoughSignalView({ result, intake, onScanAnother }: { result: ScanResult; intake: IntakeData; onScanAnother: () => void }) {
+  return (
+    <article className="space-y-0">
+      <header className="pb-8">
+        <p className="label-text mb-4">PARENT BRIEFING</p>
+        <h1 className="text-[20px] font-medium leading-[1.35] text-foreground mb-2">
+          Not enough signal yet
+        </h1>
+        <p className="text-[14px] text-hint">
+          You looked up <span className="text-foreground font-medium">{intake.query}</span>
+        </p>
+      </header>
+
+      <Divider />
+
+      <Section label="What we can say">
+        <p className="text-[15px] text-foreground leading-relaxed">
+          {result.what_we_can_say || result.summary_verdict || result.what_it_is}
+        </p>
+      </Section>
+
+      <Divider />
+
+      <Section label="What would help">
+        <p className="text-[15px] text-foreground leading-relaxed">
+          {result.what_would_help || "Write down the next thing you notice — the exact words, and when it happened."}
+        </p>
+      </Section>
+
+      {result.opening_question && (
+        <>
+          <Divider />
+          <Section label="One way to open the conversation">
+            <div className="rounded-[12px] bg-card border px-5 py-4">
+              <p className="text-[15px] text-foreground italic leading-relaxed">
+                "{result.opening_question}"
+              </p>
+            </div>
+          </Section>
+        </>
+      )}
+
+      <div className="pt-8">
+        <button
+          onClick={onScanAnother}
+          className="w-full rounded-[10px] border bg-card p-4 text-left hover:bg-accent/50 transition-colors"
+        >
+          <p className="text-[14px] font-medium text-foreground">Look up something else</p>
+        </button>
+      </div>
+    </article>
+  );
+}
+
 function OutsideScopeView({ result, intake, onScanAnother }: { result: ScanResult; intake: IntakeData; onScanAnother: () => void }) {
   return (
     <article className="space-y-0">
