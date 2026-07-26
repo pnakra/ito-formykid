@@ -206,7 +206,7 @@ function ScanPage() {
               value={description}
               onChange={setDescription}
               onSubmit={handleSubmitDescribe}
-              canScan={canScan}
+              canScan={true}
               error={error}
             />
           ) : (
@@ -217,7 +217,7 @@ function ScanPage() {
               setStep={setStep}
               stepLabels={stepLabels}
               canAdvance={canAdvance}
-              canScan={canScan}
+              canScan={true}
               toggleItem={toggleItem}
               error={error}
               onSubmit={handleSubmitLookup}
