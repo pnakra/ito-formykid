@@ -21,14 +21,14 @@ export const Route = createFileRoute("/results")({
   component: ResultsPage,
 });
 
-type ResultType = "normal" | "low_confidence" | "ambiguous" | "outside_scope";
+type ResultType = "normal" | "low_confidence" | "ambiguous" | "outside_scope" | "not_enough_signal";
 
 interface ScanResult {
   result_type: ResultType;
   summary_verdict: string;
   what_it_is: string;
   platform_context: string;
-  spectrum_label: "Mainstream" | "Edgy but benign" | "Concerning" | "High risk";
+  spectrum_label: "Mainstream" | "Edgy but benign" | "Concerning" | "High risk" | "Not enough signal";
   spectrum_reasoning: string;
   confidence: "Low" | "Medium" | "High";
   confidence_note: string;
@@ -43,6 +43,8 @@ interface ScanResult {
   disambiguation_options: string[] | null;
   scope_note: string | null;
   limitations_note: string | null;
+  what_we_can_say?: string | null;
+  what_would_help?: string | null;
 }
 
 interface IntakeData {
@@ -58,20 +60,9 @@ const SPECTRUM_POSITIONS: Record<string, number> = {
   "Edgy but benign": 35,
   "Concerning": 65,
   "High risk": 88,
+  "Not enough signal": 0,
 };
 
-const SPECTRUM_COLORS: Record<string, string> = {
-  "Mainstream": "bg-risk-low text-risk-low-foreground",
-  "Edgy but benign": "bg-risk-neutral text-risk-neutral-foreground",
-  "Concerning": "bg-risk-concerning text-risk-concerning-foreground",
-  "High risk": "bg-risk-high text-risk-high-foreground",
-};
-
-const CONFIDENCE_COLORS: Record<string, string> = {
-  "Low": "bg-risk-concerning text-risk-concerning-foreground",
-  "Medium": "bg-risk-neutral text-risk-neutral-foreground",
-  "High": "bg-risk-low text-risk-low-foreground",
-};
 
 function ResultsPage() {
   const { user, loading: authLoading } = useAuth();
