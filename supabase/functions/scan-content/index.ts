@@ -190,8 +190,13 @@ function extractJson(text: string): Record<string, unknown> {
 // Post-process: ensure result_type is set consistently
 function classifyResult(result: Record<string, unknown>): Record<string, unknown> {
   // If the AI already set a valid result_type, trust it
-  const validTypes = ["normal", "low_confidence", "ambiguous", "outside_scope", "identity_affirming"];
+  const validTypes = ["normal", "low_confidence", "ambiguous", "outside_scope", "not_enough_signal", "identity_affirming"];
   if (result.result_type && validTypes.includes(result.result_type as string)) {
+    return result;
+  }
+
+  if ((result.spectrum_label as string) === "Not enough signal") {
+    result.result_type = "not_enough_signal";
     return result;
   }
 
