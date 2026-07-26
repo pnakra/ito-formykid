@@ -7,6 +7,8 @@ import { Loader2, AlertTriangle, HelpCircle, Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { EscalationResult, type EscalationResultData } from "@/components/EscalationResult";
+
 
 export const Route = createFileRoute("/results")({
   head: () => ({
