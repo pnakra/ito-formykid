@@ -76,6 +76,8 @@ function ResultsPage() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [result, setResult] = useState<ScanResult | null>(null);
+  const [escalation, setEscalation] = useState<EscalationResultData | null>(null);
+
   const [intake, setIntake] = useState<IntakeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
