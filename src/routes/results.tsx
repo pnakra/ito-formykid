@@ -271,6 +271,26 @@ function ResultsPage() {
     );
   }
 
+  if (identity) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header isLoggedIn={!!user} />
+        <main className="flex-1 py-10">
+          <div className="mx-auto max-w-xl px-5">
+            <IdentityResult
+              result={identity}
+              onScanAnother={() => {
+                sessionStorage.removeItem("scanIntake");
+                navigate({ to: "/scan" });
+              }}
+            />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   if (escalation) {
     return (
       <div className="min-h-screen flex flex-col">
