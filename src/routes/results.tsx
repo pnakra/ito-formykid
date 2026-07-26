@@ -106,14 +106,11 @@ function ResultsPage() {
     if (user) {
       supabase
         .from("profiles")
-        .select("scan_count, is_subscribed")
+        .select("scan_count")
         .eq("id", user.id)
         .single()
         .then(({ data }) => {
-          if (data) {
-            setScanCount(data.scan_count);
-            setIsSubscribed(data.is_subscribed);
-          }
+          if (data) setScanCount(data.scan_count);
         });
     }
   }, [user]);
