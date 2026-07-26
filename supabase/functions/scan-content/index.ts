@@ -4,6 +4,14 @@ import {
   enforceIdentityGuard,
   suppressIdentityEscalation,
 } from "./identity-guard.ts";
+import { AI_GATEWAY_URL, ANALYSIS_MODEL, TRIAGE_MODEL } from "../_shared/ai-config.ts";
+import {
+  ESCALATION_CATEGORIES,
+  ESCALATION_RULES_FOR_ANALYSIS,
+  IDENTITY_GUARD_OUTPUT,
+  IDENTITY_GUARD_TRIAGE,
+} from "../_shared/safety-prompts.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
