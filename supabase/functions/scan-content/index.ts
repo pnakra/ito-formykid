@@ -232,6 +232,10 @@ IMMEDIATE_DANGER — an active threat to the child, or from the child toward oth
 
 Bias strongly toward recall. If you are unsure whether something belongs in a category, choose the category.
 
+HARD EXCEPTION — never escalate on identity. A child coming out, questioning their gender or sexuality, changing pronouns, name, or presentation, joining a queer community, or reading queer-affirming content is NOT an escalation category and is never a safety risk on its own. Set escalate to false unless one of the four categories above is separately and clearly present.
+
+
+
 Respond with ONLY valid JSON:
 {"escalate": true|false, "category": "ACUTE_EATING_DISORDER"|"SELF_HARM_OR_SUICIDALITY"|"ABUSE_DISCLOSURE"|"IMMEDIATE_DANGER"|null}`;
 
