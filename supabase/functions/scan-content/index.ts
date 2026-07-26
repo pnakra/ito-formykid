@@ -360,14 +360,14 @@ async function runTriage(
   inputType: string
 ): Promise<EscalationCategory | null> {
   try {
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch(AI_GATEWAY_URL, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-lite",
+        model: TRIAGE_MODEL,
         messages: [
           { role: "system", content: TRIAGE_PROMPT },
           { role: "user", content: `INPUT TYPE: ${inputType}\n\nPARENT INPUT:\n${content}` },
@@ -448,7 +448,7 @@ serve(async (req) => {
 
 
     const response = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
+      AI_GATEWAY_URL,
       {
         method: "POST",
         headers: {
@@ -456,7 +456,7 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
+          model: ANALYSIS_MODEL,
           messages: [
             { role: "system", content: SYSTEM_PROMPT },
             {
