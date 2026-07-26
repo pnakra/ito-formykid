@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronRight, Plus, Search, TrendingUp, BookOpen, Shield, MessageCircle } from "lucide-react";
+import { ChevronRight, Search, TrendingUp } from "lucide-react";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -38,6 +38,14 @@ const DESCRIBE_EXAMPLES = [
 ];
 
 type InputMode = "describe" | "lookup";
+
+const NORMALIZER_KEY = "itok_normalizer_dismissed";
+
+const NORMALIZER_LINES = [
+  "\u201cHe started calling girls \u2018females\u2019.\u201d",
+  "\u201cShe stopped eating with us.\u201d",
+  "\u201cHe repeats things I don\u2019t recognise.\u201d",
+];
 
 const LOG_CATEGORIES = [
   "Language shift",
@@ -72,6 +80,16 @@ function HomePage() {
     (searchTab as "understand" | "stay_ahead") || "stay_ahead"
   );
   const [query, setQuery] = useState("");
+  const [showNormalizer, setShowNormalizer] = useState(false);
+
+  useEffect(() => {
+    setShowNormalizer(localStorage.getItem(NORMALIZER_KEY) !== "dismissed");
+  }, []);
+
+  const dismissNormalizer = () => {
+    localStorage.setItem(NORMALIZER_KEY, "dismissed");
+    setShowNormalizer(false);
+  };
   const [description, setDescription] = useState("");
   const [inputMode, setInputMode] = useState<InputMode>(() => {
     if (typeof window === "undefined") return "describe";
@@ -415,13 +433,13 @@ function HomePage() {
       <Header isLoggedIn={true} />
 
       <main className="flex-1 py-8">
-        <div className="mx-auto max-w-xl px-5">
+        <div className="mx-auto max-w-[34rem] px-5">
 
           {/* Mode switcher */}
           <div className="flex rounded-[10px] bg-muted p-1 mb-8">
             <button
               onClick={() => setActiveMode("understand")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[14px] font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[17px] font-medium transition-all ${
                 activeMode === "understand"
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -432,7 +450,7 @@ function HomePage() {
             </button>
             <button
               onClick={() => setActiveMode("stay_ahead")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[14px] font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[17px] font-medium transition-all ${
                 activeMode === "stay_ahead"
                   ? "bg-background text-foreground shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
@@ -446,18 +464,32 @@ function HomePage() {
           {/* ─── UNDERSTAND NOW ─── */}
           {activeMode === "understand" && (
             <div>
-              <div className="rounded-[14px] bg-card p-5 mb-6">
-                <h2 className="text-xl font-medium text-foreground mb-1">What do you want to understand?</h2>
-                <p className="text-[13px] text-hint mb-4">
-                  Describe what you noticed, or look up a specific creator, term, or community.
-                </p>
+              {showNormalizer && (
+                <div className="mb-8 border-l-[3px] border-border pl-5">
+                  <p className="label-text mb-3">OTHER PARENTS SAID</p>
+                  <div className="space-y-2">
+                    {NORMALIZER_LINES.map((line) => (
+                      <p key={line} className="text-[17px] text-foreground leading-relaxed">{line}</p>
+                    ))}
+                  </div>
+                  <button
+                    onClick={dismissNormalizer}
+                    className="mt-4 text-[15px] text-hint hover:text-foreground underline underline-offset-4"
+                  >
+                    Hide this
+                  </button>
+                </div>
+              )}
+
+              <div className="rounded-[14px] bg-card p-5 mb-8">
+                <h2 className="text-xl font-medium text-foreground mb-4">What happened?</h2>
 
                 {/* Mode toggle — typographic, minimal */}
                 <div className="flex items-center gap-6 mb-4">
                   <button
                     type="button"
                     onClick={() => handleModeChange("describe")}
-                    className={`text-[14px] pb-1 transition-colors ${
+                    className={`text-[17px] pb-1 transition-colors ${
                       inputMode === "describe"
                         ? "text-foreground font-medium border-b border-foreground"
                         : "text-hint hover:text-foreground"
@@ -468,7 +500,7 @@ function HomePage() {
                   <button
                     type="button"
                     onClick={() => handleModeChange("lookup")}
-                    className={`text-[14px] pb-1 transition-colors ${
+                    className={`text-[17px] pb-1 transition-colors ${
                       inputMode === "lookup"
                         ? "text-foreground font-medium border-b border-foreground"
                         : "text-hint hover:text-foreground"
@@ -496,7 +528,7 @@ function HomePage() {
                               description ? `${description.trimEnd()} ${example}` : example
                             )
                           }
-                          className="rounded-[6px] border border-border bg-background px-3 py-1.5 text-[13px] text-secondary-foreground hover:bg-accent transition-colors text-left"
+                          className="rounded-[6px] border border-border bg-background px-3 py-1.5 text-[15px] text-secondary-foreground hover:bg-accent transition-colors text-left"
                         >
                           {example}
                         </button>
@@ -531,12 +563,11 @@ function HomePage() {
                   disabled={inputMode === "describe" ? !description.trim() : !query.trim()}
                   className="w-full"
                 >
-                  {inputMode === "describe" ? "Understand this" : "Get my report"}
+                  Get context
                 </Button>
 
-                <p className="text-[12px] text-hint mt-3 text-center">
-                  Your child's profile is saved. Update it anytime in{" "}
-                  <Link to="/account" className="text-foreground underline underline-offset-4">Account</Link>.
+                <p className="text-[15px] text-hint mt-4">
+                  We never see your child's phone, accounts, or messages.
                 </p>
               </div>
 
@@ -547,7 +578,6 @@ function HomePage() {
                   <div className="space-y-2">
                     {recentScans.map((scan) => {
                       const term = extractQuery(scan.input_content);
-                      const badgeVariant = SPECTRUM_COLORS[scan.risk_level] as any || "neutral";
                       return (
                         <button
                           key={scan.id}
@@ -558,9 +588,9 @@ function HomePage() {
                           }}
                         >
                           <div className="flex-1 min-w-0">
-                            <p className="text-[15px] text-foreground font-medium truncate">{term}</p>
+                            <p className="text-[18px] text-foreground font-medium truncate">{term}</p>
                             <div className="flex items-center gap-2 mt-1">
-                              <Badge variant={badgeVariant} className="text-[11px]">{scan.risk_level}</Badge>
+                              <span className="text-[13px] text-hint">{scan.risk_level}</span>
                               <span className="text-xs text-hint">
                                 {new Date(scan.created_at).toLocaleDateString()}
                               </span>
@@ -577,31 +607,12 @@ function HomePage() {
                 </div>
               )}
 
-              {/* Nudge to Stay Ahead */}
-              <div className="mt-8 rounded-[14px] border border-dashed p-5 text-center">
-                <p className="text-[14px] text-muted-foreground leading-relaxed mb-3">
-                  Looking things up is important — but staying ahead is even better. Track patterns, get monthly briefings, and strengthen what protects your child over time.
-                </p>
-                <button
-                  onClick={() => setActiveMode("stay_ahead")}
-                  className="text-[13px] font-medium text-foreground underline underline-offset-4"
-                >
-                  Explore Stay ahead →
-                </button>
-              </div>
             </div>
           )}
 
           {/* ─── STAY AHEAD ─── */}
           {activeMode === "stay_ahead" && (
             <div className="space-y-8">
-
-              {/* Intro */}
-              <div>
-                <p className="text-[14px] text-muted-foreground leading-relaxed">
-                  You don't need a crisis to use this. These tools help you notice patterns, stay informed, and strengthen the things that keep your child resilient.
-                </p>
-              </div>
 
               {/* Section 1: Monthly briefing */}
               <section>
@@ -614,21 +625,21 @@ function HomePage() {
 
                     {briefingLoading ? (
                       <div className="rounded-[14px] bg-card p-5 flex items-center justify-center gap-2 text-muted-foreground">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Generating briefing…
+                        Writing this month's note. About 15 seconds.
                       </div>
                     ) : briefing ? (
                       <div className="space-y-3">
                         <div className="rounded-[14px] bg-card p-5">
                           <ul className="space-y-3">
                             {briefing.bullets.map((bullet, i) => (
-                              <li key={i} className="text-[15px] text-foreground leading-relaxed flex gap-2">
+                              <li key={i} className="text-[18px] text-foreground leading-relaxed flex gap-2">
                                 <span className="text-hint mt-0.5 shrink-0">•</span>
                                 <span>{bullet}</span>
                               </li>
                             ))}
                           </ul>
                         </div>
-                        <div className="rounded-[14px] border-l-4 border-risk-low-foreground bg-risk-low/30 px-4 py-3">
+                        <div className="rounded-[14px] border-l-[3px] border-border bg-card px-4 py-3">
                           <p className="label-text mb-1">PROTECTIVE FACTOR</p>
                           <p className="text-sm text-foreground leading-relaxed">{briefing.protective_factor_note}</p>
                         </div>
@@ -637,7 +648,7 @@ function HomePage() {
                   </>
                 ) : (
                   <div className="rounded-[14px] bg-card p-5 text-center">
-                    <p className="text-muted-foreground mb-2">Set your child's age group to get a personalized monthly briefing.</p>
+                    <p className="text-[17px] text-muted-foreground mb-3">Add your child's age to get this.</p>
                     <Link to="/account">
                       <Button variant="outline" size="sm">Go to Settings</Button>
                     </Link>
@@ -648,9 +659,7 @@ function HomePage() {
               {/* Section 2: Situation log */}
               <section>
                 <p className="label-text mb-1">YOUR SITUATION LOG</p>
-                <p className="text-[13px] text-hint mb-4">
-                  Track what you notice over time. Even small observations add up to a clearer picture.
-                </p>
+                <p className="text-[15px] text-hint mb-4">Write down what you notice.</p>
 
                 <div className="rounded-[14px] bg-card p-5 mb-4">
                   <Textarea
@@ -665,7 +674,7 @@ function HomePage() {
                         key={cat}
                         type="button"
                         onClick={() => setLogCategory(logCategory === cat ? null : cat)}
-                        className={`rounded-[20px] border px-3 py-1 text-[12px] transition-colors ${
+                        className={`rounded-[20px] border px-3 py-1 text-[13px] transition-colors ${
                           logCategory === cat
                             ? "bg-primary text-primary-foreground border-transparent"
                             : "bg-background text-secondary-foreground border-border"
@@ -686,12 +695,12 @@ function HomePage() {
 
                 {/* Pattern summary */}
                 {patternLoading && (
-                  <div className="rounded-[14px] bg-card p-4 mb-4 flex items-center gap-2 text-muted-foreground text-sm">
-                    <Loader2 className="h-4 w-4 animate-spin" /> Analyzing patterns…
+                  <div className="rounded-[14px] bg-card p-4 mb-4 text-muted-foreground text-[15px]">
+                    Looking across your notes. About 15 seconds.
                   </div>
                 )}
                 {patternSummary && (
-                  <div className="rounded-[14px] border-l-4 border-risk-concerning-foreground bg-risk-concerning/30 px-4 py-3 mb-4">
+                  <div className="rounded-[14px] border-l-[3px] border-border bg-card px-4 py-3 mb-4">
                     <p className="label-text mb-1">PATTERN SUMMARY</p>
                     <p className="text-sm text-foreground leading-relaxed">{patternSummary}</p>
                   </div>
@@ -699,9 +708,7 @@ function HomePage() {
 
                 {/* Log entries */}
                 {logEntries.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    Start logging what you notice. Even small observations add up to a picture over time.
-                  </p>
+                  <p className="text-[17px] text-hint py-4">Nothing written down yet.</p>
                 ) : (
                   <div className="space-y-2">
                     {logEntries.map((entry: any) => (
@@ -724,9 +731,7 @@ function HomePage() {
               {/* Section 3: Protective factors */}
               <section>
                 <p className="label-text mb-1">PROTECTIVE FACTORS</p>
-                <p className="text-[13px] text-hint mb-4">
-                  Research shows these reduce vulnerability to harmful online influence. Reflect on where your family stands.
-                </p>
+                <p className="text-[15px] text-hint mb-4">Where does your family stand?</p>
 
                 <div className="space-y-3">
                   {PROTECTIVE_FACTORS.map((factor) => {
@@ -734,25 +739,21 @@ function HomePage() {
                     const suggestion = factorSuggestions[factor.key];
                     return (
                       <div key={factor.key} className="rounded-[14px] border bg-card px-4 py-3">
-                        <p className="text-[14px] text-foreground mb-2">{factor.label}</p>
+                        <p className="text-[17px] text-foreground mb-2">{factor.label}</p>
                         <div className="flex gap-2">
                           {(["good", "needs_attention", "not_sure"] as const).map((opt) => {
                             const labels: Record<string, string> = {
-                              good: "Good",
-                              needs_attention: "Needs attention",
+                              good: "Going well",
+                              needs_attention: "Could be better",
                               not_sure: "Not sure",
                             };
                             return (
                               <button
                                 key={opt}
                                 onClick={() => handleFactorChange(factor.key, opt)}
-                                className={`rounded-[20px] border px-3 py-1 text-[12px] transition-colors ${
+                                className={`rounded-[20px] border px-3 py-1 text-[13px] transition-colors ${
                                   status === opt
-                                    ? opt === "good"
-                                      ? "bg-risk-low text-risk-low-foreground border-transparent"
-                                      : opt === "needs_attention"
-                                        ? "bg-risk-concerning text-risk-concerning-foreground border-transparent"
-                                        : "bg-muted text-muted-foreground border-transparent"
+                                    ? "bg-foreground text-background border-transparent font-medium"
                                     : "bg-background text-secondary-foreground border-border"
                                 }`}
                               >
@@ -762,7 +763,7 @@ function HomePage() {
                           })}
                         </div>
                         {suggestion && status === "needs_attention" && (
-                          <p className="text-[13px] text-risk-low-foreground mt-2 leading-relaxed">
+                          <p className="text-[15px] text-muted-foreground mt-2 leading-relaxed">
                             {suggestion}
                           </p>
                         )}
@@ -772,28 +773,12 @@ function HomePage() {
                 </div>
 
                 {factorsLoading && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mt-3">
-                    <Loader2 className="h-3 w-3 animate-spin" /> Getting suggestions…
-                  </div>
+                  <p className="text-[15px] text-muted-foreground mt-3">Writing an idea for you. About 15 seconds.</p>
                 )}
 
-                <p className="text-[12px] text-hint mt-4 leading-relaxed">
-                  Based on research into what reduces adolescent vulnerability to harmful online influence. Not a clinical assessment.
-                </p>
+                <p className="text-[13px] text-hint mt-4">This is not a test or a score.</p>
               </section>
 
-              {/* Nudge to Understand Now */}
-              <div className="rounded-[14px] border border-dashed p-5 text-center">
-                <p className="text-[14px] text-muted-foreground leading-relaxed mb-3">
-                  Something worrying you right now? Look up a creator, term, or behavior and get a plain-language report in seconds.
-                </p>
-                <button
-                  onClick={() => setActiveMode("understand")}
-                  className="text-[13px] font-medium text-foreground underline underline-offset-4"
-                >
-                  Go to Understand now →
-                </button>
-              </div>
             </div>
           )}
 

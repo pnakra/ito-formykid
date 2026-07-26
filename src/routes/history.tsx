@@ -47,17 +47,17 @@ interface Scan {
 }
 
 const STATUS_OPTIONS = [
-  { value: "watching", label: "Watching", color: "bg-risk-neutral text-risk-neutral-foreground" },
-  { value: "improving", label: "Improving", color: "bg-risk-low text-risk-low-foreground" },
-  { value: "still_concerned", label: "Still concerned", color: "bg-risk-concerning text-risk-concerning-foreground" },
-  { value: "resolved", label: "Resolved", color: "bg-muted text-muted-foreground" },
+  { value: "watching", label: "Watching", color: "bg-muted text-muted-foreground" },
+  { value: "improving", label: "Better", color: "bg-muted text-muted-foreground" },
+  { value: "still_concerned", label: "Still worried", color: "bg-muted text-muted-foreground" },
+  { value: "resolved", label: "Settled", color: "bg-muted text-muted-foreground" },
 ];
 
 const SPECTRUM_COLORS: Record<string, string> = {
-  "Mainstream": "bg-risk-low text-risk-low-foreground",
-  "Edgy but benign": "bg-risk-neutral text-risk-neutral-foreground",
-  "Concerning": "bg-risk-concerning text-risk-concerning-foreground",
-  "High risk": "bg-risk-high text-risk-high-foreground",
+  "Mainstream": "bg-muted text-muted-foreground",
+  "Edgy but benign": "bg-muted text-muted-foreground",
+  "Concerning": "bg-muted text-foreground font-medium",
+  "High risk": "bg-muted text-foreground font-medium",
 };
 
 function HistoryPage() {
@@ -137,19 +137,17 @@ function HistoryPage() {
       <Header isLoggedIn={true} />
 
       <main className="flex-1 py-10">
-        <div className="mx-auto max-w-xl px-5">
-          <h1 className="text-2xl font-medium text-foreground mb-1">
+        <div className="mx-auto max-w-[34rem] px-5">
+          <h1 className="text-2xl font-medium text-foreground mb-6">
             Your lookups
           </h1>
-          <p className="text-sm text-muted-foreground mb-6">
-            Everything you've looked up, with notes and observations over time.
-          </p>
+
 
           {loading ? (
             <div className="py-12 text-center text-sm text-hint">Loading…</div>
           ) : scans.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="text-muted-foreground mb-3">Nothing here yet.</p>
+              <p className="text-[17px] text-hint mb-4">Nothing here yet.</p>
               <button
                 onClick={() => navigate({ to: "/scan" })}
                 className="text-sm text-foreground underline underline-offset-4"
@@ -177,7 +175,7 @@ function HistoryPage() {
                       className="w-full p-5 text-left hover:bg-accent/30 transition-colors"
                     >
                       <div className="flex items-start justify-between gap-3 mb-2">
-                        <p className="text-[15px] font-medium text-foreground leading-snug flex-1">
+                        <p className="text-[18px] font-medium text-foreground leading-snug flex-1">
                           {query}
                         </p>
                         <ChevronRight
@@ -205,7 +203,7 @@ function HistoryPage() {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-3 mt-2 text-[12px] text-hint">
+                      <div className="flex items-center gap-3 mt-2 text-[13px] text-hint">
                         <span>{formatDistanceToNow(new Date(scan.created_at), { addSuffix: true })}</span>
                         {scan.age_context && <span>Age {scan.age_context}</span>}
                         {noteCount > 0 && (
@@ -223,7 +221,7 @@ function HistoryPage() {
                         {/* Verdict */}
                         {scan.summary_verdict && (
                           <div className="pt-4">
-                            <p className="text-[15px] text-foreground leading-relaxed font-medium">
+                            <p className="text-[18px] text-foreground leading-relaxed font-medium">
                               {scan.summary_verdict}
                             </p>
                           </div>
@@ -232,21 +230,19 @@ function HistoryPage() {
                         {/* Summary */}
                         <div>
                           <p className="label-text mb-1">WHAT IT IS</p>
-                          <p className="text-[14px] text-muted-foreground leading-relaxed">{scan.summary}</p>
+                          <p className="text-[17px] text-muted-foreground leading-relaxed">{scan.summary}</p>
                         </div>
 
                         {/* Guidance */}
                         <div className="rounded-[10px] bg-background border p-4">
-                          <p className="label-text mb-1">ORIENTATION</p>
-                          <p className="text-[13px] text-muted-foreground leading-relaxed">{scan.guidance}</p>
+                          <p className="label-text mb-1">WHAT TO DO</p>
+                          <p className="text-[15px] text-muted-foreground leading-relaxed">{scan.guidance}</p>
                         </div>
 
                         {/* Status picker */}
                         <div>
-                          <p className="label-text mb-2">HOW ARE THINGS GOING?</p>
-                          <p className="text-[12px] text-hint mb-2">
-                            Update this whenever you have a sense of how things are evolving. Only you can see this.
-                          </p>
+                          <p className="label-text mb-2">HOW ARE THINGS NOW?</p>
+
                           <div className="flex flex-wrap gap-2">
                             {STATUS_OPTIONS.map(opt => (
                               <button
@@ -276,7 +272,7 @@ function HistoryPage() {
                             <p className="label-text">YOUR NOTES</p>
                             <button
                               onClick={() => setAddingNoteTo(addingNoteTo === scan.id ? null : scan.id)}
-                              className="flex items-center gap-1 text-[12px] text-muted-foreground hover:text-foreground transition-colors"
+                              className="flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground transition-colors"
                             >
                               <Plus className="h-3 w-3" />
                               Add note
@@ -284,16 +280,14 @@ function HistoryPage() {
                           </div>
 
                           {noteCount === 0 && addingNoteTo !== scan.id && (
-                            <p className="text-[13px] text-hint">
-                              No notes yet. Add one when you notice something new.
-                            </p>
+                            <p className="text-[15px] text-hint">No notes yet.</p>
                           )}
 
                           {scan.scan_notes
                             ?.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                             .map(note => (
                               <div key={note.id} className="mb-2 rounded-[10px] bg-background border p-3">
-                                <p className="text-[13px] text-foreground leading-relaxed">{note.note_text}</p>
+                                <p className="text-[15px] text-foreground leading-relaxed">{note.note_text}</p>
                                 <p className="text-[11px] text-hint mt-1">
                                   {format(new Date(note.created_at), "MMM d, yyyy")}
                                 </p>
@@ -305,8 +299,8 @@ function HistoryPage() {
                               <Textarea
                                 value={noteText}
                                 onChange={(e) => setNoteText(e.target.value)}
-                                placeholder="What have you noticed since the last time you looked at this?"
-                                className="min-h-[80px] text-[14px]"
+                                placeholder="What have you noticed since?"
+                                className="min-h-[80px] text-[17px]"
                               />
                               <div className="flex gap-2">
                                 <Button

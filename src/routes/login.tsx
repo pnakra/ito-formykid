@@ -49,7 +49,7 @@ function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <header className="px-6 md:px-10 py-6">
-        <Link to="/" className="text-[15px] text-muted-foreground hover:text-foreground transition-colors">
+        <Link to="/" className="text-[18px] text-muted-foreground hover:text-foreground transition-colors">
           ← Back
         </Link>
       </header>
@@ -62,7 +62,7 @@ function LoginPage() {
           >
             Welcome back
           </h1>
-          <p className="text-[14px] text-muted-foreground leading-relaxed mb-8">
+          <p className="text-[17px] text-muted-foreground leading-relaxed mb-8">
             Pick up where you left off.
           </p>
 
@@ -97,7 +97,7 @@ function LoginPage() {
             </Button>
           </form>
 
-          <p className="mt-6 text-[14px] text-muted-foreground">
+          <p className="mt-6 text-[17px] text-muted-foreground">
             Don't have an account?{" "}
             <Link to="/signup" className="text-foreground underline underline-offset-4">
               Sign up
@@ -107,7 +107,7 @@ function LoginPage() {
       </main>
 
       <footer className="px-6 md:px-10 py-8 border-t border-border">
-        <p className="text-[12px] text-hint leading-relaxed max-w-md">
+        <p className="text-[13px] text-hint leading-relaxed max-w-md">
           is this ok? is a nonprofit orientation tool for parents. We do not monitor
           devices, track children, or share your data.
         </p>

@@ -23,7 +23,7 @@ export function RefinementPanel({
     list.includes(item) ? list.filter((i) => i !== item) : [...list, item];
 
   const chip = (selected: boolean) =>
-    `rounded-[8px] border px-3 py-2 text-[13px] leading-relaxed text-left transition-colors ${
+    `rounded-[8px] border px-3 py-2 text-[15px] leading-relaxed text-left transition-colors ${
       selected
         ? "bg-foreground text-background border-foreground"
         : "bg-background text-foreground border-border hover:border-foreground/30"
@@ -36,19 +36,19 @@ export function RefinementPanel({
           onClick={() => setOpen(!open)}
           className="flex w-full items-center justify-between text-left"
         >
-          <span className="text-[15px] font-medium text-foreground">Make this more specific</span>
-          <span className="text-[13px] text-hint">{busy ? "Updating…" : open ? "Hide" : "Show"}</span>
+          <span className="text-[18px] font-medium text-foreground">Make this more specific</span>
+          <span className="text-[15px] text-hint">{busy ? "Updating…" : open ? "Hide" : "Show"}</span>
         </button>
 
         {open && (
           <div className="mt-6 space-y-7">
             <div className="flex items-center gap-3">
-              <label className="text-[13px] text-foreground" htmlFor="refine-age">Their age</label>
+              <label className="text-[15px] text-foreground" htmlFor="refine-age">Their age</label>
               <select
                 id="refine-age"
                 value={values.age}
                 onChange={(e) => onChange({ ...values, age: e.target.value })}
-                className="h-9 rounded-[8px] border border-input bg-background px-3 text-[14px] text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                className="h-9 rounded-[8px] border border-input bg-background px-3 text-[17px] text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               >
                 <option value="">—</option>
                 {AGE_OPTIONS.map((a) => (

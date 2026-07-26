@@ -55,7 +55,7 @@ function SignupPage() {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <header className="px-6 md:px-10 py-6">
-          <Link to="/" className="text-[15px] text-muted-foreground hover:text-foreground transition-colors">
+          <Link to="/" className="text-[18px] text-muted-foreground hover:text-foreground transition-colors">
             ← Back
           </Link>
         </header>
@@ -67,7 +67,7 @@ function SignupPage() {
             >
               Check your email
             </h1>
-            <p className="text-[15px] text-muted-foreground leading-relaxed">
+            <p className="text-[18px] text-muted-foreground leading-relaxed">
               We sent a confirmation link to{" "}
               <span className="text-foreground">{email}</span>.
               Click it to activate your account.
@@ -81,7 +81,7 @@ function SignupPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <header className="px-6 md:px-10 py-6">
-        <Link to="/" className="text-[15px] text-muted-foreground hover:text-foreground transition-colors">
+        <Link to="/" className="text-[18px] text-muted-foreground hover:text-foreground transition-colors">
           ← Back
         </Link>
       </header>
@@ -94,7 +94,7 @@ function SignupPage() {
           >
             Create your account
           </h1>
-          <p className="text-[14px] text-muted-foreground leading-relaxed mb-8">
+          <p className="text-[17px] text-muted-foreground leading-relaxed mb-8">
             Save reports, track patterns over time, and stay ahead of what your child encounters online.
           </p>
 
@@ -130,21 +130,21 @@ function SignupPage() {
             </Button>
           </form>
 
-          <p className="mt-6 text-[14px] text-muted-foreground">
+          <p className="mt-6 text-[17px] text-muted-foreground">
             Already have an account?{" "}
             <Link to="/login" className="text-foreground underline underline-offset-4">
               Log in
             </Link>
           </p>
 
-          <p className="mt-8 text-[12px] text-hint leading-relaxed">
+          <p className="mt-8 text-[13px] text-hint leading-relaxed">
             Your first lookups are free. You always control your data, and you can delete your account at any time.
           </p>
         </div>
       </main>
 
       <footer className="px-6 md:px-10 py-8 border-t border-border">
-        <p className="text-[12px] text-hint leading-relaxed max-w-md">
+        <p className="text-[13px] text-hint leading-relaxed max-w-md">
           is this ok? is a nonprofit orientation tool for parents. We do not monitor
           devices, track children, or share your data.
         </p>
