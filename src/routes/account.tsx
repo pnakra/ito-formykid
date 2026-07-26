@@ -158,7 +158,7 @@ function AccountPage() {
       <Header isLoggedIn={true} />
 
       <main className="flex-1 py-10">
-        <div className="mx-auto max-w-xl px-5 space-y-8">
+        <div className="mx-auto max-w-[34rem] px-5 space-y-10">
 
           {/* ─── Account ─── */}
           <section>
@@ -186,11 +186,11 @@ function AccountPage() {
 
           {/* ─── Monthly Digest ─── */}
           <section>
-            <h2 className="text-lg font-medium text-foreground mb-3">Monthly digest</h2>
+            <h2 className="text-lg font-medium text-foreground mb-3">Monthly email</h2>
             <div className="rounded-[14px] border bg-card p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[18px] text-foreground">Send me the monthly digest</p>
+                  <p className="text-[18px] text-foreground">Send me a monthly email</p>
                 </div>
                 <Switch
                   checked={profile?.digest_enabled ?? true}
@@ -217,9 +217,7 @@ function AccountPage() {
                 </div>
               </div>
 
-              <p className="text-xs text-hint">
-                The digest is tailored to your child's age group. We send it once a month — no spam.
-              </p>
+              <p className="text-[13px] text-hint">One email a month.</p>
             </div>
           </section>
 
@@ -229,7 +227,7 @@ function AccountPage() {
 
             {scans.length === 0 ? (
               <div className="rounded-[14px] border bg-card p-5 text-center">
-                <p className="text-muted-foreground">No saved reports yet.</p>
+                <p className="text-[17px] text-hint">Nothing saved yet.</p>
                 <Link to="/scan">
                   <Button size="sm" className="mt-3">Look something up</Button>
                 </Link>

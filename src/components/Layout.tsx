@@ -46,20 +46,17 @@ export function Footer() {
     <footer className="border-t py-8">
       <div className="mx-auto max-w-3xl px-5">
         <div className="flex flex-col items-center gap-2 text-center">
-          <p className="text-sm text-muted-foreground">
-            is this ok? for my kid — a companion to{" "}
-            <a
-              href="https://isthisok.app"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-foreground underline underline-offset-4"
-            >
-              isthisok.app
-            </a>
+          <p className="text-[15px] text-hint">
+            Free. Built by a nonprofit. We never see your child's phone.
           </p>
-          <p className="text-xs text-hint">
-            A nonprofit orientation tool — not a monitoring tool.
-          </p>
+          <a
+            href="https://isthisok.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[15px] text-hint underline underline-offset-4 hover:text-foreground"
+          >
+            isthisok.app
+          </a>
         </div>
       </div>
     </footer>
