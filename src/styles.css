@@ -79,12 +79,13 @@
   --input: oklch(0.88 0.01 80);
   --ring: oklch(0.36 0.05 145);
   --hint: oklch(0.70 0.03 140);
-  --risk-low: oklch(0.93 0.06 130);
-  --risk-low-foreground: oklch(0.42 0.12 130);
-  --risk-concerning: oklch(0.94 0.05 80);
-  --risk-concerning-foreground: oklch(0.55 0.12 70);
-  --risk-high: oklch(0.94 0.03 20);
-  --risk-high-foreground: oklch(0.45 0.15 20);
+  /* Severity reads through weight and wording, never colour. */
+  --risk-low: oklch(0.95 0.006 80);
+  --risk-low-foreground: oklch(0.44 0.02 145);
+  --risk-concerning: oklch(0.95 0.006 80);
+  --risk-concerning-foreground: oklch(0.36 0.03 145);
+  --risk-high: oklch(0.95 0.006 80);
+  --risk-high-foreground: oklch(0.28 0.03 145);
   --risk-neutral: oklch(0.95 0.005 80);
   --risk-neutral-foreground: oklch(0.42 0.01 80);
   --chart-1: oklch(0.646 0.222 41.116);
@@ -111,8 +112,8 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
-    font-size: 15px;
-    line-height: 1.65;
+    font-size: 18px;
+    line-height: 1.6;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
