@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
+import { AI_GATEWAY_URL, BRIEFING_MODEL, SUMMARY_MODEL } from "../_shared/ai-config.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -37,14 +38,14 @@ Deno.serve(async (req) => {
         });
       }
 
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const response = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-pro",
+          model: BRIEFING_MODEL,
           messages: [
             { role: "system", content: "You are an expert on youth online safety and digital culture trends. You work for 'is this ok? for my kid,' an Illinois nonprofit. Be plain-spoken, non-alarmist, and practical." },
             { role: "user", content: `Generate a brief monthly parent briefing for parents of ${ageGroup}-year-olds. Cover 3-4 content trends, creator types, community patterns, or language shifts currently circulating among this age group online that parents should be aware of. Focus on: gender-based attitudes and masculinity culture, body image and eating disorder content, sexual coercion and consent myths, identity suppression or anti-LGBTQ+ pipelines, grooming-adjacent communities, harmful gaming or social peer culture. Plain language, no jargon. Each bullet 1-2 sentences. End with one protective-factor note — something parents can do proactively this month.` },
@@ -95,14 +96,14 @@ Deno.serve(async (req) => {
 
       const notesText = notes.map((n: any) => `[${n.date}] ${n.category ? `(${n.category}) ` : ""}${n.text}`).join("\n");
 
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const response = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
+          model: SUMMARY_MODEL,
           messages: [
             { role: "system", content: "You help parents track behavioral patterns in their children. Be measured, non-alarmist, and empathetic. Do not diagnose." },
             { role: "user", content: `A parent has logged the following observations about their child over time:\n${notesText}\n\nIn 2-3 plain sentences, summarize what pattern these observations suggest and what might be worth paying attention to. Be measured and non-alarmist. Do not diagnose.` },
@@ -152,14 +153,14 @@ Deno.serve(async (req) => {
 
       const factorsList = factors.join(", ");
 
-      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      const response = await fetch(AI_GATEWAY_URL, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-flash",
+          model: SUMMARY_MODEL,
           messages: [
             { role: "system", content: "You help parents strengthen protective factors for their children. Be practical, non-judgmental, and specific." },
             { role: "user", content: `A parent has flagged the following protective factors as needing attention: ${factorsList}. Give one concrete, practical suggestion for each — plain language, non-judgmental, actionable this week.` },
