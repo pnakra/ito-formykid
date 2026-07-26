@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronRight, Plus, Search, TrendingUp, BookOpen, Shield, MessageCircle } from "lucide-react";
+import { ChevronRight, Search, TrendingUp } from "lucide-react";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -578,7 +578,6 @@ function HomePage() {
                   <div className="space-y-2">
                     {recentScans.map((scan) => {
                       const term = extractQuery(scan.input_content);
-                      const badgeVariant = SPECTRUM_COLORS[scan.risk_level] as any || "neutral";
                       return (
                         <button
                           key={scan.id}
