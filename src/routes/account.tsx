@@ -41,18 +41,11 @@ function AccountPage() {
 
   const [profile, setProfile] = useState<{
     email: string;
-    is_subscribed: boolean;
     digest_enabled: boolean;
     digest_age_group: string | null;
   } | null>(null);
 
-  const [subscription, setSubscription] = useState<{
-    current_period_end: string | null;
-    cancel_at_period_end: boolean | null;
-  } | null>(null);
-
   const [scans, setScans] = useState<ScanRow[]>([]);
-  const [loadingPortal, setLoadingPortal] = useState(false);
   const [noteOpen, setNoteOpen] = useState<string | null>(null);
   const [noteText, setNoteText] = useState("");
   const [savingNote, setSavingNote] = useState(false);
@@ -69,26 +62,11 @@ function AccountPage() {
     // Load profile
     supabase
       .from("profiles")
-      .select("email, is_subscribed, digest_enabled, digest_age_group")
+      .select("email, digest_enabled, digest_age_group")
       .eq("id", user.id)
       .single()
       .then(({ data }) => {
         if (data) setProfile(data as any);
-      });
-
-    // Load subscription
-    const env = getStripeEnvironment() === "sandbox" ? "sandbox" : "live";
-    supabase
-      .from("subscriptions")
-      .select("current_period_end, cancel_at_period_end")
-      .eq("user_id", user.id)
-      .eq("environment", env)
-      .in("status", ["active", "trialing"])
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single()
-      .then(({ data }) => {
-        if (data) setSubscription(data);
       });
 
     // Load scans with notes
