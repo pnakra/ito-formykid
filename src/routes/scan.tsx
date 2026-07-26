@@ -107,21 +107,8 @@ function ScanPage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (user) {
-      supabase
-        .from("profiles")
-        .select("scan_count, is_subscribed")
-        .eq("id", user.id)
-        .single()
-        .then(({ data }) => {
-          if (data) {
-            setScanCount(data.scan_count);
-            setIsSubscribed(data.is_subscribed);
-          }
-        });
-    }
-  }, [user]);
+
+
 
   // Payments temporarily disabled — always allow scanning
   const canScan = true;
