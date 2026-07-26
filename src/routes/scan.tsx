@@ -88,17 +88,7 @@ function ScanPage() {
     query: "",
   });
   const [error, setError] = useState("");
-  const [scanCount, setScanCount] = useState<number | null>(null);
-  const [isSubscribed, setIsSubscribed] = useState(false);
 
-  // Payments temporarily disabled — allow unlimited scans without account
-  const hasCompletedFirstScan = false;
-
-  useEffect(() => {
-    if (!authLoading && !user && hasCompletedFirstScan) {
-      navigate({ to: "/signup" });
-    }
-  }, [user, authLoading, navigate, hasCompletedFirstScan]);
 
   // Preserve any prior context (age/gender) from a previous session
   useEffect(() => {
