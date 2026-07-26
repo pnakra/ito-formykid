@@ -647,6 +647,9 @@ function AmbiguousView({ result, intake, onScanAnother }: { result: ScanResult; 
         <p className="text-[15px] text-hint">
           You asked about <span className="text-foreground font-medium">{intake.query}</span>
         </p>
+        <p className="mt-5 text-[17px] text-muted-foreground leading-relaxed">
+          We can't tell you if your child is safe. We can tell you what this is and how to talk about it.
+        </p>
       </header>
 
       {result.what_it_is && (
@@ -702,6 +705,9 @@ function NotEnoughSignalView({ result, intake, onScanAnother }: { result: ScanRe
         <p className="text-[15px] text-hint">
           You asked about <span className="text-foreground font-medium">{intake.query}</span>
         </p>
+        <p className="mt-5 text-[17px] text-muted-foreground leading-relaxed">
+          We can't tell you if your child is safe. We can tell you what this is and how to talk about it.
+        </p>
       </header>
 
       <Divider />
@@ -750,6 +756,9 @@ function OutsideScopeView({ result, intake, onScanAnother }: { result: ScanResul
         </h1>
         <p className="text-[15px] text-hint">
           You asked about <span className="text-foreground font-medium">{intake.query}</span>
+        </p>
+        <p className="mt-5 text-[17px] text-muted-foreground leading-relaxed">
+          We can't tell you if your child is safe. We can tell you what this is and how to talk about it.
         </p>
       </header>
 
