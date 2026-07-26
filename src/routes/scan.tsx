@@ -174,7 +174,7 @@ function ScanPage() {
     setMode(next);
   };
 
-  if (authLoading && hasCompletedFirstScan) return null;
+  if (authLoading) return null;
 
   const stepLabels = ["About your child", "What brought you here", "What you've noticed", "What to look up"];
 
