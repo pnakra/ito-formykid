@@ -35,6 +35,7 @@ interface ScanResult {
   pipeline_context: string | null;
   values_promoted: string[];
   age_specific_note: string | null;
+  normalization_line?: string | null;
   what_not_to_do: string[];
   opening_question: string;
   warning_signs: string[];
@@ -591,6 +592,22 @@ function BriefingView({
 
 function Divider() {
   return <div className="py-6"><div className="border-t border-border" /></div>;
+}
+
+function Expander({ label, children }: { label: string; children: React.ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <section>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between text-left"
+      >
+        <span className="label-text">{label.toUpperCase()}</span>
+        <span className="text-[13px] text-hint">{open ? "Hide" : "Show"}</span>
+      </button>
+      {open && <div className="mt-4">{children}</div>}
+    </section>
+  );
 }
 
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
