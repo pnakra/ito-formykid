@@ -207,25 +207,13 @@ function ResultsPage() {
   };
 
   const handleScanAnother = () => {
-    if (!user) {
-      setShowPaywall(true);
-      return;
-    }
-    if (!isSubscribed && (scanCount ?? 0) >= 3) {
-      setShowPaywall(true);
-    } else {
-      sessionStorage.removeItem("scanIntake");
-      navigate({ to: "/scan" });
-    }
+    sessionStorage.removeItem("scanIntake");
+    navigate({ to: "/scan" });
   };
 
   const handleSaveReport = async () => {
     if (!user) {
-      setShowPaywall(true);
-      return;
-    }
-    if (!isSubscribed) {
-      navigate({ to: "/checkout" });
+      navigate({ to: "/signup" });
       return;
     }
     setSaved(true);
