@@ -7,8 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, ChevronRight } from "lucide-react";
-import { getStripeEnvironment } from "@/lib/stripe";
+import { ChevronRight } from "lucide-react";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
