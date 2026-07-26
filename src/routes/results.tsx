@@ -459,7 +459,7 @@ function BriefingView({
         <>
           <Divider />
           <Section label="Part of a larger pattern">
-            <div className="border-l-[3px] border-risk-concerning-foreground/30 pl-4">
+            <div className="border-l-[3px] border-border pl-4">
               <p className="text-[14px] text-foreground leading-relaxed">{result.pipeline_context}</p>
             </div>
           </Section>
