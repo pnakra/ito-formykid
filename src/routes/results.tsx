@@ -84,8 +84,6 @@ function ResultsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [scanCount, setScanCount] = useState<number | null>(null);
-  const [isSubscribed, setIsSubscribed] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
   const [showDigest, setShowDigest] = useState(false);
   const [digestEmail, setDigestEmail] = useState("");
   const [digestName, setDigestName] = useState("");
