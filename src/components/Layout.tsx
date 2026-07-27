@@ -27,6 +27,9 @@ export function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
             </>
           ) : (
             <>
+              <Link to="/why">
+                <Button variant="ghost" size="sm">Why this?</Button>
+              </Link>
               <Link to="/login">
                 <Button variant="ghost" size="sm">Log in</Button>
               </Link>
