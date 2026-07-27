@@ -508,6 +508,9 @@ serve(async (req) => {
     // Ensure result_type is always set
     result = classifyResult(result);
 
+    // Fill in any report fields the model left out.
+    result = ensureBriefingFields(result);
+
     // Identity is never a risk classification.
     result = enforceIdentityGuard(result, content);
 
