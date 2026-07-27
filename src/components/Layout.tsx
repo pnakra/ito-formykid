@@ -27,6 +27,9 @@ export function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
             </>
           ) : (
             <>
+              <Link to="/why">
+                <Button variant="ghost" size="sm">Why this?</Button>
+              </Link>
               <Link to="/login">
                 <Button variant="ghost" size="sm">Log in</Button>
               </Link>
@@ -45,18 +48,26 @@ export function Footer() {
   return (
     <footer className="border-t py-8">
       <div className="mx-auto max-w-3xl px-5">
-        <div className="flex flex-col items-center gap-2 text-center">
+        <div className="flex flex-col items-center gap-3 text-center">
           <p className="text-[15px] text-hint">
             Free. Built by a nonprofit. We never see your child's phone.
           </p>
-          <a
-            href="https://isthisok.app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[15px] text-hint underline underline-offset-4 hover:text-foreground"
-          >
-            isthisok.app
-          </a>
+          <div className="flex items-center gap-4 text-[15px] text-hint">
+            <Link
+              to="/why"
+              className="underline underline-offset-4 hover:text-foreground"
+            >
+              Why this?
+            </Link>
+            <a
+              href="https://isthisok.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4 hover:text-foreground"
+            >
+              isthisok.app
+            </a>
+          </div>
         </div>
       </div>
     </footer>
