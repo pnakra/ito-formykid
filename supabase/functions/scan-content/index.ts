@@ -245,6 +245,71 @@ function classifyResult(result: Record<string, unknown>): Record<string, unknown
   return result;
 }
 
+// Some model responses drop whole fields, which made report sections
+// ("Why it appeals", "Where this sits", "More context") come back empty.
+// Fill in safe, honest defaults so a section is either complete or absent.
+function ensureBriefingFields(result: Record<string, unknown>): Record<string, unknown> {
+  const type = result.result_type as string;
+  if (type === "not_enough_signal" || type === "identity_affirming") return result;
+
+  const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : null);
+  const arr = (v: unknown) =>
+    Array.isArray(v) ? v.filter((i) => typeof i === "string" && i.trim()) : [];
+
+  const validLabels = ["Mainstream", "Edgy but benign", "Concerning", "High risk", "Not enough signal"];
+  if (!validLabels.includes(result.spectrum_label as string)) {
+    result.spectrum_label = "Not enough signal";
+  }
+  if (!str(result.spectrum_reasoning)) {
+    result.spectrum_reasoning = "We don't have enough to place this with confidence.";
+  }
+  if (!["Low", "Medium", "High"].includes(result.confidence as string)) {
+    result.confidence = "Low";
+  }
+  if (!str(result.confidence_note)) {
+    result.confidence_note = "Treat this as a starting point, not a verdict.";
+  }
+  if (!str(result.why_it_appeals)) {
+    result.why_it_appeals = "We can't say what draws them to this yet. Asking them is the fastest way to find out.";
+  }
+  if (!str(result.what_it_is)) {
+    result.what_it_is = str(result.summary_verdict) ?? "We could not pin down what this is.";
+  }
+  if (!str(result.summary_verdict)) {
+    result.summary_verdict = result.what_it_is;
+  }
+  if (!str(result.normalization_line)) {
+    result.normalization_line = str(result.age_specific_note);
+  }
+  if (!str(result.opening_question)) {
+    result.opening_question = "What made you want to show me this?";
+  }
+  if (arr(result.what_not_to_do).length === 0) {
+    result.what_not_to_do = [
+      "Do not take the phone away first.",
+      "Do not mock what they like.",
+      "Do not make it one big talk.",
+    ];
+  } else {
+    result.what_not_to_do = arr(result.what_not_to_do);
+  }
+  if (arr(result.warning_signs).length === 0) {
+    result.warning_signs = [
+      "They pull away from friends or family.",
+      "Their mood drops after being online.",
+      "They hide their screen from you.",
+    ];
+  } else {
+    result.warning_signs = arr(result.warning_signs);
+  }
+  result.values_promoted = arr(result.values_promoted);
+  result.return_signals = arr(result.return_signals);
+  if (!str(result.platform_context)) result.platform_context = null;
+  if (!str(result.pipeline_context)) result.pipeline_context = null;
+
+  return result;
+}
+
 // ─── Pre-analysis safety triage ───
 
 type EscalationCategory =
