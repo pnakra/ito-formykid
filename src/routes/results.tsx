@@ -87,6 +87,8 @@ function ResultsPage() {
   const [digestSubmitted, setDigestSubmitted] = useState(false);
   const [saved, setSaved] = useState(false);
   const [refining, setRefining] = useState(false);
+  const [justRefined, setJustRefined] = useState(false);
+
   const [progressStep, setProgressStep] = useState(0);
 
   useEffect(() => {
