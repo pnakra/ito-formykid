@@ -176,6 +176,7 @@ function LandingPage() {
             Made by Override Labs, a nonprofit. We are not affiliated with any platform, creator, or advertiser.
           </p>
           <div className="flex gap-4 text-[15px]">
+            <Link to="/why" className="text-hint hover:text-foreground transition-colors">Why this?</Link>
             <Link to="/login" className="text-hint hover:text-foreground transition-colors">Sign in</Link>
             <a href="https://isthisok.app" target="_blank" rel="noopener noreferrer" className="text-hint hover:text-foreground transition-colors">isthisok.app</a>
           </div>
