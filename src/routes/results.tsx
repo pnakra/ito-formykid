@@ -521,77 +521,95 @@ function BriefingView({
       <Divider />
 
       {/* 5 — Why it appeals */}
-      <Section label="Why it appeals">
-        <p className="text-[17px] text-foreground leading-relaxed">{result.why_it_appeals}</p>
-      </Section>
-
-      <Divider />
+      {result.why_it_appeals && (
+        <>
+          <Section label="Why it appeals">
+            <p className="text-[17px] text-foreground leading-relaxed">{result.why_it_appeals}</p>
+          </Section>
+          <Divider />
+        </>
+      )}
 
       {/* 6 — Where this sits */}
-      <Section label="Where this sits">
-        <div className="mb-4">
-          <div className="relative h-[3px] rounded-full bg-border">
-            {result.spectrum_label !== "Not enough signal" && (
-              <div
-                className="absolute top-1/2 w-[9px] h-[9px] rounded-full bg-foreground"
-                style={{ left: `${SPECTRUM_POSITIONS[result.spectrum_label] ?? 0}%`, transform: "translate(-50%, -50%)" }}
-              />
+      {result.spectrum_label && (
+        <>
+          <Section label="Where this sits">
+            <div className="mb-4">
+              <div className="relative h-[3px] rounded-full bg-border">
+                {result.spectrum_label !== "Not enough signal" && (
+                  <div
+                    className="absolute top-1/2 w-[9px] h-[9px] rounded-full bg-foreground"
+                    style={{ left: `${SPECTRUM_POSITIONS[result.spectrum_label] ?? 0}%`, transform: "translate(-50%, -50%)" }}
+                  />
+                )}
+              </div>
+            </div>
+            <p className="text-[18px] font-medium text-foreground">{result.spectrum_label}</p>
+            {result.spectrum_reasoning && (
+              <p className="text-[17px] text-foreground leading-relaxed mt-2">{result.spectrum_reasoning}</p>
             )}
-          </div>
-        </div>
-        <p className="text-[18px] font-medium text-foreground">{result.spectrum_label}</p>
-        <p className="text-[17px] text-foreground leading-relaxed mt-2">{result.spectrum_reasoning}</p>
-        <p className="text-[15px] text-hint leading-relaxed mt-3">
-          {result.confidence} confidence. {result.confidence_note}
-        </p>
-      </Section>
-
-      <Divider />
+            {result.confidence && (
+              <p className="text-[15px] text-hint leading-relaxed mt-3">
+                {result.confidence} confidence. {result.confidence_note}
+              </p>
+            )}
+          </Section>
+          <Divider />
+        </>
+      )}
 
       {/* 7 — Context, collapsed */}
-      <Expander label="More context">
-        <div className="space-y-5">
-          {result.platform_context && (
-            <p className="text-[17px] text-foreground leading-relaxed">{result.platform_context}</p>
-          )}
-          {result.pipeline_context && (
-            <p className="text-[17px] text-foreground leading-relaxed">{result.pipeline_context}</p>
-          )}
-          {result.age_specific_note && intake.age && (
-            <p className="text-[17px] text-foreground leading-relaxed">{result.age_specific_note}</p>
-          )}
-          {result.values_promoted?.length > 0 && (
-            <ul className="space-y-2">
-              {result.values_promoted.map((v, i) => (
-                <li key={i} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
-                  <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-                  <span className="flex-1">{v}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </Expander>
-
-      <Divider />
+      {(result.platform_context ||
+        result.pipeline_context ||
+        (result.age_specific_note && intake.age) ||
+        result.values_promoted?.length > 0) && (
+        <>
+          <Expander label="More context">
+            <div className="space-y-5">
+              {result.platform_context && (
+                <p className="text-[17px] text-foreground leading-relaxed">{result.platform_context}</p>
+              )}
+              {result.pipeline_context && (
+                <p className="text-[17px] text-foreground leading-relaxed">{result.pipeline_context}</p>
+              )}
+              {result.age_specific_note && intake.age && (
+                <p className="text-[17px] text-foreground leading-relaxed">{result.age_specific_note}</p>
+              )}
+              {result.values_promoted?.length > 0 && (
+                <ul className="space-y-2">
+                  {result.values_promoted.map((v, i) => (
+                    <li key={i} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
+                      <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
+                      <span className="flex-1">{v}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </Expander>
+          <Divider />
+        </>
+      )}
 
       {/* 8 — What to watch for, collapsed */}
-      <Expander label="What to watch for">
-        <ul className="space-y-2">
-          {result.warning_signs.map((s, i) => (
-            <li key={i} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
-              <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-              <span className="flex-1">{s}</span>
-            </li>
-          ))}
-          {result.return_signals?.map((s, i) => (
-            <li key={`r-${i}`} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
-              <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-              <span className="flex-1">{s}</span>
-            </li>
-          ))}
-        </ul>
-      </Expander>
+      {(result.warning_signs?.length > 0 || result.return_signals?.length > 0) && (
+        <Expander label="What to watch for">
+          <ul className="space-y-2">
+            {result.warning_signs?.map((s, i) => (
+              <li key={i} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
+                <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
+                <span className="flex-1">{s}</span>
+              </li>
+            ))}
+            {result.return_signals?.map((s, i) => (
+              <li key={`r-${i}`} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
+                <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
+                <span className="flex-1">{s}</span>
+              </li>
+            ))}
+          </ul>
+        </Expander>
+      )}
 
 
       <div className="pt-12">

@@ -118,6 +118,8 @@ In spectrum_reasoning and confidence_note, show your work — parents who see tr
 
 Always complete every sentence and every array item fully. Never truncate mid-sentence. If you are running long, shorten earlier fields rather than cutting off later ones.
 
+Unless result_type is "not_enough_signal" or "identity_affirming", every field in the JSON contract below is REQUIRED. Never omit a key and never return an empty string or empty array. This includes why_it_appeals, spectrum_label, spectrum_reasoning, confidence, confidence_note, platform_context, values_promoted, warning_signs, and return_signals. If you are unsure about one, say so in that field in plain words instead of leaving it out.
+
 The what_not_to_do items must be consistent with the spectrum_label. If the spectrum_label is 'Concerning' or 'High risk', do not include items that suggest the parent may be overreacting or that the content is probably harmless. Reserve reassuring framing for 'Mainstream' or 'Edgy but benign' results only. For concerning or high risk results, what_not_to_do should focus on how to engage without alienating — not on whether to engage at all.
 
 summary_verdict: One plain-language sentence that tells a non-technical parent the single most important thing to know about this content. Write it as if speaking directly to a worried grandparent. No jargon. No spectrum labels. No confidence language. Just the honest one-sentence takeaway. Examples of the right tone: 'This is content that teaches boys their worth is based on how they look, and it can lead to more harmful ideas over time.' or 'This appears to be a harmless gaming term, but it's worth knowing the context.' or 'This is a community that actively tries to pull young people away from the adults in their life — it deserves your attention.'
@@ -242,6 +244,71 @@ function classifyResult(result: Record<string, unknown>): Record<string, unknown
   }
 
   result.result_type = "normal";
+  return result;
+}
+
+// Some model responses drop whole fields, which made report sections
+// ("Why it appeals", "Where this sits", "More context") come back empty.
+// Fill in safe, honest defaults so a section is either complete or absent.
+function ensureBriefingFields(result: Record<string, unknown>): Record<string, unknown> {
+  const type = result.result_type as string;
+  if (type === "not_enough_signal" || type === "identity_affirming") return result;
+
+  const str = (v: unknown) => (typeof v === "string" && v.trim() ? v.trim() : null);
+  const arr = (v: unknown) =>
+    Array.isArray(v) ? v.filter((i) => typeof i === "string" && i.trim()) : [];
+
+  const validLabels = ["Mainstream", "Edgy but benign", "Concerning", "High risk", "Not enough signal"];
+  if (!validLabels.includes(result.spectrum_label as string)) {
+    result.spectrum_label = "Not enough signal";
+  }
+  if (!str(result.spectrum_reasoning)) {
+    result.spectrum_reasoning = "We don't have enough to place this with confidence.";
+  }
+  if (!["Low", "Medium", "High"].includes(result.confidence as string)) {
+    result.confidence = "Low";
+  }
+  if (!str(result.confidence_note)) {
+    result.confidence_note = "Treat this as a starting point, not a verdict.";
+  }
+  if (!str(result.why_it_appeals)) {
+    result.why_it_appeals = "We can't say what draws them to this yet. Asking them is the fastest way to find out.";
+  }
+  if (!str(result.what_it_is)) {
+    result.what_it_is = str(result.summary_verdict) ?? "We could not pin down what this is.";
+  }
+  if (!str(result.summary_verdict)) {
+    result.summary_verdict = result.what_it_is;
+  }
+  if (!str(result.normalization_line)) {
+    result.normalization_line = str(result.age_specific_note);
+  }
+  if (!str(result.opening_question)) {
+    result.opening_question = "What made you want to show me this?";
+  }
+  if (arr(result.what_not_to_do).length === 0) {
+    result.what_not_to_do = [
+      "Do not take the phone away first.",
+      "Do not mock what they like.",
+      "Do not make it one big talk.",
+    ];
+  } else {
+    result.what_not_to_do = arr(result.what_not_to_do);
+  }
+  if (arr(result.warning_signs).length === 0) {
+    result.warning_signs = [
+      "They pull away from friends or family.",
+      "Their mood drops after being online.",
+      "They hide their screen from you.",
+    ];
+  } else {
+    result.warning_signs = arr(result.warning_signs);
+  }
+  result.values_promoted = arr(result.values_promoted);
+  result.return_signals = arr(result.return_signals);
+  if (!str(result.platform_context)) result.platform_context = null;
+  if (!str(result.pipeline_context)) result.pipeline_context = null;
+
   return result;
 }
 
@@ -507,6 +574,9 @@ serve(async (req) => {
 
     // Ensure result_type is always set
     result = classifyResult(result);
+
+    // Fill in any report fields the model left out.
+    result = ensureBriefingFields(result);
 
     // Identity is never a risk classification.
     result = enforceIdentityGuard(result, content);
