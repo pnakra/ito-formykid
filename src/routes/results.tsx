@@ -222,9 +222,14 @@ function ResultsPage() {
     setIntake(updated);
     sessionStorage.setItem("scanIntake", JSON.stringify(updated));
     setRefining(true);
+    setJustRefined(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
     await runScan(updated);
     setRefining(false);
+    setJustRefined(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
 
   const handleScanAnother = () => {
     sessionStorage.removeItem("scanIntake");
