@@ -335,6 +335,19 @@ function ResultsPage() {
       <main className="flex-1 py-12 md:py-16">
         <div className="mx-auto max-w-[34rem] px-5">
 
+          {justRefined && (
+            <div className="mb-8 border-l-[3px] border-foreground/30 pl-5">
+              <p className="text-[17px] text-foreground">Updated with what you added.</p>
+              <button
+                onClick={() => setJustRefined(false)}
+                className="mt-2 text-[15px] text-hint underline underline-offset-4 hover:text-foreground"
+              >
+                Hide this
+              </button>
+            </div>
+          )}
+
+
           {resultType === "not_enough_signal" ? (
             <NotEnoughSignalView result={result} intake={intake} onScanAnother={handleScanAnother} />
           ) : resultType === "ambiguous" ? (
