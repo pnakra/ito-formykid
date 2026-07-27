@@ -257,7 +257,7 @@ function ResultsPage() {
         <Header isLoggedIn={!!user} />
         <main className="flex-1 flex items-center justify-center px-5">
           <div className="max-w-[26rem] w-full">
-            <p className="text-[20px] text-foreground mb-3">Reading what you wrote.</p>
+            <p className="text-[20px] text-foreground mb-3">{refining ? "Redoing the report." : "Reading what you wrote."}</p>
             <p className="text-[17px] text-muted-foreground mb-6">{progressLine}</p>
             <div className="h-[2px] w-full bg-border overflow-hidden rounded-full">
               <div className="h-full bg-foreground/50 transition-all duration-700" style={{ width: `${progressPct}%` }} />
