@@ -591,26 +591,25 @@ function BriefingView({
         </>
       )}
 
-
-      <Divider />
-
       {/* 8 — What to watch for, collapsed */}
-      <Expander label="What to watch for">
-        <ul className="space-y-2">
-          {result.warning_signs.map((s, i) => (
-            <li key={i} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
-              <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-              <span className="flex-1">{s}</span>
-            </li>
-          ))}
-          {result.return_signals?.map((s, i) => (
-            <li key={`r-${i}`} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
-              <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-              <span className="flex-1">{s}</span>
-            </li>
-          ))}
-        </ul>
-      </Expander>
+      {(result.warning_signs?.length > 0 || result.return_signals?.length > 0) && (
+        <Expander label="What to watch for">
+          <ul className="space-y-2">
+            {result.warning_signs?.map((s, i) => (
+              <li key={i} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
+                <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
+                <span className="flex-1">{s}</span>
+              </li>
+            ))}
+            {result.return_signals?.map((s, i) => (
+              <li key={`r-${i}`} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
+                <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
+                <span className="flex-1">{s}</span>
+              </li>
+            ))}
+          </ul>
+        </Expander>
+      )}
 
 
       <div className="pt-12">
