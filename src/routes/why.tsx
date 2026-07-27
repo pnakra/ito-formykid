@@ -76,7 +76,7 @@ function WhyPage() {
               Most parents are already using tools to monitor or restrict what their children do online. Yet many still do not feel confident they know what their child is actually seeing.
             </p>
             <p className="text-[18px] text-foreground leading-[1.7]">
-              That gap between concern and confidence is the problem. It is not just exposure. It is interpretation.
+              That gap between concern and confidence is the problem. It is not exposure alone — it is interpretation.
             </p>
           </div>
         </section>
@@ -114,7 +114,7 @@ function WhyPage() {
               This is a calm place to ask, “Is this okay for my kid?” and get guidance you can actually use.
             </p>
             <p className="text-[18px] text-foreground leading-[1.7] mb-8">
-              We translate the language, behavior, and influencers your child encounters into something you can talk about. No monitoring. No judgment.
+              We translate the language, behavior, and influencers your child encounters into something you can talk about — with no monitoring and no judgment.
             </p>
             <Link to="/">
               <Button size="lg" className="text-[17px] px-6">
