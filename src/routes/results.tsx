@@ -87,6 +87,8 @@ function ResultsPage() {
   const [digestSubmitted, setDigestSubmitted] = useState(false);
   const [saved, setSaved] = useState(false);
   const [refining, setRefining] = useState(false);
+  const [justRefined, setJustRefined] = useState(false);
+
   const [progressStep, setProgressStep] = useState(0);
 
   useEffect(() => {
@@ -222,9 +224,14 @@ function ResultsPage() {
     setIntake(updated);
     sessionStorage.setItem("scanIntake", JSON.stringify(updated));
     setRefining(true);
+    setJustRefined(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
     await runScan(updated);
     setRefining(false);
+    setJustRefined(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
 
   const handleScanAnother = () => {
     sessionStorage.removeItem("scanIntake");
@@ -250,7 +257,7 @@ function ResultsPage() {
         <Header isLoggedIn={!!user} />
         <main className="flex-1 flex items-center justify-center px-5">
           <div className="max-w-[26rem] w-full">
-            <p className="text-[20px] text-foreground mb-3">Reading what you wrote.</p>
+            <p className="text-[20px] text-foreground mb-3">{refining ? "Redoing the report." : "Reading what you wrote."}</p>
             <p className="text-[17px] text-muted-foreground mb-6">{progressLine}</p>
             <div className="h-[2px] w-full bg-border overflow-hidden rounded-full">
               <div className="h-full bg-foreground/50 transition-all duration-700" style={{ width: `${progressPct}%` }} />
@@ -327,6 +334,19 @@ function ResultsPage() {
 
       <main className="flex-1 py-12 md:py-16">
         <div className="mx-auto max-w-[34rem] px-5">
+
+          {justRefined && (
+            <div className="mb-8 border-l-[3px] border-foreground/30 pl-5">
+              <p className="text-[17px] text-foreground">Updated with what you added.</p>
+              <button
+                onClick={() => setJustRefined(false)}
+                className="mt-2 text-[15px] text-hint underline underline-offset-4 hover:text-foreground"
+              >
+                Hide this
+              </button>
+            </div>
+          )}
+
 
           {resultType === "not_enough_signal" ? (
             <NotEnoughSignalView result={result} intake={intake} onScanAnother={handleScanAnother} />
