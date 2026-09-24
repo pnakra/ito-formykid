@@ -25,6 +25,23 @@ export const Route = createFileRoute("/early-access")({
 
 const serif = { fontFamily: "var(--font-serif)", fontWeight: 400 } as const;
 
+function ValueCard({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="p-4 rounded-[14px] bg-card border border-border/60 flex gap-4">
+      <div
+        aria-hidden
+        className="w-5 h-5 mt-0.5 rounded-full border border-primary shrink-0 flex items-center justify-center"
+      >
+        <span className="w-2 h-2 rounded-full bg-primary" />
+      </div>
+      <div>
+        <p className="label-text mb-1">{label}</p>
+        <div className="text-[15px] leading-relaxed text-foreground">{children}</div>
+      </div>
+    </div>
+  );
+}
+
 function EarlyAccessPage() {
   const join = useServerFn(joinWaitlist);
   const [email, setEmail] = useState("");
@@ -75,9 +92,9 @@ function EarlyAccessPage() {
         </div>
       </header>
 
-      <main className="flex-1">
+      <main className="flex-1 w-full max-w-md mx-auto px-5 pt-10 pb-16">
         {done ? (
-          <section className="mx-auto max-w-xl px-5 pt-14 pb-20">
+          <section className="pt-4">
             <h1 className="text-[28px] md:text-[34px] leading-[1.25] mb-4 text-foreground" style={serif}>
               You're on the list.
             </h1>
@@ -89,89 +106,82 @@ function EarlyAccessPage() {
             </p>
           </section>
         ) : (
-          <>
-            <section className="mx-auto max-w-xl px-5 pt-10 pb-12 md:pt-14">
-              <h1 className="text-[28px] md:text-[36px] leading-[1.2] mb-4 text-foreground" style={serif}>
+          <div className="flex flex-col gap-8">
+            <header className="flex flex-col gap-3">
+              <h1 className="text-[30px] md:text-[34px] leading-[1.2] text-foreground" style={serif}>
                 A calm second opinion for parents.
               </h1>
-              <p className="text-[18px] text-muted-foreground leading-[1.65] mb-7">
-                Saw something on your kid's phone, or heard a new word at dinner? Describe it. Get plain context and one good way to bring it up.
+              <p className="text-[18px] leading-[1.6] text-muted-foreground">
+                Saw something on your kid's phone? Describe it. Get plain answers and one good way to talk about it.
               </p>
+            </header>
 
-              <form onSubmit={submit} className="space-y-3" noValidate>
-                <label htmlFor="email" className="label-text block">Email</label>
-                <Input
-                  id="email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
-                  className="h-12 text-[18px]"
-                  required
-                />
-                <Input
-                  aria-label="First name (optional)"
-                  autoComplete="given-name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="First name (optional)"
-                  className="h-12 text-[18px]"
-                />
-                {error && <p className="text-[15px] text-destructive">{error}</p>}
-                <Button type="submit" size="lg" disabled={loading} className="w-full h-12 text-[17px]">
-                  {loading ? "Saving…" : "Get early access"}
-                </Button>
-                <p className="text-[15px] text-hint leading-[1.6]">
-                  We'll email you once, when early access opens. Free. No spam.
-                </p>
-              </form>
-            </section>
+            <form onSubmit={submit} className="flex flex-col gap-3" noValidate>
+              <Input
+                aria-label="First name (optional)"
+                autoComplete="given-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="First name (optional)"
+                className="h-12 text-[18px] bg-card"
+              />
+              <Input
+                id="email"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="h-12 text-[18px] bg-card"
+                required
+              />
+              {error && <p className="text-[15px] text-destructive">{error}</p>}
+              <Button type="submit" size="lg" disabled={loading} className="w-full h-12 text-[17px]">
+                {loading ? "Saving…" : "Get early access"}
+              </Button>
+              <p className="text-[15px] text-hint leading-[1.6]">
+                Free. No spam. One email when access opens.
+              </p>
+            </form>
 
-            <section className="bg-card py-12">
-              <div className="mx-auto max-w-xl px-5 space-y-8">
-                <div>
-                  <p className="label-text mb-3">WHO IT'S FOR</p>
-                  <p className="text-[18px] text-foreground leading-[1.7]">
-                    Parents of kids and teens who want to understand, not spy. Think of it as a consent coach for the online stuff.
-                  </p>
-                </div>
-                <div>
-                  <p className="label-text mb-3">WHAT YOU GET</p>
-                  <ul className="text-[18px] text-foreground leading-[1.7] space-y-2">
-                    <li>What it is, in plain words.</li>
-                    <li>Whether it's common for their age.</li>
-                    <li>What not to say.</li>
-                    <li>One easy way to start the talk.</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="label-text mb-3">WHAT EARLY ACCESS MEANS</p>
-                  <p className="text-[18px] text-foreground leading-[1.7]">
-                    We're letting parents in a small group at a time. You'll be among the first, and your feedback shapes what we build.
-                  </p>
-                </div>
+            <div className="grid gap-3">
+              <ValueCard label="WHO IT'S FOR">
+                Parents who want to understand, not spy. A consent coach for the online stuff.
+              </ValueCard>
+              <ValueCard label="WHAT YOU GET">
+                What it is, in plain words. Whether it's common, and one way to start the talk.
+              </ValueCard>
+              <ValueCard label="WHAT EARLY ACCESS MEANS">
+                We invite a small group at a time. Your feedback shapes what we build.
+              </ValueCard>
+            </div>
+
+            <section className="pt-4 border-t border-border">
+              <div className="bg-primary/5 rounded-[14px] p-4">
+                <p className="label-text mb-3">YOUR PRIVACY</p>
+                <ul className="text-[15px] leading-[1.6] text-muted-foreground grid gap-2">
+                  <li className="flex items-start gap-2">
+                    <span aria-hidden className="mt-2 w-1.5 h-1.5 rounded-full bg-hint shrink-0" />
+                    Nonprofit. We never sell or share your data.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span aria-hidden className="mt-2 w-1.5 h-1.5 rounded-full bg-hint shrink-0" />
+                    We keep your email and first name, only to tell you when access opens.
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span aria-hidden className="mt-2 w-1.5 h-1.5 rounded-full bg-hint shrink-0" />
+                    We never see your child's phone, accounts, or messages.
+                  </li>
+                </ul>
               </div>
             </section>
-          </>
-        )}
-
-        <section className="py-12">
-          <div className="mx-auto max-w-xl px-5">
-            <p className="label-text mb-3">YOUR PRIVACY</p>
-            <ul className="text-[17px] text-muted-foreground leading-[1.7] space-y-2">
-              <li>We're a nonprofit. We never sell or share your data.</li>
-              <li>We keep your email, your first name if you give it, and which link brought you here.</li>
-              <li>We use it only to tell you when early access opens.</li>
-              <li>We never see your child's phone, accounts, or messages.</li>
-            </ul>
           </div>
-        </section>
+        )}
       </main>
 
       <footer className="border-t py-8">
-        <div className="mx-auto max-w-xl px-5 flex items-center justify-between text-[15px] text-hint">
+        <div className="mx-auto max-w-md px-5 flex items-center justify-between text-[15px] text-hint">
           <span>Made by Override Labs, a nonprofit.</span>
           <Link to="/unlock" className="hover:text-foreground transition-colors">Team</Link>
         </div>
