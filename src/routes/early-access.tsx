@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
-import { ShieldAlert, MessageCircle, Sparkles, Lock } from "lucide-react";
+import { ShieldAlert, Sparkles, Lock } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -337,12 +337,6 @@ function EarlyAccessPage() {
                 title="Getting hurt, or hurting someone"
                 body="Someone may be pressuring your kid. Or your kid may be sharing something cruel or illegal without knowing it."
                 icon={<ShieldAlert size={16} className="text-primary" />}
-              />
-              <Tile
-                tag=""
-                title=""
-                body=""
-                icon={<MessageCircle size={16} className="text-primary" />}
               />
               <Tile
                 tag="What you get"
