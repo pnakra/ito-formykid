@@ -152,11 +152,11 @@ function EarlyAccessPage() {
   };
 
   return (
-    <div className="theme-launch min-h-screen flex flex-col">
+    <div className="theme-launch relative isolate min-h-screen flex flex-col">
       {/* soft green glow behind the top of the page */}
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_at_top,color-mix(in_oklab,var(--primary)_22%,transparent),transparent_70%)]"
+        className="pointer-events-none absolute -z-10 inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_at_top,color-mix(in_oklab,var(--primary)_18%,transparent),transparent_70%)]"
       />
 
       <div className="relative flex-1 w-full max-w-lg mx-auto px-5 pt-8 pb-16">
