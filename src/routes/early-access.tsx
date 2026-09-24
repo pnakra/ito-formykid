@@ -87,18 +87,21 @@ function Tile({
   icon?: ReactNode;
 }) {
   const box = solid
-    ? "rounded-3xl border border-primary/60 bg-primary p-5 lg:p-7"
+    ? "rounded-3xl border p-5 lg:p-7 border-border/80 bg-card lg:border-primary/60 lg:bg-primary"
     : "rounded-3xl bg-card border border-border/80 p-5 lg:p-7";
-  const titleColor = solid ? "text-background" : "text-foreground";
-  const bodyColor = solid ? "text-background/80" : "text-muted-foreground";
+  const tagClass = solid
+    ? "bg-primary/15 text-primary lg:bg-background/15 lg:text-background"
+    : "bg-primary/15 text-primary";
+  const titleColor = solid
+    ? "text-foreground lg:text-background"
+    : "text-foreground";
+  const bodyColor = solid
+    ? "text-muted-foreground lg:text-background/80"
+    : "text-muted-foreground";
   return (
     <div className={`${box} ${className}`}>
       <span
-        className={`inline-block rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] ${
-          solid
-            ? "bg-background/15 text-background"
-            : "bg-primary/15 text-primary"
-        }`}
+        className={`inline-block rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] ${tagClass}`}
       >
         {tag}
       </span>
