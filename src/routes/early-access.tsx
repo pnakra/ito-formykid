@@ -23,8 +23,8 @@ export const Route = createFileRoute("/early-access")({
   component: EarlyAccessPage,
 });
 
-// Early access opens October 1, 2026 (Central Time).
-const LAUNCH_DATE = new Date("2026-10-01T09:00:00-05:00");
+// Early access opens October 1, 2026, 5:00 PM Central Time.
+const LAUNCH_DATE = new Date("2026-10-01T17:00:00-05:00");
 
 type Role = "parent" | "aunt_uncle" | "grandparent" | "educator";
 const ROLES: { value: Role; label: string }[] = [
@@ -39,7 +39,7 @@ function Countdown() {
 
   useEffect(() => {
     setNow(Date.now());
-    const t = setInterval(() => setNow(Date.now()), 1000);
+    const t = setInterval(() => setNow(Date.now()), 30_000);
     return () => clearInterval(t);
   }, []);
 
@@ -48,12 +48,10 @@ function Countdown() {
   const parts = [
     { v: pad(Math.floor(diff / 86_400_000)), l: "days" },
     { v: pad(Math.floor((diff % 86_400_000) / 3_600_000)), l: "hrs" },
-    { v: pad(Math.floor((diff % 3_600_000) / 60_000)), l: "min" },
-    { v: pad(Math.floor((diff % 60_000) / 1000)), l: "sec" },
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-2 lg:gap-3">
+    <div className="grid grid-cols-2 gap-2 lg:gap-3">
       {parts.map((p) => (
         <div
           key={p.l}
