@@ -38,6 +38,7 @@ export const joinWaitlist = createServerFn({ method: "POST" })
       .object({
         email: z.string().trim().toLowerCase().email().max(254),
         name: z.string().trim().max(100).optional().nullable(),
+        role: z.enum(["parent", "aunt_uncle", "grandparent", "educator"]).optional().nullable(),
         utm_source: utm,
         utm_medium: utm,
         utm_campaign: utm,
