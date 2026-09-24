@@ -31,6 +31,7 @@ export const unlockSite = createServerFn({ method: "POST" })
   });
 
 const utm = z.string().trim().max(200).optional().nullable();
+const roleValue = z.enum(["parent", "aunt_uncle", "grandparent", "educator"]);
 
 export const joinWaitlist = createServerFn({ method: "POST" })
   .inputValidator((d) =>
@@ -38,7 +39,7 @@ export const joinWaitlist = createServerFn({ method: "POST" })
       .object({
         email: z.string().trim().toLowerCase().email().max(254),
         name: z.string().trim().max(100).optional().nullable(),
-        role: z.enum(["parent", "aunt_uncle", "grandparent", "educator"]).optional().nullable(),
+        roles: z.array(roleValue).max(4).optional().nullable(),
         utm_source: utm,
         utm_medium: utm,
         utm_campaign: utm,
@@ -51,9 +52,11 @@ export const joinWaitlist = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { roles, ...rest } = data;
     const { error } = await supabaseAdmin.from("waitlist_signups").upsert(
       {
-        ...data,
+        ...rest,
+        roles: roles && roles.length > 0 ? roles : null,
         name: data.name || null,
         user_agent: (getRequestHeader("user-agent") ?? "").slice(0, 300),
       },
