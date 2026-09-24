@@ -1,0 +1,66 @@
+import { createServerFn } from "@tanstack/react-start";
+import { getCookie, setCookie, getRequestHeader } from "@tanstack/react-start/server";
+import { z } from "zod";
+
+const COOKIE = "itok_access";
+
+async function token(pw: string) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`itok:${pw}`));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+export const checkAccess = createServerFn({ method: "GET" }).handler(async () => {
+  const pw = process.env["SITE_ACCESS_PASSWORD"];
+  if (!pw) return { ok: false };
+  return { ok: getCookie(COOKIE) === (await token(pw)) };
+});
+
+export const unlockSite = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ password: z.string().min(1).max(200) }).parse(d))
+  .handler(async ({ data }) => {
+    const pw = process.env["SITE_ACCESS_PASSWORD"];
+    if (!pw || data.password !== pw) return { ok: false };
+    setCookie(COOKIE, await token(pw), {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+    });
+    return { ok: true };
+  });
+
+const utm = z.string().trim().max(200).optional().nullable();
+
+export const joinWaitlist = createServerFn({ method: "POST" })
+  .inputValidator((d) =>
+    z
+      .object({
+        email: z.string().trim().toLowerCase().email().max(254),
+        name: z.string().trim().max(100).optional().nullable(),
+        utm_source: utm,
+        utm_medium: utm,
+        utm_campaign: utm,
+        utm_content: utm,
+        utm_term: utm,
+        referrer: z.string().max(500).optional().nullable(),
+        landing_path: z.string().max(500).optional().nullable(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("waitlist_signups").upsert(
+      {
+        ...data,
+        name: data.name || null,
+        user_agent: (getRequestHeader("user-agent") ?? "").slice(0, 300),
+      },
+      { onConflict: "email", ignoreDuplicates: true },
+    );
+    if (error) {
+      console.error("waitlist insert failed", error);
+      return { ok: false };
+    }
+    return { ok: true };
+  });

@@ -1,5 +1,6 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { AuthProvider } from "@/hooks/useAuth";
+import { enforceAccess } from "@/lib/accessGate";
 
 import appCss from "../styles.css?url";
 
@@ -28,6 +29,7 @@ function NotFoundComponent() {
 }
 
 export const Route = createRootRoute({
+  beforeLoad: ({ location }) => enforceAccess(location.pathname),
   head: () => ({
     meta: [
       { charSet: "utf-8" },
