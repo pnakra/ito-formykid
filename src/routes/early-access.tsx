@@ -331,8 +331,10 @@ function EarlyAccessPage() {
               </p>
             </form>
 
-            <div className="mt-10 grid gap-3">
+            <div className="mt-10 grid gap-3 lg:mt-14 lg:grid-cols-2 lg:gap-4">
               <Tile
+                solid
+                className="lg:col-span-2"
                 tag="Who it's for"
                 title="Parents and teachers"
                 body="For grown-ups who want to understand kids, not spy on them."
@@ -348,9 +350,33 @@ function EarlyAccessPage() {
                 body="We invite a few people at a time. Your feedback shapes it."
               />
               <Tile
+                className="lg:col-span-2"
                 tag="Your privacy"
                 title="We never see their phone"
                 body="Nonprofit. We don't sell or share your data. Ever."
+                icon={
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    className="h-4 w-4 text-primary"
+                  >
+                    <rect
+                      x="4.5"
+                      y="9"
+                      width="11"
+                      height="7.5"
+                      rx="2"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                    />
+                    <path
+                      d="M7 9V6.5a3 3 0 0 1 6 0V9"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                }
               />
             </div>
           </>
@@ -358,7 +384,7 @@ function EarlyAccessPage() {
       </div>
 
       <footer className="relative border-t border-border/60 py-7">
-        <div className="mx-auto flex max-w-lg items-center justify-between px-5 text-[15px] text-hint">
+        <div className="mx-auto flex max-w-lg items-center justify-between px-5 text-[15px] text-hint lg:max-w-3xl lg:px-10">
           <span>Made by Override Labs, a nonprofit.</span>
           <Link to="/unlock" className="hover:text-primary transition-colors">
             Team
