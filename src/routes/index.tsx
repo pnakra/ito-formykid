@@ -58,7 +58,7 @@ function LandingPage() {
       <header className="border-b">
         <div className="mx-auto flex h-14 max-w-2xl items-center justify-between px-5">
           <Link to="/" className="text-[15px] font-medium tracking-[0.06em] text-hint">
-            is this ok? for my kid
+            is this ok for my kid?
           </Link>
           <Link to="/login" className="text-[15px] text-hint hover:text-foreground transition-colors">
             Sign in
@@ -171,7 +171,7 @@ function LandingPage() {
 
       <footer className="border-t py-10">
         <div className="mx-auto max-w-2xl px-5">
-          <p className="text-[15px] font-medium text-foreground mb-2">is this ok? for my kid</p>
+          <p className="text-[15px] font-medium text-foreground mb-2">is this ok for my kid?</p>
           <p className="text-[15px] text-hint leading-[1.75] mb-4">
             Made by Override Labs, a nonprofit. We are not affiliated with any platform, creator, or advertiser.
           </p>
