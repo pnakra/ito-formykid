@@ -346,8 +346,7 @@ function EarlyAccessPage() {
               <Tile
                 tag="What you get"
                 title="A calm, plain answer"
-                 What it is. Whether it's common. One way to start the talk. Other
-                 things to watch out for.
+                 body="What it is. Whether it's common. One way to start the talk. Other things to watch out for."
               />
               <Tile
                 tag="Early access"
@@ -358,8 +357,7 @@ function EarlyAccessPage() {
                 className="lg:col-span-2"
                 tag="Your privacy"
                 title="We never see their phone"
-                 We're a nonprofit. We won't sell your data or try and track who you
-                 are.
+                 body="We're a nonprofit. We won't sell your data or try and track who you are."
                 icon={
                   <svg
                     viewBox="0 0 20 20"
