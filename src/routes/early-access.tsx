@@ -397,7 +397,7 @@ function EarlyAccessPage() {
             >
               Override Labs
             </a>
-            , a 501(c)3 nonprofit.
+            , a 501(c)3 nonprofit. We also build isthisok.app, a private self-reflection space for teens.
           </span>
           <Link to="/unlock" className="hover:text-primary transition-colors">
             Team
