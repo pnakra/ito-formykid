@@ -4,7 +4,7 @@ import { Users, MessageCircle, Sparkles, Lock } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { joinWaitlist, getWaitlistCount } from "@/lib/earlyAccess.functions";
+import { joinWaitlist } from "@/lib/earlyAccess.functions";
 
 const TITLE = "is this ok? for my kid — early access";
 const DESC =
@@ -110,20 +110,12 @@ function Tile({
 
 function EarlyAccessPage() {
   const join = useServerFn(joinWaitlist);
-  const count = useServerFn(getWaitlistCount);
   const [email, setEmail] = useState("");
   const [roles, setRoles] = useState<Role[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
-  const [signups, setSignups] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    count()
-      .then((r) => setSignups(r.count))
-      .catch(() => {});
-  }, [count]);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -331,9 +323,6 @@ function EarlyAccessPage() {
               </Button>
               <p className="text-center text-[15px] text-hint">
                  No spam. We'll email you only when it's ready.
-                {signups !== null && signups > 0
-                  ? ` You'd join ${signups}.`
-                  : ""}
               </p>
             </form>
 
