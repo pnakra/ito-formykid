@@ -338,7 +338,7 @@ function EarlyAccessPage() {
                 solid
                 className="lg:col-span-2"
                 tag="Who it's for"
-                title="Parents and teachers"
+                title="Parents, teachers, others who care about kids around them"
                 body="For grown-ups who want to understand kids, not spy on them."
               />
               <Tile
