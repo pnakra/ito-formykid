@@ -387,7 +387,18 @@ function EarlyAccessPage() {
 
       <footer className="relative border-t border-border/60 py-7">
         <div className="mx-auto flex max-w-lg items-center justify-between px-5 text-[15px] text-hint lg:max-w-3xl lg:px-10">
-          <span>Made by Override Labs, a nonprofit.</span>
+          <span>
+            Made by{" "}
+            <a
+              href="https://overridelabsprevention.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary underline underline-offset-2 transition-colors"
+            >
+              Override Labs
+            </a>
+            , a nonprofit.
+          </span>
           <Link to="/unlock" className="hover:text-primary transition-colors">
             Team
           </Link>
