@@ -10,18 +10,25 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhyRouteImport } from './routes/why'
+import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ScanRouteImport } from './routes/scan'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 
 const WhyRoute = WhyRouteImport.update({
   id: '/why',
   path: '/why',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnlockRoute = UnlockRouteImport.update({
+  id: '/unlock',
+  path: '/unlock',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -54,6 +61,11 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EarlyAccessRoute = EarlyAccessRouteImport.update({
+  id: '/early-access',
+  path: '/early-access',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AccountRoute = AccountRouteImport.update({
   id: '/account',
   path: '/account',
@@ -68,35 +80,41 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/early-access': typeof EarlyAccessRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
+  '/unlock': typeof UnlockRoute
   '/why': typeof WhyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/early-access': typeof EarlyAccessRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
+  '/unlock': typeof UnlockRoute
   '/why': typeof WhyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/early-access': typeof EarlyAccessRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
+  '/unlock': typeof UnlockRoute
   '/why': typeof WhyRoute
 }
 export interface FileRouteTypes {
@@ -104,46 +122,54 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/account'
+    | '/early-access'
     | '/history'
     | '/home'
     | '/login'
     | '/results'
     | '/scan'
     | '/signup'
+    | '/unlock'
     | '/why'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/account'
+    | '/early-access'
     | '/history'
     | '/home'
     | '/login'
     | '/results'
     | '/scan'
     | '/signup'
+    | '/unlock'
     | '/why'
   id:
     | '__root__'
     | '/'
     | '/account'
+    | '/early-access'
     | '/history'
     | '/home'
     | '/login'
     | '/results'
     | '/scan'
     | '/signup'
+    | '/unlock'
     | '/why'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  EarlyAccessRoute: typeof EarlyAccessRoute
   HistoryRoute: typeof HistoryRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   ResultsRoute: typeof ResultsRoute
   ScanRoute: typeof ScanRoute
   SignupRoute: typeof SignupRoute
+  UnlockRoute: typeof UnlockRoute
   WhyRoute: typeof WhyRoute
 }
 
@@ -154,6 +180,13 @@ declare module '@tanstack/react-router' {
       path: '/why'
       fullPath: '/why'
       preLoaderRoute: typeof WhyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unlock': {
+      id: '/unlock'
+      path: '/unlock'
+      fullPath: '/unlock'
+      preLoaderRoute: typeof UnlockRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -198,6 +231,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/early-access': {
+      id: '/early-access'
+      path: '/early-access'
+      fullPath: '/early-access'
+      preLoaderRoute: typeof EarlyAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/account': {
       id: '/account'
       path: '/account'
@@ -218,12 +258,14 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  EarlyAccessRoute: EarlyAccessRoute,
   HistoryRoute: HistoryRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   ResultsRoute: ResultsRoute,
   ScanRoute: ScanRoute,
   SignupRoute: SignupRoute,
+  UnlockRoute: UnlockRoute,
   WhyRoute: WhyRoute,
 }
 export const routeTree = rootRouteImport
