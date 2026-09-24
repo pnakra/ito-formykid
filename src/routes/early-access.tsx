@@ -101,7 +101,7 @@ function EarlyAccessPage() {
   const join = useServerFn(joinWaitlist);
   const count = useServerFn(getWaitlistCount);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<Role | null>(null);
+  const [roles, setRoles] = useState<Role[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
