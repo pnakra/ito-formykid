@@ -128,7 +128,7 @@ function EarlyAccessPage() {
       const res = await join({
         data: {
           email: value,
-          role,
+          roles,
           utm_source: p.get("utm_source"),
           utm_medium: p.get("utm_medium"),
           utm_campaign: p.get("utm_campaign"),
@@ -225,24 +225,54 @@ function EarlyAccessPage() {
             <form onSubmit={submit} className="mt-6 flex flex-col gap-3" noValidate>
               <fieldset>
                 <legend className="mb-2 text-[15px] font-medium text-foreground">
-                  Which fits you best?
+                  Which fits you? Pick any.
                 </legend>
                 <div className="grid gap-2">
-                  {ROLES.map((r) => (
-                    <button
-                      key={r.value}
-                      type="button"
-                      aria-pressed={role === r.value}
-                      onClick={() => setRole(r.value)}
-                      className={`rounded-2xl border px-4 py-3 text-left text-[16px] transition-colors ${
-                        role === r.value
-                          ? "border-primary bg-primary/15 text-foreground"
-                          : "border-border/80 bg-card text-muted-foreground"
-                      }`}
-                    >
-                      {r.label}
-                    </button>
-                  ))}
+                  {ROLES.map((r) => {
+                    const checked = roles.includes(r.value);
+                    return (
+                      <button
+                        key={r.value}
+                        type="button"
+                        role="checkbox"
+                        aria-checked={checked}
+                        onClick={() =>
+                          setRoles((prev) =>
+                            checked
+                              ? prev.filter((v) => v !== r.value)
+                              : [...prev, r.value],
+                          )
+                        }
+                        className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-left text-[16px] transition-colors ${
+                          checked
+                            ? "border-primary bg-primary/15 text-foreground"
+                            : "border-border/80 bg-card text-muted-foreground"
+                        }`}
+                      >
+                        <span
+                          aria-hidden
+                          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
+                            checked
+                              ? "border-primary bg-primary text-background"
+                              : "border-border/80 bg-background"
+                          }`}
+                        >
+                          {checked && (
+                            <svg viewBox="0 0 20 20" fill="none" className="h-3.5 w-3.5">
+                              <path
+                                d="M4 10.5 8.2 14.5 16 5.5"
+                                stroke="currentColor"
+                                strokeWidth="2.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          )}
+                        </span>
+                        {r.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </fieldset>
               <Input
