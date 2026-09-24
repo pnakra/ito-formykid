@@ -339,6 +339,7 @@ function EarlyAccessPage() {
                 icon={<ShieldAlert size={16} className="text-primary" />}
               />
               <Tile
+                className="lg:col-span-2"
                 tag="What you get"
                 title="How serious it is, and what to say"
                 body="A plain read on how serious it is. The words to start the talk — and where to report if it's serious."
