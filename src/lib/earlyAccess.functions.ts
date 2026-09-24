@@ -75,7 +75,7 @@ export const joinWaitlist = createServerFn({ method: "POST" })
         const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
         const labels: Record<string, string> = {
           parent: "I have kids",
-          pibling: "Aunt, uncle, or pibling",
+          aunt_uncle: "Aunt, uncle, or pibling",
           grandparent: "I have grandkids",
           educator: "Educator or coach",
         };
