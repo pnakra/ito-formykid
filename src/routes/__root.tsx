@@ -42,8 +42,8 @@ export const Route = createRootRoute({
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "is this ok? for my kid — understand what your child sees online" },
       { name: "twitter:description", content: "A calm orientation tool helping parents understand harmful online content and how to talk about it with their teens." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/967bf54b-b021-49c5-abd9-2b8b264f20a6" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/967bf54b-b021-49c5-abd9-2b8b264f20a6" },
+      { property: "og:image", content: "https://formykid.isthisok.app/og-image.png" },
+      { name: "twitter:image", content: "https://formykid.isthisok.app/og-image.png" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
@@ -58,6 +58,7 @@ export const Route = createRootRoute({
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "icon", type: "image/png", href: "/favicon.png" },
     ],
   }),
   shellComponent: RootShell,
