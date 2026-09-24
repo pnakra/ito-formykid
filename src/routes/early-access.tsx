@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
-import { Users, MessageCircle, Sparkles, Lock } from "lucide-react";
+import { ShieldAlert, MessageCircle, Sparkles, Lock } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { joinWaitlist } from "@/lib/earlyAccess.functions";
 
 const TITLE = "is this ok? for my kid — early access";
 const DESC =
-  "Describe what you saw on your kid's device, or something you heard them say. Get a plain read on what it is, and how to talk to them about it.";
+  "Tell us what you saw or heard. Find out if your kid is at risk, causing harm, or just being a teen.";
 
 export const Route = createFileRoute("/early-access")({
   head: () => ({
@@ -227,14 +227,14 @@ function EarlyAccessPage() {
           <>
             <section className="mt-12 lg:mt-16">
               <h1 className="text-[40px] leading-[1.08] font-bold text-foreground lg:text-[56px]">
-                Know what to say.
+                When something feels wrong.
                 <br />
-                <span className="text-primary">Not just what they saw.</span>
+                <span className="text-primary">Know what to do.</span>
               </h1>
               <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground lg:text-[20px]">
-                 Describe what you saw on your kid's device, or something you heard
-                 them say. Get a plain read on what it is, and how to talk to them
-                 about it.
+                 A scary message, a nude photo, a chat with a stranger, a cruel
+                 group chat. Tell us what you saw or heard, and find out if your
+                 kid is at risk, causing harm, or just being a teen.
               </p>
             </section>
 
@@ -329,28 +329,28 @@ function EarlyAccessPage() {
             <div className="mt-10 grid gap-3 lg:mt-14 lg:grid-cols-2 lg:gap-4">
               <Tile
                 className="lg:col-span-2"
-                tag="Who it's for"
-                title="Parents, teachers, others who care about kids around them"
-                body="For grown-ups who want to understand kids, not spy on them."
-                icon={<Users size={16} className="text-primary" />}
+                tag="Both worries"
+                title="Getting hurt, or hurting someone"
+                body="Someone may be pressuring your kid. Or your kid may be sharing something cruel or illegal without knowing it."
+                icon={<ShieldAlert size={16} className="text-primary" />}
               />
               <Tile
-                tag="What you get"
-                title="A calm, plain answer"
-                 body="What it is. Whether it's common. One way to start the talk. Other things to watch out for."
+                tag="Real risks"
+                title="Not just teen slang"
+                body="Threats over photos, fake nudes, strangers in game chats, pushy partners, group chat pile-ons."
                 icon={<MessageCircle size={16} className="text-primary" />}
               />
               <Tile
-                tag="Early access"
-                title="A small group first"
-                body="We invite a few people at a time. Your feedback shapes it."
+                tag="What you get"
+                title="What to do, and what not to"
+                body="A plain read on how serious it is. Then the first thing to do and the words to use."
                 icon={<Sparkles size={16} className="text-primary" />}
               />
               <Tile
                 className="lg:col-span-2"
-                tag="PRIVACY"
+                tag="No spying"
                 title="We never see their phone"
-                 body="We're a nonprofit. We won't sell your data or try and track who you are."
+                body="Spy apps show you what. We help you understand it and know what to say. We're a nonprofit and never sell your data."
                 icon={<Lock size={16} className="text-primary" />}
               />
             </div>
