@@ -9,6 +9,7 @@ export function markUnlocked() {
 }
 
 export async function enforceAccess(pathname: string) {
+  if (pathname.startsWith("/lovable/")) return;
   if (PUBLIC.some((p) => pathname === p || pathname.startsWith(p + "/"))) return;
   if (unlocked) return;
   const { ok } = await checkAccess();

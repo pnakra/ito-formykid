@@ -53,18 +53,49 @@ export const joinWaitlist = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { roles, ...rest } = data;
-    const { error } = await supabaseAdmin.from("waitlist_signups").upsert(
-      {
-        ...rest,
-        roles: roles && roles.length > 0 ? roles : null,
-        name: data.name || null,
-        user_agent: (getRequestHeader("user-agent") ?? "").slice(0, 300),
-      },
-      { onConflict: "email", ignoreDuplicates: true },
-    );
+    const { data: inserted, error } = await supabaseAdmin
+      .from("waitlist_signups")
+      .upsert(
+        {
+          ...rest,
+          roles: roles && roles.length > 0 ? roles : null,
+          name: data.name || null,
+          user_agent: (getRequestHeader("user-agent") ?? "").slice(0, 300),
+        },
+        { onConflict: "email", ignoreDuplicates: true },
+      )
+      .select("id, created_at");
     if (error) {
       console.error("waitlist insert failed", error);
       return { ok: false };
+    }
+    const row = inserted?.[0];
+    if (row) {
+      try {
+        const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+        const labels: Record<string, string> = {
+          parent: "I have kids",
+          pibling: "Aunt, uncle, or pibling",
+          grandparent: "I have grandkids",
+          educator: "Educator or coach",
+        };
+        await sendTemplateEmail("new-signup-alert", "priya@overridelabsprevention.org", {
+          idempotencyKey: `new-signup-alert-${row.id}`,
+          templateData: {
+            email: data.email,
+            roles: (roles ?? []).map((r) => labels[r] ?? r).join(", "),
+            source: data.utm_source ?? "",
+            campaign: data.utm_campaign ?? "",
+            signedUpAt: new Date(row.created_at).toLocaleString("en-US", {
+              timeZone: "America/Chicago",
+              dateStyle: "medium",
+              timeStyle: "short",
+            }) + " CT",
+          },
+        });
+      } catch (e) {
+        console.error("signup alert email failed", e);
+      }
     }
     return { ok: true };
   });
