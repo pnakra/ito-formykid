@@ -263,7 +263,7 @@ function EarlyAccessPage() {
 
             <div className="mt-8 lg:mt-12">
               <p className="mb-3 text-[12px] font-medium uppercase tracking-[0.14em] text-hint">
-                Opens October 1
+                OPENS OCTOBER 1ST, 2026
               </p>
               <Countdown />
             </div>
