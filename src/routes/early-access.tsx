@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,13 +53,13 @@ function Countdown() {
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-2">
+    <div className="grid grid-cols-4 gap-2 lg:gap-3">
       {parts.map((p) => (
         <div
           key={p.l}
-          className="rounded-2xl bg-card border border-border/80 py-3 text-center"
+          className="rounded-2xl bg-card border border-border/80 py-3 text-center lg:rounded-3xl lg:py-5"
         >
-          <div className="font-display text-[30px] leading-none font-bold tabular-nums text-primary">
+          <div className="font-display text-[30px] leading-none font-bold tabular-nums text-primary lg:text-[40px]">
             {now === null ? "––" : p.v}
           </div>
           <div className="mt-1.5 text-[11px] uppercase tracking-[0.14em] text-hint">
@@ -76,23 +76,48 @@ function Tile({
   title,
   body,
   className = "",
+  solid = false,
+  icon,
 }: {
   tag: string;
   title: string;
   body: string;
   className?: string;
+  solid?: boolean;
+  icon?: ReactNode;
 }) {
+  const box = solid
+    ? "rounded-3xl border border-primary/60 bg-primary p-5 lg:p-7"
+    : "rounded-3xl bg-card border border-border/80 p-5 lg:p-7";
+  const titleColor = solid ? "text-background" : "text-foreground";
+  const bodyColor = solid ? "text-background/80" : "text-muted-foreground";
   return (
-    <div
-      className={`rounded-3xl bg-card border border-border/80 p-5 ${className}`}
-    >
-      <span className="inline-block rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-primary">
+    <div className={`${box} ${className}`}>
+      <span
+        className={`inline-block rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] ${
+          solid
+            ? "bg-background/15 text-background"
+            : "bg-primary/15 text-primary"
+        }`}
+      >
         {tag}
       </span>
-      <h3 className="mt-3 text-[20px] font-bold text-foreground">{title}</h3>
-      <p className="mt-1.5 text-[16px] leading-[1.55] text-muted-foreground">
-        {body}
-      </p>
+      <h3
+        className={`mt-3 flex items-center gap-2.5 text-[20px] font-bold ${titleColor}`}
+      >
+        {icon && (
+          <span
+            aria-hidden
+            className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-full lg:flex ${
+              solid ? "bg-background/15" : "bg-primary/15"
+            }`}
+          >
+            {icon}
+          </span>
+        )}
+        {title}
+      </h3>
+      <p className={`mt-1.5 text-[16px] leading-[1.55] ${bodyColor}`}>{body}</p>
     </div>
   );
 }
