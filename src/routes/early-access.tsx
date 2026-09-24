@@ -227,14 +227,14 @@ function EarlyAccessPage() {
           <>
             <section className="mt-12 lg:mt-16">
               <h1 className="text-[40px] leading-[1.08] font-bold text-foreground lg:text-[56px]">
-                When something feels wrong.
+                Something feels off.
                 <br />
-                <span className="text-primary">Know what to do.</span>
+                <span className="text-primary">Know how serious it is.</span>
               </h1>
               <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground lg:text-[20px]">
                  A scary message, a nude photo, a chat with a stranger, a cruel
-                 group chat. Tell us what you saw or heard, and find out if your
-                 kid is at risk, causing harm, or just being a teen.
+                 group chat. Find out how serious it is, how to talk about it,
+                 and where to report it.
               </p>
             </section>
 
@@ -342,8 +342,8 @@ function EarlyAccessPage() {
               />
               <Tile
                 tag="What you get"
-                title="What to do, and what not to"
-                body="A plain read on how serious it is. Then the first thing to do and the words to use."
+                title="How serious it is, and what to say"
+                body="A plain read on how serious it is. The words to start the talk — and where to report if it's serious."
                 icon={<Sparkles size={16} className="text-primary" />}
               />
               <Tile
