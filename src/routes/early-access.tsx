@@ -331,9 +331,6 @@ function EarlyAccessPage() {
               </Button>
               <p className="text-center text-[15px] text-hint">
                  No spam. We'll email you only when it's ready.
-                {signups !== null && signups > 0
-                  ? ` You'd join ${signups}.`
-                  : ""}
               </p>
             </form>
 
