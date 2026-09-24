@@ -187,7 +187,7 @@ function EarlyAccessPage() {
   return (
     <div className="theme-launch relative isolate min-h-screen flex flex-col">
       
-      <div className="relative flex-1 w-full max-w-lg mx-auto px-5 pt-8 pb-16">
+      <div className="relative flex-1 w-full max-w-lg mx-auto px-5 pt-8 pb-16 lg:max-w-3xl lg:px-10 lg:pt-14 lg:pb-24">
         <div className="flex items-center justify-between">
           <span className="font-display text-[17px] font-bold tracking-tight text-foreground">
             is this ok?
@@ -202,7 +202,7 @@ function EarlyAccessPage() {
         </div>
 
         {done ? (
-          <section className="mt-16">
+          <section className="mt-16 lg:max-w-xl">
             <h1 className="text-[34px] leading-[1.15] font-bold text-foreground">
               You're on the list.
             </h1>
@@ -228,31 +228,35 @@ function EarlyAccessPage() {
           </section>
         ) : (
           <>
-            <section className="mt-12">
-              <h1 className="text-[40px] leading-[1.08] font-bold text-foreground">
+            <section className="mt-12 lg:mt-16">
+              <h1 className="text-[40px] leading-[1.08] font-bold text-foreground lg:text-[56px]">
                 Know what to say.
                 <br />
                 <span className="text-primary">Not just what they saw.</span>
               </h1>
-              <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground">
+              <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground lg:text-[20px]">
                 Describe what you saw on your kid's phone. Get plain answers and
                 one good way to talk about it.
               </p>
             </section>
 
-            <div className="mt-8">
+            <div className="mt-8 lg:mt-12">
               <p className="mb-3 text-[12px] font-medium uppercase tracking-[0.14em] text-hint">
                 Opens October 1
               </p>
               <Countdown />
             </div>
 
-            <form onSubmit={submit} className="mt-6 flex flex-col gap-3" noValidate>
+            <form
+              onSubmit={submit}
+              className="mt-6 flex flex-col gap-3 lg:mt-12 lg:gap-5 lg:rounded-[28px] lg:bg-card lg:border lg:border-border/80 lg:p-8"
+              noValidate
+            >
               <fieldset>
                 <legend className="mb-2 text-[15px] font-medium text-foreground">
                   Which fits you? Pick any.
                 </legend>
-                <div className="grid gap-2">
+                <div className="grid gap-2 lg:grid-cols-2 lg:gap-3">
                   {ROLES.map((r) => {
                     const checked = roles.includes(r.value);
                     return (
