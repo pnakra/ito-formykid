@@ -329,28 +329,28 @@ function EarlyAccessPage() {
             <div className="mt-10 grid gap-3 lg:mt-14 lg:grid-cols-2 lg:gap-4">
               <Tile
                 className="lg:col-span-2"
-                tag="Who it's for"
-                title="Parents, teachers, others who care about kids around them"
-                body="For grown-ups who want to understand kids, not spy on them."
-                icon={<Users size={16} className="text-primary" />}
+                tag="Both worries"
+                title="Getting hurt, or hurting someone"
+                body="Someone may be pressuring your kid. Or your kid may be sharing something cruel or illegal without knowing it."
+                icon={<ShieldAlert size={16} className="text-primary" />}
               />
               <Tile
-                tag="What you get"
-                title="A calm, plain answer"
-                 body="What it is. Whether it's common. One way to start the talk. Other things to watch out for."
+                tag="Real risks"
+                title="Not just teen slang"
+                body="Threats over photos, fake nudes, strangers in game chats, pushy partners, group chat pile-ons."
                 icon={<MessageCircle size={16} className="text-primary" />}
               />
               <Tile
-                tag="Early access"
-                title="A small group first"
-                body="We invite a few people at a time. Your feedback shapes it."
+                tag="What you get"
+                title="What to do, and what not to"
+                body="A plain read on how serious it is. Then the first thing to do and the words to use."
                 icon={<Sparkles size={16} className="text-primary" />}
               />
               <Tile
                 className="lg:col-span-2"
-                tag="PRIVACY"
+                tag="No spying"
                 title="We never see their phone"
-                 body="We're a nonprofit. We won't sell your data or try and track who you are."
+                body="Spy apps show you what. We help you understand it and know what to say. We're a nonprofit and never sell your data."
                 icon={<Lock size={16} className="text-primary" />}
               />
             </div>
