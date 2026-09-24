@@ -352,6 +352,10 @@ function EarlyAccessPage() {
                 icon={<Lock size={16} className="text-primary" />}
               />
             </div>
+
+            <p className="mt-8 text-[14px] leading-[1.6] text-hint">
+              If your child is in danger right now, call or text 988 (Suicide and Crisis Lifeline) or text HOME to 741741 (Crisis Text Line). We're not a crisis line — please don't wait on us in an emergency.
+            </p>
           </>
         )}
       </div>
