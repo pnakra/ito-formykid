@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { joinWaitlist } from "@/lib/earlyAccess.functions";
+import { joinWaitlist, getWaitlistCount } from "@/lib/earlyAccess.functions";
 
 const TITLE = "is this ok? for my kid — early access";
 const DESC =
@@ -25,6 +25,58 @@ export const Route = createFileRoute("/early-access")({
 
 const serif = { fontFamily: "var(--font-serif)", fontWeight: 400 } as const;
 
+// Early access opens October 1, 2026 (Central Time).
+const LAUNCH_DATE = new Date("2026-10-01T09:00:00-05:00");
+const LAUNCH_LABEL = "Early access opens October 1";
+
+function CountdownBlock() {
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    setNow(Date.now());
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  let parts: { value: string; label: string }[] | null = null;
+  if (now !== null) {
+    const diff = Math.max(0, LAUNCH_DATE.getTime() - now);
+    const days = Math.floor(diff / 86_400_000);
+    const hours = Math.floor((diff % 86_400_000) / 3_600_000);
+    const mins = Math.floor((diff % 3_600_000) / 60_000);
+    const secs = Math.floor((diff % 60_000) / 1000);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    parts = [
+      { value: String(days), label: "days" },
+      { value: pad(hours), label: "hours" },
+      { value: pad(mins), label: "min" },
+      { value: pad(secs), label: "sec" },
+    ];
+  }
+
+  return (
+    <div className="rounded-[14px] border border-border/60 bg-card px-5 py-4">
+      <p className="label-text mb-2">{LAUNCH_LABEL.toUpperCase()}</p>
+      <div className="flex items-baseline gap-5 tabular-nums">
+        {parts
+          ? parts.map((p) => (
+              <div key={p.label} className="flex flex-col">
+                <span className="text-[26px] leading-none text-foreground" style={serif}>
+                  {p.value}
+                </span>
+                <span className="text-[13px] text-hint mt-1">{p.label}</span>
+              </div>
+            ))
+          : (
+            <span className="text-[26px] leading-none text-hint" style={serif}>
+              —
+            </span>
+          )}
+      </div>
+    </div>
+  );
+}
+
 function ValueCard({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="p-4 rounded-[14px] bg-card border border-border/60 flex gap-4">
@@ -44,11 +96,18 @@ function ValueCard({ label, children }: { label: string; children: React.ReactNo
 
 function EarlyAccessPage() {
   const join = useServerFn(joinWaitlist);
+  const count = useServerFn(getWaitlistCount);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+  const [signups, setSignups] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    count().then((r) => setSignups(r.count)).catch(() => {});
+  }, [count]);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -84,6 +143,15 @@ function EarlyAccessPage() {
     setLoading(false);
   };
 
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.origin + "/early-access");
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <header className="border-b">
@@ -99,11 +167,20 @@ function EarlyAccessPage() {
               You're on the list.
             </h1>
             <p className="text-[18px] text-muted-foreground leading-[1.7] mb-3">
-              We'll email <span className="text-foreground">{email.trim()}</span> when early access opens. That's the only email you'll get until then.
+              We'll email <span className="text-foreground">{email.trim()}</span> when early access opens on October 1. That's the only email you'll get until then.
             </p>
             <p className="text-[18px] text-muted-foreground leading-[1.7]">
               Changed your mind? Reply to that email and we'll delete your address.
             </p>
+            <div className="mt-6 p-4 rounded-[14px] bg-card border border-border/60">
+              <p className="label-text mb-2">KNOW ANOTHER PARENT?</p>
+              <p className="text-[15px] text-muted-foreground leading-[1.6] mb-3">
+                Send them this page. Everyone on the list hears first.
+              </p>
+              <Button variant="outline" size="sm" onClick={copyLink}>
+                {copied ? "Copied" : "Copy page link"}
+              </Button>
+            </div>
           </section>
         ) : (
           <div className="flex flex-col gap-8">
@@ -115,6 +192,8 @@ function EarlyAccessPage() {
                 Saw something on your kid's phone? Describe it. Get plain answers and one good way to talk about it.
               </p>
             </header>
+
+            <CountdownBlock />
 
             <form onSubmit={submit} className="flex flex-col gap-3" noValidate>
               <Input
@@ -141,7 +220,8 @@ function EarlyAccessPage() {
                 {loading ? "Saving…" : "Get early access"}
               </Button>
               <p className="text-[15px] text-hint leading-[1.6]">
-                Free. No spam. One email when access opens.
+                Free. No spam. One email on October 1.
+                {signups !== null && signups > 0 ? ` You'd join ${signups} ${signups === 1 ? "parent" : "parents"}.` : ""}
               </p>
             </form>
 

@@ -64,3 +64,17 @@ export const joinWaitlist = createServerFn({ method: "POST" })
     }
     return { ok: true };
   });
+
+export const getWaitlistCount = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { count, error } = await supabaseAdmin
+      .from("waitlist_signups")
+      .select("email", { count: "exact", head: true });
+    if (error) {
+      console.error("waitlist count failed", error);
+      return { count: 0 };
+    }
+    return { count: count ?? 0 };
+  },
+);
