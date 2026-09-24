@@ -227,14 +227,14 @@ function EarlyAccessPage() {
           <>
             <section className="mt-12 lg:mt-16">
               <h1 className="text-[40px] leading-[1.08] font-bold text-foreground lg:text-[56px]">
-                Know what to say.
+                When something feels wrong.
                 <br />
-                <span className="text-primary">Not just what they saw.</span>
+                <span className="text-primary">Know what to do.</span>
               </h1>
               <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground lg:text-[20px]">
-                 Describe what you saw on your kid's device, or something you heard
-                 them say. Get a plain read on what it is, and how to talk to them
-                 about it.
+                 A scary message, a nude photo, a chat with a stranger, a cruel
+                 group chat. Tell us what you saw or heard, and find out if your
+                 kid is at risk, causing harm, or just being a teen.
               </p>
             </section>
 
