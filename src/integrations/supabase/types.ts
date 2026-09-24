@@ -302,6 +302,7 @@ export type Database = {
           name: string | null
           referrer: string | null
           role: string | null
+          roles: string[] | null
           user_agent: string | null
           utm_campaign: string | null
           utm_content: string | null
@@ -317,6 +318,7 @@ export type Database = {
           name?: string | null
           referrer?: string | null
           role?: string | null
+          roles?: string[] | null
           user_agent?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
@@ -332,6 +334,7 @@ export type Database = {
           name?: string | null
           referrer?: string | null
           role?: string | null
+          roles?: string[] | null
           user_agent?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
