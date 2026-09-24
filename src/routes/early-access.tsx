@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,13 +53,13 @@ function Countdown() {
   ];
 
   return (
-    <div className="grid grid-cols-4 gap-2">
+    <div className="grid grid-cols-4 gap-2 lg:gap-3">
       {parts.map((p) => (
         <div
           key={p.l}
-          className="rounded-2xl bg-card border border-border/80 py-3 text-center"
+          className="rounded-2xl bg-card border border-border/80 py-3 text-center lg:rounded-3xl lg:py-5"
         >
-          <div className="font-display text-[30px] leading-none font-bold tabular-nums text-primary">
+          <div className="font-display text-[30px] leading-none font-bold tabular-nums text-primary lg:text-[40px]">
             {now === null ? "––" : p.v}
           </div>
           <div className="mt-1.5 text-[11px] uppercase tracking-[0.14em] text-hint">
@@ -76,23 +76,51 @@ function Tile({
   title,
   body,
   className = "",
+  solid = false,
+  icon,
 }: {
   tag: string;
   title: string;
   body: string;
   className?: string;
+  solid?: boolean;
+  icon?: ReactNode;
 }) {
+  const box = solid
+    ? "rounded-3xl border p-5 lg:p-7 border-border/80 bg-card lg:border-primary/60 lg:bg-primary"
+    : "rounded-3xl bg-card border border-border/80 p-5 lg:p-7";
+  const tagClass = solid
+    ? "bg-primary/15 text-primary lg:bg-background/15 lg:text-background"
+    : "bg-primary/15 text-primary";
+  const titleColor = solid
+    ? "text-foreground lg:text-background"
+    : "text-foreground";
+  const bodyColor = solid
+    ? "text-muted-foreground lg:text-background/80"
+    : "text-muted-foreground";
   return (
-    <div
-      className={`rounded-3xl bg-card border border-border/80 p-5 ${className}`}
-    >
-      <span className="inline-block rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-primary">
+    <div className={`${box} ${className}`}>
+      <span
+        className={`inline-block rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] ${tagClass}`}
+      >
         {tag}
       </span>
-      <h3 className="mt-3 text-[20px] font-bold text-foreground">{title}</h3>
-      <p className="mt-1.5 text-[16px] leading-[1.55] text-muted-foreground">
-        {body}
-      </p>
+      <h3
+        className={`mt-3 flex items-center gap-2.5 text-[20px] font-bold ${titleColor}`}
+      >
+        {icon && (
+          <span
+            aria-hidden
+            className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-full lg:flex ${
+              solid ? "bg-background/15" : "bg-primary/15"
+            }`}
+          >
+            {icon}
+          </span>
+        )}
+        {title}
+      </h3>
+      <p className={`mt-1.5 text-[16px] leading-[1.55] ${bodyColor}`}>{body}</p>
     </div>
   );
 }
@@ -162,7 +190,7 @@ function EarlyAccessPage() {
   return (
     <div className="theme-launch relative isolate min-h-screen flex flex-col">
       
-      <div className="relative flex-1 w-full max-w-lg mx-auto px-5 pt-8 pb-16">
+      <div className="relative flex-1 w-full max-w-lg mx-auto px-5 pt-8 pb-16 lg:max-w-3xl lg:px-10 lg:pt-14 lg:pb-24">
         <div className="flex items-center justify-between">
           <span className="font-display text-[17px] font-bold tracking-tight text-foreground">
             is this ok?
@@ -177,7 +205,7 @@ function EarlyAccessPage() {
         </div>
 
         {done ? (
-          <section className="mt-16">
+          <section className="mt-16 lg:max-w-xl">
             <h1 className="text-[34px] leading-[1.15] font-bold text-foreground">
               You're on the list.
             </h1>
@@ -203,31 +231,35 @@ function EarlyAccessPage() {
           </section>
         ) : (
           <>
-            <section className="mt-12">
-              <h1 className="text-[40px] leading-[1.08] font-bold text-foreground">
+            <section className="mt-12 lg:mt-16">
+              <h1 className="text-[40px] leading-[1.08] font-bold text-foreground lg:text-[56px]">
                 Know what to say.
                 <br />
                 <span className="text-primary">Not just what they saw.</span>
               </h1>
-              <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground">
+              <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground lg:text-[20px]">
                 Describe what you saw on your kid's phone. Get plain answers and
                 one good way to talk about it.
               </p>
             </section>
 
-            <div className="mt-8">
+            <div className="mt-8 lg:mt-12">
               <p className="mb-3 text-[12px] font-medium uppercase tracking-[0.14em] text-hint">
                 Opens October 1
               </p>
               <Countdown />
             </div>
 
-            <form onSubmit={submit} className="mt-6 flex flex-col gap-3" noValidate>
+            <form
+              onSubmit={submit}
+              className="mt-6 flex flex-col gap-3 lg:mt-12 lg:gap-5 lg:rounded-[28px] lg:bg-card lg:border lg:border-border/80 lg:p-8"
+              noValidate
+            >
               <fieldset>
                 <legend className="mb-2 text-[15px] font-medium text-foreground">
                   Which fits you? Pick any.
                 </legend>
-                <div className="grid gap-2">
+                <div className="grid gap-2 lg:grid-cols-2 lg:gap-3">
                   {ROLES.map((r) => {
                     const checked = roles.includes(r.value);
                     return (
@@ -302,8 +334,10 @@ function EarlyAccessPage() {
               </p>
             </form>
 
-            <div className="mt-10 grid gap-3">
+            <div className="mt-10 grid gap-3 lg:mt-14 lg:grid-cols-2 lg:gap-4">
               <Tile
+                solid
+                className="lg:col-span-2"
                 tag="Who it's for"
                 title="Parents and teachers"
                 body="For grown-ups who want to understand kids, not spy on them."
@@ -319,9 +353,33 @@ function EarlyAccessPage() {
                 body="We invite a few people at a time. Your feedback shapes it."
               />
               <Tile
+                className="lg:col-span-2"
                 tag="Your privacy"
                 title="We never see their phone"
                 body="Nonprofit. We don't sell or share your data. Ever."
+                icon={
+                  <svg
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    className="h-4 w-4 text-primary"
+                  >
+                    <rect
+                      x="4.5"
+                      y="9"
+                      width="11"
+                      height="7.5"
+                      rx="2"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                    />
+                    <path
+                      d="M7 9V6.5a3 3 0 0 1 6 0V9"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                }
               />
             </div>
           </>
@@ -329,7 +387,7 @@ function EarlyAccessPage() {
       </div>
 
       <footer className="relative border-t border-border/60 py-7">
-        <div className="mx-auto flex max-w-lg items-center justify-between px-5 text-[15px] text-hint">
+        <div className="mx-auto flex max-w-lg items-center justify-between px-5 text-[15px] text-hint lg:max-w-3xl lg:px-10">
           <span>Made by Override Labs, a nonprofit.</span>
           <Link to="/unlock" className="hover:text-primary transition-colors">
             Team
