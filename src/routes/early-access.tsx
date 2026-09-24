@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { Users, MessageCircle, Sparkles, Lock } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -342,16 +343,19 @@ function EarlyAccessPage() {
                 tag="Who it's for"
                 title="Parents, teachers, others who care about kids around them"
                 body="For grown-ups who want to understand kids, not spy on them."
+                icon={<Users size={16} className="text-primary" />}
               />
               <Tile
                 tag="What you get"
                 title="A calm, plain answer"
                  body="What it is. Whether it's common. One way to start the talk. Other things to watch out for."
+                icon={<MessageCircle size={16} className="text-primary" />}
               />
               <Tile
                 tag="Early access"
                 title="A small group first"
                 body="We invite a few people at a time. Your feedback shapes it."
+                icon={<Sparkles size={16} className="text-primary" />}
               />
               <Tile
                 className="lg:col-span-2"
