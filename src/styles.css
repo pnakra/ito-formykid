@@ -55,6 +55,9 @@
   --color-hint: var(--hint);
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+
 }
 
 :root {
@@ -102,6 +105,40 @@
   --sidebar-border: oklch(0.88 0.01 80);
   --sidebar-ring: oklch(0.36 0.05 145);
 }
+
+/* Scoped theme for the early access launch page: deep ink + fresh green. */
+.theme-launch {
+  --radius: 1rem;
+  --background: oklch(0.19 0.03 165);
+  --foreground: oklch(0.97 0.01 150);
+  --card: oklch(0.24 0.035 165);
+  --card-foreground: oklch(0.97 0.01 150);
+  --popover: oklch(0.24 0.035 165);
+  --popover-foreground: oklch(0.97 0.01 150);
+  --primary: oklch(0.78 0.19 155);
+  --primary-foreground: oklch(0.19 0.05 165);
+  --secondary: oklch(0.28 0.04 165);
+  --secondary-foreground: oklch(0.95 0.01 150);
+  --muted: oklch(0.28 0.04 165);
+  --muted-foreground: oklch(0.78 0.02 155);
+  --accent: oklch(0.32 0.06 165);
+  --accent-foreground: oklch(0.97 0.01 150);
+  --border: oklch(0.34 0.04 165);
+  --input: oklch(0.34 0.04 165);
+  --ring: oklch(0.78 0.19 155);
+  --hint: oklch(0.68 0.02 155);
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+  font-family: var(--font-body);
+}
+
+.theme-launch h1,
+.theme-launch h2,
+.theme-launch h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
 
 @layer base {
   * {
