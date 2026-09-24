@@ -7,7 +7,7 @@ import { joinWaitlist, getWaitlistCount } from "@/lib/earlyAccess.functions";
 
 const TITLE = "is this ok? for my kid — early access";
 const DESC =
-  "A calm guide for parents. Describe what you noticed online, get plain context and one good way to talk about it. Free, from a nonprofit.";
+  "Describe what you saw on your kid's phone. Get plain answers and one good way to talk about it. Free, from a nonprofit.";
 
 export const Route = createFileRoute("/early-access")({
   head: () => ({
@@ -23,13 +23,10 @@ export const Route = createFileRoute("/early-access")({
   component: EarlyAccessPage,
 });
 
-const serif = { fontFamily: "var(--font-serif)", fontWeight: 400 } as const;
-
 // Early access opens October 1, 2026 (Central Time).
 const LAUNCH_DATE = new Date("2026-10-01T09:00:00-05:00");
-const LAUNCH_LABEL = "Early access opens October 1";
 
-function CountdownBlock() {
+function Countdown() {
   const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
@@ -38,58 +35,56 @@ function CountdownBlock() {
     return () => clearInterval(t);
   }, []);
 
-  let parts: { value: string; label: string }[] | null = null;
-  if (now !== null) {
-    const diff = Math.max(0, LAUNCH_DATE.getTime() - now);
-    const days = Math.floor(diff / 86_400_000);
-    const hours = Math.floor((diff % 86_400_000) / 3_600_000);
-    const mins = Math.floor((diff % 3_600_000) / 60_000);
-    const secs = Math.floor((diff % 60_000) / 1000);
-    const pad = (n: number) => String(n).padStart(2, "0");
-    parts = [
-      { value: String(days), label: "days" },
-      { value: pad(hours), label: "hours" },
-      { value: pad(mins), label: "min" },
-      { value: pad(secs), label: "sec" },
-    ];
-  }
+  const diff = now === null ? 0 : Math.max(0, LAUNCH_DATE.getTime() - now);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const parts = [
+    { v: pad(Math.floor(diff / 86_400_000)), l: "days" },
+    { v: pad(Math.floor((diff % 86_400_000) / 3_600_000)), l: "hrs" },
+    { v: pad(Math.floor((diff % 3_600_000) / 60_000)), l: "min" },
+    { v: pad(Math.floor((diff % 60_000) / 1000)), l: "sec" },
+  ];
 
   return (
-    <div className="rounded-[14px] border border-border/60 bg-card px-5 py-4">
-      <p className="label-text mb-2">{LAUNCH_LABEL.toUpperCase()}</p>
-      <div className="flex items-baseline gap-5 tabular-nums">
-        {parts
-          ? parts.map((p) => (
-              <div key={p.label} className="flex flex-col">
-                <span className="text-[26px] leading-none text-foreground" style={serif}>
-                  {p.value}
-                </span>
-                <span className="text-[13px] text-hint mt-1">{p.label}</span>
-              </div>
-            ))
-          : (
-            <span className="text-[26px] leading-none text-hint" style={serif}>
-              —
-            </span>
-          )}
-      </div>
+    <div className="grid grid-cols-4 gap-2">
+      {parts.map((p) => (
+        <div
+          key={p.l}
+          className="rounded-2xl bg-card border border-border/80 py-3 text-center"
+        >
+          <div className="font-display text-[30px] leading-none font-bold tabular-nums text-primary">
+            {now === null ? "––" : p.v}
+          </div>
+          <div className="mt-1.5 text-[11px] uppercase tracking-[0.14em] text-hint">
+            {p.l}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-function ValueCard({ label, children }: { label: string; children: React.ReactNode }) {
+function Tile({
+  tag,
+  title,
+  body,
+  className = "",
+}: {
+  tag: string;
+  title: string;
+  body: string;
+  className?: string;
+}) {
   return (
-    <div className="p-4 rounded-[14px] bg-card border border-border/60 flex gap-4">
-      <div
-        aria-hidden
-        className="w-5 h-5 mt-0.5 rounded-full border border-primary shrink-0 flex items-center justify-center"
-      >
-        <span className="w-2 h-2 rounded-full bg-primary" />
-      </div>
-      <div>
-        <p className="label-text mb-1">{label}</p>
-        <div className="text-[15px] leading-relaxed text-foreground">{children}</div>
-      </div>
+    <div
+      className={`rounded-3xl bg-card border border-border/80 p-5 ${className}`}
+    >
+      <span className="inline-block rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-primary">
+        {tag}
+      </span>
+      <h3 className="mt-3 text-[20px] font-bold text-foreground">{title}</h3>
+      <p className="mt-1.5 text-[16px] leading-[1.55] text-muted-foreground">
+        {body}
+      </p>
     </div>
   );
 }
@@ -106,7 +101,9 @@ function EarlyAccessPage() {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    count().then((r) => setSignups(r.count)).catch(() => {});
+    count()
+      .then((r) => setSignups(r.count))
+      .catch(() => {});
   }, [count]);
 
   const submit = async (e: FormEvent) => {
@@ -145,7 +142,9 @@ function EarlyAccessPage() {
 
   const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.origin + "/early-access");
+      await navigator.clipboard.writeText(
+        window.location.origin + "/early-access",
+      );
       setCopied(true);
     } catch {
       setCopied(false);
@@ -153,56 +152,81 @@ function EarlyAccessPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <header className="border-b">
-        <div className="mx-auto flex h-14 max-w-xl items-center px-5">
-          <span className="text-[15px] font-medium tracking-[0.06em] text-hint">is this ok? for my kid</span>
-        </div>
-      </header>
+    <div className="theme-launch min-h-screen flex flex-col">
+      {/* soft green glow behind the top of the page */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_at_top,color-mix(in_oklab,var(--primary)_22%,transparent),transparent_70%)]"
+      />
 
-      <main className="flex-1 w-full max-w-md mx-auto px-5 pt-10 pb-16">
+      <div className="relative flex-1 w-full max-w-lg mx-auto px-5 pt-8 pb-16">
+        <div className="flex items-center justify-between">
+          <span className="font-display text-[17px] font-bold tracking-tight text-foreground">
+            is this ok?
+          </span>
+          <span className="flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[12px] font-medium text-primary">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-70" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+            </span>
+            Early access
+          </span>
+        </div>
+
         {done ? (
-          <section className="pt-4">
-            <h1 className="text-[28px] md:text-[34px] leading-[1.25] mb-4 text-foreground" style={serif}>
+          <section className="mt-16">
+            <h1 className="text-[34px] leading-[1.15] font-bold text-foreground">
               You're on the list.
             </h1>
-            <p className="text-[18px] text-muted-foreground leading-[1.7] mb-3">
-              We'll email <span className="text-foreground">{email.trim()}</span> when early access opens on October 1. That's the only email you'll get until then.
+            <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground">
+              We'll email{" "}
+              <span className="text-primary">{email.trim()}</span> when early
+              access opens. That's the only email you'll get.
             </p>
-            <p className="text-[18px] text-muted-foreground leading-[1.7]">
-              Changed your mind? Reply to that email and we'll delete your address.
-            </p>
-            <div className="mt-6 p-4 rounded-[14px] bg-card border border-border/60">
-              <p className="label-text mb-2">KNOW ANOTHER PARENT?</p>
-              <p className="text-[15px] text-muted-foreground leading-[1.6] mb-3">
+            <div className="mt-8 rounded-3xl bg-card border border-border/80 p-5">
+              <h3 className="text-[20px] font-bold text-foreground">
+                Know another parent?
+              </h3>
+              <p className="mt-1.5 text-[16px] text-muted-foreground">
                 Send them this page. Everyone on the list hears first.
               </p>
-              <Button variant="outline" size="sm" onClick={copyLink}>
+              <Button
+                onClick={copyLink}
+                className="mt-4 h-11 rounded-full px-5 font-medium"
+              >
                 {copied ? "Copied" : "Copy page link"}
               </Button>
             </div>
           </section>
         ) : (
-          <div className="flex flex-col gap-8">
-            <header className="flex flex-col gap-3">
-              <h1 className="text-[30px] md:text-[34px] leading-[1.2] text-foreground" style={serif}>
-                A calm second opinion for parents.
+          <>
+            <section className="mt-12">
+              <h1 className="text-[40px] leading-[1.08] font-bold text-foreground">
+                Know what to say.
+                <br />
+                <span className="text-primary">Not just what they saw.</span>
               </h1>
-              <p className="text-[18px] leading-[1.6] text-muted-foreground">
-                Saw something on your kid's phone? Describe it. Get plain answers and one good way to talk about it.
+              <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground">
+                Describe what you saw on your kid's phone. Get plain answers and
+                one good way to talk about it.
               </p>
-            </header>
+            </section>
 
-            <CountdownBlock />
+            <div className="mt-8">
+              <p className="mb-3 text-[12px] font-medium uppercase tracking-[0.14em] text-hint">
+                Opens October 1
+              </p>
+              <Countdown />
+            </div>
 
-            <form onSubmit={submit} className="flex flex-col gap-3" noValidate>
+            <form onSubmit={submit} className="mt-6 flex flex-col gap-3" noValidate>
               <Input
                 aria-label="First name (optional)"
                 autoComplete="given-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="First name (optional)"
-                className="h-12 text-[18px] bg-card"
+                className="h-13 rounded-2xl border-border/80 bg-card px-4 text-[17px]"
               />
               <Input
                 id="email"
@@ -212,58 +236,57 @@ function EarlyAccessPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="h-12 text-[18px] bg-card"
+                className="h-13 rounded-2xl border-border/80 bg-card px-4 text-[17px]"
                 required
               />
               {error && <p className="text-[15px] text-destructive">{error}</p>}
-              <Button type="submit" size="lg" disabled={loading} className="w-full h-12 text-[17px]">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="h-13 rounded-2xl text-[17px] font-bold"
+              >
                 {loading ? "Saving…" : "Get early access"}
               </Button>
-              <p className="text-[15px] text-hint leading-[1.6]">
-                Free. No spam. One email on October 1.
-                {signups !== null && signups > 0 ? ` You'd join ${signups} ${signups === 1 ? "parent" : "parents"}.` : ""}
+              <p className="text-center text-[15px] text-hint">
+                Free. No spam. One email when it opens.
+                {signups !== null && signups > 0
+                  ? ` You'd join ${signups}.`
+                  : ""}
               </p>
             </form>
 
-            <div className="grid gap-3">
-              <ValueCard label="WHO IT'S FOR">
-                Parents who want to understand, not spy. A consent coach for the online stuff.
-              </ValueCard>
-              <ValueCard label="WHAT YOU GET">
-                What it is, in plain words. Whether it's common, and one way to start the talk.
-              </ValueCard>
-              <ValueCard label="WHAT EARLY ACCESS MEANS">
-                We invite a small group at a time. Your feedback shapes what we build.
-              </ValueCard>
+            <div className="mt-10 grid gap-3">
+              <Tile
+                tag="Who it's for"
+                title="Parents and teachers"
+                body="For grown-ups who want to understand kids, not spy on them."
+              />
+              <Tile
+                tag="What you get"
+                title="A calm, plain answer"
+                body="What it is. Whether it's common. One way to start the talk."
+              />
+              <Tile
+                tag="Early access"
+                title="A small group first"
+                body="We invite a few people at a time. Your feedback shapes it."
+              />
+              <Tile
+                tag="Your privacy"
+                title="We never see their phone"
+                body="Nonprofit. We don't sell or share your data. Ever."
+              />
             </div>
-
-            <section className="pt-4 border-t border-border">
-              <div className="bg-primary/5 rounded-[14px] p-4">
-                <p className="label-text mb-3">YOUR PRIVACY</p>
-                <ul className="text-[15px] leading-[1.6] text-muted-foreground grid gap-2">
-                  <li className="flex items-start gap-2">
-                    <span aria-hidden className="mt-2 w-1.5 h-1.5 rounded-full bg-hint shrink-0" />
-                    Nonprofit. We never sell or share your data.
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span aria-hidden className="mt-2 w-1.5 h-1.5 rounded-full bg-hint shrink-0" />
-                    We keep your email and first name, only to tell you when access opens.
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span aria-hidden className="mt-2 w-1.5 h-1.5 rounded-full bg-hint shrink-0" />
-                    We never see your child's phone, accounts, or messages.
-                  </li>
-                </ul>
-              </div>
-            </section>
-          </div>
+          </>
         )}
-      </main>
+      </div>
 
-      <footer className="border-t py-8">
-        <div className="mx-auto max-w-md px-5 flex items-center justify-between text-[15px] text-hint">
+      <footer className="relative border-t border-border/60 py-7">
+        <div className="mx-auto flex max-w-lg items-center justify-between px-5 text-[15px] text-hint">
           <span>Made by Override Labs, a nonprofit.</span>
-          <Link to="/unlock" className="hover:text-foreground transition-colors">Team</Link>
+          <Link to="/unlock" className="hover:text-primary transition-colors">
+            Team
+          </Link>
         </div>
       </footer>
     </div>
