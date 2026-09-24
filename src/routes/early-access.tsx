@@ -232,9 +232,13 @@ function EarlyAccessPage() {
                 <span className="text-primary">Know how serious it is.</span>
               </h1>
               <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground lg:text-[20px]">
-                 A scary message, a nude photo, a chat with a stranger, a cruel
-                 group chat. Find out how serious it is, how to talk about it,
-                 and where to report it.
+                 A concerning message.{"\u00a0"}
+                 <br />
+                 A confusing term they used at dinner.{"\u00a0"}
+                 <br />
+                 A joke they made with friends that made you nervous.
+                 <br />
+                 Find out how serious it is, and how to talk about it.
               </p>
             </section>
 
@@ -335,9 +339,9 @@ function EarlyAccessPage() {
                 icon={<ShieldAlert size={16} className="text-primary" />}
               />
               <Tile
-                tag="Real risks"
-                title="Not just teen slang"
-                body="Threats over photos, fake nudes, strangers in game chats, pushy partners, group chat pile-ons."
+                tag=""
+                title=""
+                body=""
                 icon={<MessageCircle size={16} className="text-primary" />}
               />
               <Tile
@@ -348,9 +352,9 @@ function EarlyAccessPage() {
               />
               <Tile
                 className="lg:col-span-2"
-                tag="No spying"
-                title="We never see their phone"
-                body="Spy apps show you what. We help you understand it and know what to say. We're a nonprofit and never sell your data."
+                tag="NO ULTERIOR MOTIVES"
+                title="No surveillance or tracking"
+                body="We help you understand what they see, hear, or say, and know how to respond. We're a nonprofit and never sell your data."
                 icon={<Lock size={16} className="text-primary" />}
               />
             </div>
