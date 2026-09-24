@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { joinWaitlist } from "@/lib/earlyAccess.functions";
 
-const TITLE = "is this ok? for my kid — early access";
+const TITLE = "is this ok for my kid? — early access";
 const DESC =
   "Tell us what you saw or heard. Find out if your kid is at risk, causing harm, or just being a teen.";
 
@@ -174,7 +174,7 @@ function EarlyAccessPage() {
       <div className="relative flex-1 w-full max-w-lg mx-auto px-5 pt-8 pb-8 lg:max-w-3xl lg:px-10 lg:pt-14 lg:pb-12">
         <div className="flex items-center justify-between">
           <span className="font-display text-[17px] font-bold tracking-tight text-foreground">
-             is this ok? for my kid
+             is this ok for my kid?
           </span>
           <span className="flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[12px] font-medium text-primary">
             <span className="relative flex h-2 w-2">
@@ -361,7 +361,16 @@ function EarlyAccessPage() {
             </div>
 
             <p className="mt-8 text-[14px] leading-[1.6] text-hint">
-              If your child is in danger right now, call or text 988 (Suicide and Crisis Lifeline) or text HOME to 741741 (Crisis Text Line). We're not a crisis line. Please don't wait on us in an emergency.
+              If your child is in danger right now, call or text 988 (Suicide and Crisis Lifeline) or text HOME to 741741 (Crisis Text Line). If someone is threatening to share private images of your child,{" "}
+              <a
+                href="https://takeitdown.ncmec.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-primary transition-colors"
+              >
+                Take It Down
+              </a>{" "}
+              can help get them removed. We're not a crisis line. Please don't wait on us in an emergency.
             </p>
           </>
         )}
