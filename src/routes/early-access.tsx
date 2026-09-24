@@ -397,7 +397,7 @@ function EarlyAccessPage() {
             >
               Override Labs
             </a>
-            , a nonprofit.
+            , a 501(c)3 nonprofit.
           </span>
           <Link to="/unlock" className="hover:text-primary transition-colors">
             Team
