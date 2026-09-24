@@ -23,8 +23,8 @@ export const Route = createFileRoute("/early-access")({
   component: EarlyAccessPage,
 });
 
-// Early access opens October 1, 2026 (Central Time).
-const LAUNCH_DATE = new Date("2026-10-01T09:00:00-05:00");
+// Early access opens October 1, 2026, 5:00 PM Central Time.
+const LAUNCH_DATE = new Date("2026-10-01T17:00:00-05:00");
 
 type Role = "parent" | "aunt_uncle" | "grandparent" | "educator";
 const ROLES: { value: Role; label: string }[] = [
