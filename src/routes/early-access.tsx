@@ -398,7 +398,16 @@ function EarlyAccessPage() {
               Override Labs
             </a>
             , a 501(c)3 nonprofit.
-            We also build isthisok.app, a private self-reflection space for teens.
+            We also build{" "}
+            <a
+              href="https://isthisok.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary underline underline-offset-2 transition-colors"
+            >
+              isthisok.app
+            </a>
+            , a private self-reflection space for teens.
           </span>
           <Link to="/unlock" className="hover:text-primary transition-colors">
             {"\n"}
