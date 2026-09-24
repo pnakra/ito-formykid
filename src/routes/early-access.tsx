@@ -362,29 +362,7 @@ function EarlyAccessPage() {
                 tag="PRIVACY"
                 title="We never see their phone"
                  body="We're a nonprofit. We won't sell your data or try and track who you are."
-                icon={
-                  <svg
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    className="h-4 w-4 text-primary"
-                  >
-                    <rect
-                      x="4.5"
-                      y="9"
-                      width="11"
-                      height="7.5"
-                      rx="2"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                    />
-                    <path
-                      d="M7 9V6.5a3 3 0 0 1 6 0V9"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                }
+                icon={<Lock size={16} className="text-primary" />}
               />
             </div>
           </>
