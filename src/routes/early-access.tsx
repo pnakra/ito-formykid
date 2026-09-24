@@ -165,7 +165,7 @@ function EarlyAccessPage() {
   return (
     <div className="theme-launch relative isolate min-h-screen flex flex-col">
       
-      <div className="relative flex-1 w-full max-w-lg mx-auto px-5 pt-8 pb-16 lg:max-w-3xl lg:px-10 lg:pt-14 lg:pb-24">
+      <div className="relative flex-1 w-full max-w-lg mx-auto px-5 pt-8 pb-8 lg:max-w-3xl lg:px-10 lg:pt-14 lg:pb-12">
         <div className="flex items-center justify-between">
           <span className="font-display text-[17px] font-bold tracking-tight text-foreground">
              is this ok? for my kid
