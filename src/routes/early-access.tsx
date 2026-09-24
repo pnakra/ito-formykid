@@ -204,14 +204,33 @@ function EarlyAccessPage() {
 
         {done ? (
           <section className="mt-16 lg:max-w-xl">
-            <h1 className="text-[34px] leading-[1.15] font-bold text-foreground">
+            <div
+              className="flex h-14 w-14 items-center justify-center rounded-full bg-primary"
+              aria-hidden
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="h-7 w-7 text-background"
+              >
+                <path
+                  d="M5 12.5 10 17.5 19 7"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <h1 className="mt-6 text-[34px] leading-[1.15] font-bold text-foreground">
               You're on the list.
             </h1>
             <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground">
-              We'll email{" "}
+              Your email is saved. We'll write to{" "}
               <span className="text-primary">{email.trim()}</span> when early
               access opens. That's the only email you'll get.
             </p>
+
             <div className="mt-8 rounded-3xl bg-card border border-border/80 p-5">
               <h3 className="text-[20px] font-bold text-foreground">
                 Know another parent?
