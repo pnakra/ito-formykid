@@ -7,7 +7,7 @@ import { joinWaitlist, getWaitlistCount } from "@/lib/earlyAccess.functions";
 
 const TITLE = "is this ok? for my kid — early access";
 const DESC =
-  "Describe what you saw on your kid's phone. Get plain answers and one good way to talk about it. Free, from a nonprofit.";
+  "Describe what you saw on your kid's device, or something you heard them say. Get a plain read on what it is, and how to talk to them about it.";
 
 export const Route = createFileRoute("/early-access")({
   head: () => ({
@@ -193,7 +193,7 @@ function EarlyAccessPage() {
       <div className="relative flex-1 w-full max-w-lg mx-auto px-5 pt-8 pb-16 lg:max-w-3xl lg:px-10 lg:pt-14 lg:pb-24">
         <div className="flex items-center justify-between">
           <span className="font-display text-[17px] font-bold tracking-tight text-foreground">
-            is this ok?
+             is this ok? for my kid
           </span>
           <span className="flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[12px] font-medium text-primary">
             <span className="relative flex h-2 w-2">
@@ -238,8 +238,9 @@ function EarlyAccessPage() {
                 <span className="text-primary">Not just what they saw.</span>
               </h1>
               <p className="mt-4 text-[18px] leading-[1.6] text-muted-foreground lg:text-[20px]">
-                Describe what you saw on your kid's phone. Get plain answers and
-                one good way to talk about it.
+                 Describe what you saw on your kid's device, or something you heard
+                 them say. Get a plain read on what it is, and how to talk to them
+                 about it.
               </p>
             </section>
 
@@ -257,7 +258,7 @@ function EarlyAccessPage() {
             >
               <fieldset>
                 <legend className="mb-2 text-[15px] font-medium text-foreground">
-                  Which fits you? Pick any.
+                  Which fits you? Pick one or many.
                 </legend>
                 <div className="grid gap-2 lg:grid-cols-2 lg:gap-3">
                   {ROLES.map((r) => {
@@ -327,7 +328,7 @@ function EarlyAccessPage() {
                 {loading ? "Saving…" : "Get early access"}
               </Button>
               <p className="text-center text-[15px] text-hint">
-                Free. No spam. One email when it opens.
+                 No spam. We'll email you only when it's ready.
                 {signups !== null && signups > 0
                   ? ` You'd join ${signups}.`
                   : ""}
@@ -345,7 +346,8 @@ function EarlyAccessPage() {
               <Tile
                 tag="What you get"
                 title="A calm, plain answer"
-                body="What it is. Whether it's common. One way to start the talk."
+                 What it is. Whether it's common. One way to start the talk. Other
+                 things to watch out for.
               />
               <Tile
                 tag="Early access"
@@ -356,7 +358,8 @@ function EarlyAccessPage() {
                 className="lg:col-span-2"
                 tag="Your privacy"
                 title="We never see their phone"
-                body="Nonprofit. We don't sell or share your data. Ever."
+                 We're a nonprofit. We won't sell your data or try and track who you
+                 are.
                 icon={
                   <svg
                     viewBox="0 0 20 20"
