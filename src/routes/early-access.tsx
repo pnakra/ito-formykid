@@ -74,51 +74,35 @@ function Tile({
   title,
   body,
   className = "",
-  solid = false,
   icon,
 }: {
   tag: string;
   title: string;
   body: string;
   className?: string;
-  solid?: boolean;
   icon?: ReactNode;
 }) {
-  const box = solid
-    ? "rounded-3xl border p-5 lg:p-7 border-border/80 bg-card lg:border-primary/60 lg:bg-primary"
-    : "rounded-3xl bg-card border border-border/80 p-5 lg:p-7";
-  const tagClass = solid
-    ? "bg-primary/15 text-primary lg:bg-background/15 lg:text-background"
-    : "bg-primary/15 text-primary";
-  const titleColor = solid
-    ? "text-foreground lg:text-background"
-    : "text-foreground";
-  const bodyColor = solid
-    ? "text-muted-foreground lg:text-background/80"
-    : "text-muted-foreground";
   return (
-    <div className={`${box} ${className}`}>
-      <span
-        className={`inline-block rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] ${tagClass}`}
-      >
+    <div
+      className={`rounded-3xl bg-card border border-border/80 p-5 lg:p-7 ${className}`}
+    >
+      <span className="inline-block rounded-full px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] bg-primary/15 text-primary">
         {tag}
       </span>
-      <h3
-        className={`mt-3 flex items-center gap-2.5 text-[20px] font-bold ${titleColor}`}
-      >
+      <h3 className="mt-3 flex items-center gap-2.5 text-[20px] font-bold text-foreground">
         {icon && (
           <span
             aria-hidden
-            className={`hidden h-9 w-9 shrink-0 items-center justify-center rounded-full lg:flex ${
-              solid ? "bg-background/15" : "bg-primary/15"
-            }`}
+            className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15 lg:flex"
           >
             {icon}
           </span>
         )}
         {title}
       </h3>
-      <p className={`mt-1.5 text-[16px] leading-[1.55] ${bodyColor}`}>{body}</p>
+      <p className="mt-1.5 text-[16px] leading-[1.55] text-muted-foreground">
+        {body}
+      </p>
     </div>
   );
 }
@@ -354,7 +338,6 @@ function EarlyAccessPage() {
 
             <div className="mt-10 grid gap-3 lg:mt-14 lg:grid-cols-2 lg:gap-4">
               <Tile
-                solid
                 className="lg:col-span-2"
                 tag="Who it's for"
                 title="Parents, teachers, others who care about kids around them"
