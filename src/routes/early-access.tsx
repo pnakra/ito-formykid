@@ -26,6 +26,14 @@ export const Route = createFileRoute("/early-access")({
 // Early access opens October 1, 2026 (Central Time).
 const LAUNCH_DATE = new Date("2026-10-01T09:00:00-05:00");
 
+type Role = "parent" | "aunt_uncle" | "grandparent" | "educator";
+const ROLES: { value: Role; label: string }[] = [
+  { value: "parent", label: "I have kids" },
+  { value: "aunt_uncle", label: "I'm an aunt, uncle, or pibling" },
+  { value: "grandparent", label: "I have grandkids" },
+  { value: "educator", label: "I work with kids as a teacher or coach" },
+];
+
 function Countdown() {
   const [now, setNow] = useState<number | null>(null);
 
@@ -93,7 +101,7 @@ function EarlyAccessPage() {
   const join = useServerFn(joinWaitlist);
   const count = useServerFn(getWaitlistCount);
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [role, setRole] = useState<Role | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
@@ -120,7 +128,7 @@ function EarlyAccessPage() {
       const res = await join({
         data: {
           email: value,
-          name: name.trim() || null,
+          role,
           utm_source: p.get("utm_source"),
           utm_medium: p.get("utm_medium"),
           utm_campaign: p.get("utm_campaign"),
@@ -215,14 +223,28 @@ function EarlyAccessPage() {
             </div>
 
             <form onSubmit={submit} className="mt-6 flex flex-col gap-3" noValidate>
-              <Input
-                aria-label="First name (optional)"
-                autoComplete="given-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="First name (optional)"
-                className="h-13 rounded-2xl border-border/80 bg-card px-4 text-[17px]"
-              />
+              <fieldset>
+                <legend className="mb-2 text-[15px] font-medium text-foreground">
+                  Which fits you best?
+                </legend>
+                <div className="grid gap-2">
+                  {ROLES.map((r) => (
+                    <button
+                      key={r.value}
+                      type="button"
+                      aria-pressed={role === r.value}
+                      onClick={() => setRole(r.value)}
+                      className={`rounded-2xl border px-4 py-3 text-left text-[16px] transition-colors ${
+                        role === r.value
+                          ? "border-primary bg-primary/15 text-foreground"
+                          : "border-border/80 bg-card text-muted-foreground"
+                      }`}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
               <Input
                 id="email"
                 type="email"
