@@ -353,7 +353,7 @@ function EarlyAccessPage() {
               />
               <Tile
                 className="lg:col-span-2"
-                tag="Your privacy"
+                tag="PRIVACY"
                 title="We never see their phone"
                  body="We're a nonprofit. We won't sell your data or try and track who you are."
                 icon={
