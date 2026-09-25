@@ -169,6 +169,17 @@ function EarlyAccessPage() {
     }
   };
 
+  const shareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        window.location.origin + "/early-access",
+      );
+      setShareCopied(true);
+    } catch {
+      setShareCopied(false);
+    }
+  };
+
   return (
     <div className="theme-launch relative isolate min-h-screen flex flex-col">
       
