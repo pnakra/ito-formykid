@@ -348,6 +348,18 @@ function EarlyAccessPage() {
               </p>
             </form>
 
+            <p className="mt-5 text-center text-[15px] text-hint">
+              Not a parent? Know one who needs this?{" "}
+              <button
+                type="button"
+                onClick={shareLink}
+                className="underline underline-offset-2 hover:text-primary transition-colors"
+              >
+                {shareCopied ? "Copied" : "Send them this page"}
+              </button>
+            </p>
+
+
             <div className="mt-10 grid gap-3 lg:mt-14 lg:grid-cols-2 lg:gap-4">
               <Tile
                 className="lg:col-span-2"
