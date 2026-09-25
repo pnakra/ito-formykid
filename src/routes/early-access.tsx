@@ -122,6 +122,7 @@ function EarlyAccessPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
