@@ -122,6 +122,7 @@ function EarlyAccessPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -165,6 +166,17 @@ function EarlyAccessPage() {
       setCopied(true);
     } catch {
       setCopied(false);
+    }
+  };
+
+  const shareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        window.location.origin + "/early-access",
+      );
+      setShareCopied(true);
+    } catch {
+      setShareCopied(false);
     }
   };
 
@@ -336,6 +348,18 @@ function EarlyAccessPage() {
               </p>
             </form>
 
+            <p className="mt-5 text-center text-[15px] text-hint">
+              Not a parent? Know one who needs this?{" "}
+              <button
+                type="button"
+                onClick={shareLink}
+                className="underline underline-offset-2 hover:text-primary transition-colors"
+              >
+                {shareCopied ? "Copied" : "Send them this page"}
+              </button>
+            </p>
+
+
             <div className="mt-10 grid gap-3 lg:mt-14 lg:grid-cols-2 lg:gap-4">
               <Tile
                 className="lg:col-span-2"
@@ -359,6 +383,35 @@ function EarlyAccessPage() {
                 icon={<Lock size={16} className="text-primary" />}
               />
             </div>
+
+            <section className="mt-10 lg:mt-14">
+              <p className="mb-3 text-[12px] font-medium uppercase tracking-[0.14em] text-hint">
+                WHAT YOU GET BACK
+              </p>
+              <div className="rounded-3xl bg-card border border-border/80 p-5 lg:p-7">
+                <p className="text-[15px] text-hint">
+                  "He started referring to girls as 'females'"
+                </p>
+                <div className="mt-4">
+                  <p className="text-[13px] uppercase tracking-[0.1em] text-hint mb-1">
+                    What this is
+                  </p>
+                  <p className="text-[16px] leading-[1.6] text-foreground">
+                    It's a word used in some online videos about dating and
+                    status. Boys often repeat it before they understand it.
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <p className="text-[13px] uppercase tracking-[0.1em] text-hint mb-1">
+                    One way to bring it up
+                  </p>
+                  <p className="text-[16px] leading-[1.6] text-foreground">
+                    "I heard you say 'females' the other day. What does that
+                    word mean to you?"
+                  </p>
+                </div>
+              </div>
+            </section>
 
             <p className="mt-8 text-[14px] leading-[1.6] text-hint">
               If your child is in danger right now, call or text 988 (Suicide and Crisis Lifeline) or text HOME to 741741 (Crisis Text Line). If someone is threatening to share private images of your child,{" "}
