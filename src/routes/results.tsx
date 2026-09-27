@@ -13,8 +13,14 @@ import { RefinementPanel, type RefinementValues } from "@/components/RefinementP
 export const Route = createFileRoute("/results")({
   head: () => ({
     meta: [
-      { title: "Your report — is this ok?" },
+      { title: "Your report — is this ok for my kid?" },
       { name: "description", content: "Your parent briefing — what it is, why it matters, and how to talk about it." },
+      { property: "og:title", content: "Your report — is this ok for my kid?" },
+      { property: "og:description", content: "Your parent briefing — what it is, why it matters, and how to talk about it." },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://formykid.isthisok.app/og-image.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://formykid.isthisok.app/og-image.png" },
     ],
   }),
   component: ResultsPage,

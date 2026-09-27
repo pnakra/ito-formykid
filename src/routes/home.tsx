@@ -11,8 +11,14 @@ import { ChevronRight, Search, TrendingUp } from "lucide-react";
 export const Route = createFileRoute("/home")({
   head: () => ({
     meta: [
-      { title: "Home — is this ok?" },
+      { title: "Home — is this ok for my kid?" },
       { name: "description", content: "Understand something worrying right now, or stay ahead of harmful online influence over time." },
+      { property: "og:title", content: "Home — is this ok for my kid?" },
+      { property: "og:description", content: "Understand something worrying right now, or stay ahead of harmful online influence over time." },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://formykid.isthisok.app/og-image.png" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://formykid.isthisok.app/og-image.png" },
     ],
   }),
   component: HomePage,
