@@ -45,6 +45,7 @@ export const Route = createRootRoute({
       { property: "og:image", content: "https://formykid.isthisok.app/og-image.png" },
       { name: "twitter:image", content: "https://formykid.isthisok.app/og-image.png" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "google-site-verification", content: "xr4x5H9hV0dwQOnoNptKRvSN5Nl2ae837bV20FyqKIs" },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
