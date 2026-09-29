@@ -23,7 +23,7 @@ export function DinnerPromptMockup() {
   </div></Frame>;
 }
 export function MomentCalendarMockup() {
-  return <Frame><div className="space-y-5"><Label>COMING UP · EXAMPLE</Label><Box><Heading>Your kid turns 13 next month</Heading><p className="mt-3 text-[15px] text-muted-foreground">Before new apps and accounts, talk about:</p><ul className="mt-4 space-y-3 text-[16px]">{["Who can reach them online", "What feels safe to share", "Who they can come to for help"].map((x, i) => <li key={x} className="flex gap-3"><span className="text-primary">0{i + 1}</span>{x}</li>)}</ul><span className="mt-6 inline-flex rounded-full bg-primary px-5 py-2 text-[14px] font-medium text-primary-foreground">Remind me</span></Box>
+  return <Frame><div className="space-y-5"><Label>COMING UP · EXAMPLE</Label><Box><Heading>Your kid turns 16 next month</Heading><p className="mt-3 text-[15px] text-muted-foreground">As they get more freedom, talk about:</p><ul className="mt-4 space-y-3 text-[16px]">{["How they want to be treated in a relationship", "What to do if someone shares a private photo", "Who they can call, any time, no questions asked"].map((x, i) => <li key={x} className="flex gap-3"><span className="text-primary">0{i + 1}</span>{x}</li>)}</ul><span className="mt-6 inline-flex rounded-full bg-primary px-5 py-2 text-[14px] font-medium text-primary-foreground">Remind me</span></Box>
   </div></Frame>;
 }
 export function GroupChatMockup() {
