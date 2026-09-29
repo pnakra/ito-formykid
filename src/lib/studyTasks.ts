@@ -22,3 +22,16 @@ export function tickTask(k: TaskKey) {
 
 // Tasks tick only when that page's Quick questions card is submitted.
 export function tickFromEvent(_event: string, _props: Record<string, unknown>) {}
+
+export const TASK_ORDER: { key: TaskKey; to: "/samples/$id" | "/scan"; id?: string; next: string }[] = [
+  { key: "joke", to: "/samples/$id", id: "joke", next: "" },
+  { key: "screenshot", to: "/samples/$id", id: "screenshot", next: "Next: screenshot sample" },
+  { key: "image", to: "/samples/$id", id: "image", next: "Next: image sample" },
+  { key: "live", to: "/scan", next: "Next: try it yourself" },
+];
+
+export function nextTask() {
+  const t = getTasks();
+  const n = TASK_ORDER.find((x) => !t[x.key]);
+  return n ?? null;
+}

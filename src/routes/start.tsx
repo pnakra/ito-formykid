@@ -121,6 +121,11 @@ function StartPage() {
               context, a proportionate next step, and help talking with your kid about respect,
               boundaries, and pressure.
             </p>
+            {isStudy && (
+              <Link to="/samples/$id" params={{ id: "joke" }} className="mt-10 block">
+                <Button size="lg" className="h-16 w-full rounded-2xl text-[18px]">Start task 1</Button>
+              </Link>
+            )}
             <div className="mt-10 grid gap-4 sm:grid-cols-2">
               <Link to="/scan" className="block">
                 <Button size="lg" className="h-16 w-full rounded-2xl text-[18px]">

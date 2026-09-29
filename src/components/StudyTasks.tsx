@@ -74,9 +74,15 @@ export function StudyTasks() {
                       {ok && <Check className="h-4 w-4" />}
                     </span>
                     <div className="min-w-0 flex-1 text-[16px] leading-snug">
-                      <span className={ok ? "text-hint line-through" : "text-foreground"}>
-                        {i + 1}. {item.label}
-                      </span>
+                      {item.key === "live" ? (
+                        <Link to="/scan" className={`underline underline-offset-4 ${ok ? "text-hint line-through" : "text-foreground"}`}>
+                          {i + 1}. {item.label}
+                        </Link>
+                      ) : (
+                        <Link to="/samples/$id" params={{ id: item.key }} className={`underline underline-offset-4 ${ok ? "text-hint line-through" : "text-foreground"}`}>
+                          {i + 1}. {item.label}
+                        </Link>
+                      )}
                       {item.key === "live" && (
                         <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-start">
                           <p className="min-w-0 flex-1 rounded-2xl border border-border/80 bg-background p-3 text-[15px] text-muted-foreground">

@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { saveStudyAnswers } from "@/lib/studyAnswers";
-import { tickTask, getTasks, type TaskKey } from "@/lib/studyTasks";
+import { tickTask, getTasks, nextTask, type TaskKey } from "@/lib/studyTasks";
+import { Link } from "@tanstack/react-router";
 
 export type QQ = {
   key: string;
@@ -83,7 +84,8 @@ export function QuickQuestions({ pageKey, questions }: { pageKey: TaskKey; quest
   if (done) {
     return (
       <section className="rounded-3xl border border-border/80 bg-card p-5">
-        <p className="text-[17px] text-foreground">Thanks. Next task is at the top of the page.</p>
+        <p className="text-[17px] text-foreground">Thanks.</p>
+        <NextButton />
       </section>
     );
   }
@@ -124,5 +126,27 @@ export function QuickQuestions({ pageKey, questions }: { pageKey: TaskKey; quest
         {busy ? "Sending…" : "Submit"}
       </Button>
     </section>
+  );
+}
+
+function NextButton() {
+  const n = nextTask();
+  const cls = "mt-4 h-14 w-full rounded-2xl text-[18px] sm:w-auto sm:px-8";
+  if (!n)
+    return (
+      <Link to="/study/done" resetScroll className="block">
+        <Button size="lg" className={cls}>Next: final questions</Button>
+      </Link>
+    );
+  if (n.to === "/scan")
+    return (
+      <Link to="/scan" resetScroll className="block">
+        <Button size="lg" className={cls}>{n.next}</Button>
+      </Link>
+    );
+  return (
+    <Link to="/samples/$id" params={{ id: n.id! }} resetScroll className="block">
+      <Button size="lg" className={cls}>{n.next}</Button>
+    </Link>
   );
 }
