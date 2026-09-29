@@ -2,18 +2,28 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
-import { AGE_OPTIONS, AUTOFILL_EXAMPLES, DESCRIBE_EXAMPLES } from "@/config/intake";
+import {
+  AGE_BANDS,
+  WHERE_OPTIONS,
+  FREQUENCY_OPTIONS,
+  QUESTION_OPTIONS,
+  DANGER_OPTIONS,
+  AUTOFILL_EXAMPLES,
+  DESCRIBE_EXAMPLES,
+} from "@/config/intake";
+
+const TITLE = "What are you trying to make sense of? — is this ok for my kid?";
+const DESC = "Describe what you noticed, or look up a term or creator. Get context and a next step.";
 
 export const Route = createFileRoute("/scan")({
   head: () => ({
     meta: [
-      { title: "Look something up — is this ok?" },
-      { name: "description", content: "Tell us what you noticed and we'll help you understand what's going on." },
-      { property: "og:title", content: "Look something up — is this ok?" },
-      { property: "og:description", content: "Tell us what you noticed and we'll help you understand what's going on." },
+      { title: TITLE },
+      { name: "description", content: DESC },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESC },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -22,65 +32,95 @@ export const Route = createFileRoute("/scan")({
 });
 
 type Mode = "describe" | "lookup";
-
 const MODE_KEY = "itok_input_mode";
+const MAX = 1500;
+
+function Pills({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: string[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <fieldset>
+      <legend className="mb-3 text-[17px] font-medium text-foreground">{label}</legend>
+      <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={label}>
+        {options.map((o) => {
+          const active = value === o;
+          return (
+            <button
+              key={o}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={() => onChange(active ? "" : o)}
+              className={`min-h-11 rounded-full border px-4 text-[16px] transition-colors ${
+                active
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-card text-foreground hover:border-primary/60"
+              }`}
+            >
+              {o}
+            </button>
+          );
+        })}
+      </div>
+    </fieldset>
+  );
+}
 
 function ScanPage() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>("describe");
-  const [description, setDescription] = useState("");
-  const [query, setQuery] = useState("");
-  const [age, setAge] = useState("");
+  const [text, setText] = useState("");
+  const [ageBand, setAgeBand] = useState("");
+  const [where, setWhere] = useState("");
+  const [frequency, setFrequency] = useState("");
+  const [question, setQuestion] = useState("");
+  const [danger, setDanger] = useState("");
 
   useEffect(() => {
     const storedMode = sessionStorage.getItem(MODE_KEY);
     if (storedMode === "lookup" || storedMode === "describe") setMode(storedMode);
-
-    const stored = sessionStorage.getItem("scanIntake");
-    if (stored) {
-      try {
-        const prior = JSON.parse(stored);
-        if (prior.age) setAge(prior.age);
-      } catch {
-        /* ignore */
-      }
-    }
   }, []);
 
-  const handleModeChange = (next: Mode) => {
-    if (next === mode) return;
-    if (mode === "describe") setDescription("");
-    else setQuery("");
+  const toggleLookup = (on: boolean) => {
+    const next: Mode = on ? "lookup" : "describe";
     setMode(next);
     sessionStorage.setItem(MODE_KEY, next);
   };
 
-  const value = mode === "describe" ? description : query;
   const examples = mode === "describe" ? DESCRIBE_EXAMPLES : AUTOFILL_EXAMPLES;
-
-  const appendExample = (example: string) => {
-    if (mode === "describe") {
-      setDescription(description ? `${description.trimEnd()} ${example}` : example);
-    } else {
-      setQuery(example);
-    }
-  };
+  const trimmed = text.trim();
 
   const handleSubmit = () => {
-    if (!value.trim()) return;
+    if (danger === "Yes") {
+      navigate({ to: "/help" });
+      return;
+    }
+    if (!trimmed || text.length > MAX) return;
     sessionStorage.setItem(MODE_KEY, mode);
     sessionStorage.setItem(
       "scanIntake",
       JSON.stringify({
-        age,
-        gender: "",
+        age: "",
+        age_band: ageBand,
+        where,
+        frequency,
+        question_on_mind: question,
+        danger_now: danger,
         concerns: [],
         observations: [],
-        query: value.trim(),
+        query: trimmed,
         inputMode: mode,
-      })
+      }),
     );
     navigate({ to: "/results" });
   };
@@ -88,107 +128,103 @@ function ScanPage() {
   if (authLoading) return null;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex min-h-screen flex-col bg-background">
       <Header isLoggedIn={!!user} />
 
       <main className="flex-1 py-10 md:py-16">
-        <div className="mx-auto max-w-[34rem] px-5">
-
-          {/* Mode selector — typographic, minimal */}
-          <div className="mb-8 flex items-center gap-6">
-            <button
-              type="button"
-              onClick={() => handleModeChange("describe")}
-              className={`text-[17px] pb-1 transition-colors ${
-                mode === "describe"
-                  ? "text-foreground font-medium border-b border-foreground"
-                  : "text-hint hover:text-foreground"
-              }`}
-            >
-              Something happened
-            </button>
-            <button
-              type="button"
-              onClick={() => handleModeChange("lookup")}
-              className={`text-[17px] pb-1 transition-colors ${
-                mode === "lookup"
-                  ? "text-foreground font-medium border-b border-foreground"
-                  : "text-hint hover:text-foreground"
-              }`}
-            >
-              Look something up
-            </button>
-          </div>
-
-          <h1
-            className="text-[22px] md:text-[26px] text-foreground leading-[1.3] mb-6"
-            style={{ fontFamily: "var(--font-serif)", fontWeight: 400 }}
-          >
-            {mode === "describe" ? "Describe what you noticed." : "What do you want to look up?"}
+        <div className="mx-auto max-w-2xl px-5">
+          <h1 className="font-display text-[30px] font-bold leading-[1.15] tracking-tight text-foreground md:text-[40px]">
+            What are you trying to make sense of?
           </h1>
 
-          {mode === "describe" ? (
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="A comment, an attitude shift, something they said…"
-              className="min-h-[160px] text-[18px] leading-relaxed rounded-[8px]"
-            />
-          ) : (
-            <Input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="A creator, term, game, or community"
-              className="h-12 text-[18px] rounded-[8px]"
-            />
-          )}
+          <p className="mt-6 rounded-2xl border border-border/80 bg-card p-4 text-[16px] leading-[1.55] text-muted-foreground">
+            Please leave out names, usernames, schools, contact details, passwords, and identifying
+            details. Describe what happened in your own words instead of pasting private messages.
+          </p>
+
+          <label htmlFor="scan-text" className="sr-only">
+            What happened
+          </label>
+          <Textarea
+            id="scan-text"
+            value={text}
+            onChange={(e) => setText(e.target.value.slice(0, MAX))}
+            maxLength={MAX}
+            placeholder={
+              mode === "describe"
+                ? "What you saw, heard, or noticed…"
+                : "A term, creator, game, or community"
+            }
+            className="mt-4 min-h-[170px] text-[18px] leading-relaxed"
+          />
+          <div className="mt-2 flex items-center justify-between gap-4">
+            <label className="flex cursor-pointer items-center gap-2 text-[16px] text-muted-foreground">
+              <input
+                type="checkbox"
+                checked={mode === "lookup"}
+                onChange={(e) => toggleLookup(e.target.checked)}
+                className="h-5 w-5 accent-[var(--color-primary)]"
+              />
+              I'm looking up a term or creator
+            </label>
+            <span
+              className={`text-[14px] tabular-nums ${text.length >= MAX ? "text-destructive" : "text-hint"}`}
+              aria-live="polite"
+            >
+              {text.length} / {MAX}
+            </span>
+          </div>
 
           <div className="mt-5 flex flex-wrap gap-2">
             {examples.map((example) => (
               <button
                 key={example}
                 type="button"
-                onClick={() => appendExample(example)}
-                className="rounded-[6px] border border-border bg-background px-3 py-1.5 text-[15px] text-muted-foreground hover:text-foreground hover:border-foreground/30 transition-colors text-left"
+                onClick={() => setText(example)}
+                className="rounded-full border border-border bg-card px-3 py-1.5 text-left text-[15px] text-muted-foreground transition-colors hover:border-primary/60 hover:text-foreground"
               >
                 {example}
               </button>
             ))}
           </div>
 
-          {/* Optional age */}
-          <div className="mt-8">
-            <div className="flex items-center gap-3">
-              <label className="text-[15px] text-foreground" htmlFor="child-age">Their age</label>
-              <select
-                id="child-age"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                className="h-9 rounded-[8px] border border-input bg-background px-3 text-[17px] text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              >
-                <option value="">—</option>
-                {AGE_OPTIONS.map((a) => (
-                  <option key={a} value={a}>{a}</option>
-                ))}
-              </select>
-            </div>
-            <p className="text-[13px] text-hint mt-2">Optional.</p>
+          <div className="mt-10 space-y-8">
+            <p className="label-text text-primary">OPTIONAL. SKIP ANY OF THESE.</p>
+            <Pills label="Child's age" options={AGE_BANDS} value={ageBand} onChange={setAgeBand} />
+            <Pills label="Where this came up" options={WHERE_OPTIONS} value={where} onChange={setWhere} />
+            <Pills label="How often" options={FREQUENCY_OPTIONS} value={frequency} onChange={setFrequency} />
+            <Pills
+              label="Which question is on your mind?"
+              options={QUESTION_OPTIONS}
+              value={question}
+              onChange={setQuestion}
+            />
+            <Pills
+              label="Could someone be in danger right now?"
+              options={DANGER_OPTIONS}
+              value={danger}
+              onChange={setDanger}
+            />
+            {danger === "Yes" && (
+              <p className="text-[16px] text-foreground">
+                We'll take you to people who can help right now.
+              </p>
+            )}
           </div>
 
-          <div className="mt-8">
+          <div className="mt-10">
             <Button
               onClick={handleSubmit}
-              disabled={!value.trim()}
+              disabled={danger !== "Yes" && !trimmed}
               size="lg"
-              className="text-[17px] px-6"
+              className="h-14 w-full rounded-full text-[18px] sm:w-auto sm:px-10"
             >
-              Get context
+              {danger === "Yes" ? "Get help now" : "Get context"}
             </Button>
             <p className="mt-5 text-[15px] text-hint">
               We never see your child's phone, accounts, or messages.
             </p>
           </div>
-
         </div>
       </main>
 
