@@ -204,17 +204,8 @@ function ResultsPage() {
 
       localStorage.setItem("itook_first_scan_done", "true");
 
-      // Scan persistence now happens server-side in the edge function so that
-      // anonymous scans are also stored. For signed-in users we still bump scan_count.
-      if (user) {
-        const currentCount = scanCount ?? 0;
-        const newCount = currentCount + 1;
-        await supabase
-          .from("profiles")
-          .update({ scan_count: newCount })
-          .eq("id", user.id);
-        setScanCount(newCount);
-      }
+      // Scan persistence happens server-side in the edge function so that
+      // anonymous scans are also stored. scan_count is no longer bumped.
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -537,7 +528,7 @@ function BriefingView({
       )}
 
       {/* 6 — Where this sits */}
-      {result.spectrum_label && (
+      {SHOW_RISK_SPECTRUM && result.spectrum_label && (
         <>
           <Section label="Where this sits">
             <div className="mb-4">
