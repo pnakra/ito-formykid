@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PROLIFIC_COMPLETION_CODE } from "@/config/features";
 import { getPid } from "@/lib/entrySource";
 import { MOCKUPS } from "@/components/mockups";
+import { notifyStudyCompletion } from "@/lib/studyCompletion.functions";
 
 const TITLE = "Finish study — is this ok for my kid?";
 const DESC = "A few short questions to finish the study.";
@@ -139,6 +140,7 @@ function StudyDone() {
       setError("That didn't save. Please try again.");
       return;
     }
+    void notifyStudyCompletion({ data: { pid: getPid(), anonId: anonId() } });
     track("study_completed");
     setDone(true);
     window.scrollTo({ top: 0 });
