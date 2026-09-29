@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
@@ -24,7 +24,14 @@ export const Route = createFileRoute("/admin/stats")({
 function StatsPage() {
   const { user, loading } = useAuth();
   const fetchStats = useServerFn(getAdminStats);
-  const q = useQuery({ queryKey: ["admin-stats"], queryFn: () => fetchStats(), enabled: !!user, retry: false });
+  type Stats = Awaited<ReturnType<typeof getAdminStats>>;
+  const [q, setQ] = useState<{ isLoading: boolean; error: boolean; data: Stats | null }>({ isLoading: true, error: false, data: null });
+  useEffect(() => {
+    if (!user) return;
+    fetchStats()
+      .then((data) => setQ({ isLoading: false, error: false, data }))
+      .catch(() => setQ({ isLoading: false, error: true, data: null }));
+  }, [user]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
