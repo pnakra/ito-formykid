@@ -345,6 +345,7 @@ export type Database = {
           helped_decide: string | null
           id: string
           is_parent_11_18: string | null
+          mockup_picks: string[] | null
           pid: string | null
           problem_wording: string | null
           tone_rating: number | null
@@ -362,6 +363,7 @@ export type Database = {
           helped_decide?: string | null
           id?: string
           is_parent_11_18?: string | null
+          mockup_picks?: string[] | null
           pid?: string | null
           problem_wording?: string | null
           tone_rating?: number | null
@@ -379,6 +381,7 @@ export type Database = {
           helped_decide?: string | null
           id?: string
           is_parent_11_18?: string | null
+          mockup_picks?: string[] | null
           pid?: string | null
           problem_wording?: string | null
           tone_rating?: number | null

@@ -1,6 +1,8 @@
 # Roadmap
 
 ## Done
+- [x] Joke practice: three turns, safety stop, shared IP rate limits, no transcript storage; tested at phone and desktop widths
+- [x] Four illustrative study mockups and 390px PNGs; required picks saved and verified; test rows removed
 - [x] Calibrate triage and refresh screenshot sample from a live check
 - [x] Add admin evaluation page; run 16 live cases and six safety-only cases
 - [x] Align listed pages with early-access theme and inspect phone screenshots

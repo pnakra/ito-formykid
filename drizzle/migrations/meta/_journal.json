@@ -71,6 +71,13 @@
       "when": 1790667191608,
       "tag": "0009_study_responses_additions",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1790667788344,
+      "tag": "0010_add_study_mockup_picks",
+      "breakpoints": true
     }
   ]
 }

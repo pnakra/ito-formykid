@@ -1,0 +1,1 @@
+ALTER TABLE public.study_responses ADD COLUMN IF NOT EXISTS mockup_picks text[];
