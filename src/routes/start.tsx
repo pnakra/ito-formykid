@@ -1,3 +1,5 @@
+import { grantStudyAccess } from "@/lib/earlyAccess.functions";
+import { markUnlocked } from "@/lib/accessGate";
 import { track } from "@/lib/track";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -51,7 +53,11 @@ function StartPage() {
       const source = normalizeSource(src);
       storeEntry(source, pid);
       setIsStudy(source === "prolific");
-      if (source === "prolific" && !studyNoticeSeen()) setShowNotice(true);
+      if (source === "prolific") {
+        // Make sure this browser keeps study access (cookie) for the session.
+        void grantStudyAccess().then(() => markUnlocked()).catch(() => {});
+        if (!studyNoticeSeen()) setShowNotice(true);
+      }
     } else {
       setIsStudy(sessionStorage.getItem("itok_src") === "prolific");
     }
