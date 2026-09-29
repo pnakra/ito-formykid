@@ -9,6 +9,7 @@ import { EscalationResult, type EscalationResultData } from "@/components/Escala
 import { IdentityResult, type IdentityResultData } from "@/components/IdentityResult";
 import { RefinementPanel, type RefinementValues } from "@/components/RefinementPanel";
 import { SHOW_RISK_SPECTRUM } from "@/config/features";
+import { useIsStudy } from "@/lib/entrySource";
 
 
 export const Route = createFileRoute("/results")({
@@ -437,6 +438,7 @@ function BriefingView({
   user: any;
 }) {
   const isLowConfidence = result.result_type === "low_confidence";
+  const isStudy = useIsStudy();
 
   return (
     <article className="space-y-0">
@@ -605,14 +607,16 @@ function BriefingView({
         <Button onClick={onScanAnother} size="lg">Ask about something else</Button>
       </div>
 
-      <div className="pt-6 flex flex-col gap-3 items-start">
-        <button onClick={onSaveReport} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
-          {saved ? "Saved" : user ? "Save this" : "Sign in to save this"}
-        </button>
-        <button onClick={onShowDigest} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
-          Get a monthly email
-        </button>
-      </div>
+      {!isStudy && (
+        <div className="pt-6 flex flex-col gap-3 items-start">
+          <button onClick={onSaveReport} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
+            {saved ? "Saved" : user ? "Save this" : "Sign in to save this"}
+          </button>
+          <button onClick={onShowDigest} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
+            Get a monthly email
+          </button>
+        </div>
+      )}
 
       <TrustFooter />
 

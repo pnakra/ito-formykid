@@ -29,7 +29,8 @@ function NotFoundComponent() {
 }
 
 export const Route = createRootRoute({
-  beforeLoad: ({ location }) => enforceAccess(location.pathname),
+  beforeLoad: ({ location }) =>
+    enforceAccess(location.pathname, location.search as Record<string, unknown>),
   head: () => ({
     meta: [
       { charSet: "utf-8" },

@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhyRouteImport } from './routes/why'
 import { Route as UnlockRouteImport } from './routes/unlock'
+import { Route as StartRouteImport } from './routes/start'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ScanRouteImport } from './routes/scan'
+import { Route as SamplesRouteImport } from './routes/samples'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HomeRouteImport } from './routes/home'
@@ -20,6 +22,7 @@ import { Route as HistoryRouteImport } from './routes/history'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StudyDoneRouteImport } from './routes/study.done'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const WhyRoute = WhyRouteImport.update({
@@ -32,6 +35,11 @@ const UnlockRoute = UnlockRouteImport.update({
   path: '/unlock',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StartRoute = StartRouteImport.update({
+  id: '/start',
+  path: '/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -40,6 +48,11 @@ const SignupRoute = SignupRouteImport.update({
 const ScanRoute = ScanRouteImport.update({
   id: '/scan',
   path: '/scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SamplesRoute = SamplesRouteImport.update({
+  id: '/samples',
+  path: '/samples',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResultsRoute = ResultsRouteImport.update({
@@ -77,6 +90,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudyDoneRoute = StudyDoneRouteImport.update({
+  id: '/study/done',
+  path: '/study/done',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -92,10 +110,13 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/results': typeof ResultsRoute
+  '/samples': typeof SamplesRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
+  '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
   '/why': typeof WhyRoute
+  '/study/done': typeof StudyDoneRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
@@ -106,10 +127,13 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/results': typeof ResultsRoute
+  '/samples': typeof SamplesRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
+  '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
   '/why': typeof WhyRoute
+  '/study/done': typeof StudyDoneRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
@@ -121,10 +145,13 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/results': typeof ResultsRoute
+  '/samples': typeof SamplesRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
+  '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
   '/why': typeof WhyRoute
+  '/study/done': typeof StudyDoneRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
@@ -137,10 +164,13 @@ export interface FileRouteTypes {
     | '/home'
     | '/login'
     | '/results'
+    | '/samples'
     | '/scan'
     | '/signup'
+    | '/start'
     | '/unlock'
     | '/why'
+    | '/study/done'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -151,10 +181,13 @@ export interface FileRouteTypes {
     | '/home'
     | '/login'
     | '/results'
+    | '/samples'
     | '/scan'
     | '/signup'
+    | '/start'
     | '/unlock'
     | '/why'
+    | '/study/done'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
@@ -165,10 +198,13 @@ export interface FileRouteTypes {
     | '/home'
     | '/login'
     | '/results'
+    | '/samples'
     | '/scan'
     | '/signup'
+    | '/start'
     | '/unlock'
     | '/why'
+    | '/study/done'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
@@ -180,10 +216,13 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   ResultsRoute: typeof ResultsRoute
+  SamplesRoute: typeof SamplesRoute
   ScanRoute: typeof ScanRoute
   SignupRoute: typeof SignupRoute
+  StartRoute: typeof StartRoute
   UnlockRoute: typeof UnlockRoute
   WhyRoute: typeof WhyRoute
+  StudyDoneRoute: typeof StudyDoneRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
 }
 
@@ -203,6 +242,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UnlockRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/start': {
+      id: '/start'
+      path: '/start'
+      fullPath: '/start'
+      preLoaderRoute: typeof StartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -215,6 +261,13 @@ declare module '@tanstack/react-router' {
       path: '/scan'
       fullPath: '/scan'
       preLoaderRoute: typeof ScanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/samples': {
+      id: '/samples'
+      path: '/samples'
+      fullPath: '/samples'
+      preLoaderRoute: typeof SamplesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/results': {
@@ -266,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/study/done': {
+      id: '/study/done'
+      path: '/study/done'
+      fullPath: '/study/done'
+      preLoaderRoute: typeof StudyDoneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -284,10 +344,13 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   ResultsRoute: ResultsRoute,
+  SamplesRoute: SamplesRoute,
   ScanRoute: ScanRoute,
   SignupRoute: SignupRoute,
+  StartRoute: StartRoute,
   UnlockRoute: UnlockRoute,
   WhyRoute: WhyRoute,
+  StudyDoneRoute: StudyDoneRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
 }
 export const routeTree = rootRouteImport

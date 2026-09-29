@@ -1,16 +1,23 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Shield, MessageCircle, Eye } from "lucide-react";
+import { useIsStudy } from "@/lib/entrySource";
 
-export function Header({ isLoggedIn }: { isLoggedIn: boolean }) {
+export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boolean }) {
+  const storedStudy = useIsStudy();
+  const isStudy = study ?? storedStudy;
   return (
     <header className="border-b bg-background">
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-5">
-        <Link to="/" className="text-[18px] font-medium text-foreground">
+        <Link to={isStudy ? "/start" : "/"} className="text-[18px] font-medium text-foreground">
           is this ok?
         </Link>
         <nav className="flex items-center gap-1">
-          {isLoggedIn ? (
+          {isStudy ? (
+            <Link to="/study/done">
+              <Button size="sm">Finish study</Button>
+            </Link>
+          ) : isLoggedIn ? (
             <>
               <Link to="/home" search={{ tab: "understand" }}>
                 <Button variant="ghost" size="sm" className="text-[15px]">Understand now</Button>

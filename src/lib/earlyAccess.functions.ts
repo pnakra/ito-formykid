@@ -30,6 +30,20 @@ export const unlockSite = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// Sets the access cookie for Prolific participants (reached via /start?src=prolific).
+export const grantStudyAccess = createServerFn({ method: "POST" }).handler(async () => {
+  const pw = process.env["SITE_ACCESS_PASSWORD"];
+  if (!pw) return { ok: false };
+  setCookie(COOKIE, await token(pw), {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24,
+  });
+  return { ok: true };
+});
+
 const utm = z.string().trim().max(200).optional().nullable();
 const roleValue = z.enum(["parent", "aunt_uncle", "grandparent", "educator"]);
 

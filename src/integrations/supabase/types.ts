@@ -263,6 +263,51 @@ export type Database = {
         }
         Relationships: []
       }
+      study_responses: {
+        Row: {
+          could_not_tell: string | null
+          created_at: string
+          helped_decide: string | null
+          id: string
+          is_parent_11_18: string | null
+          pid: string | null
+          problem_wording: string | null
+          tone_rating: number | null
+          tool_purpose: string | null
+          vs_google_chatgpt: string | null
+          would_use_words: string | null
+          would_use_words_why: string | null
+        }
+        Insert: {
+          could_not_tell?: string | null
+          created_at?: string
+          helped_decide?: string | null
+          id?: string
+          is_parent_11_18?: string | null
+          pid?: string | null
+          problem_wording?: string | null
+          tone_rating?: number | null
+          tool_purpose?: string | null
+          vs_google_chatgpt?: string | null
+          would_use_words?: string | null
+          would_use_words_why?: string | null
+        }
+        Update: {
+          could_not_tell?: string | null
+          created_at?: string
+          helped_decide?: string | null
+          id?: string
+          is_parent_11_18?: string | null
+          pid?: string | null
+          problem_wording?: string | null
+          tone_rating?: number | null
+          tool_purpose?: string | null
+          vs_google_chatgpt?: string | null
+          would_use_words?: string | null
+          would_use_words_why?: string | null
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean | null

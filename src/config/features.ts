@@ -5,3 +5,10 @@ export const STAY_AHEAD_ENABLED = false;
 
 // Risk spectrum (Mainstream / Edgy but benign / Concerning / High risk) on /results.
 export const SHOW_RISK_SPECTRUM = false;
+
+// Public launch. While false, the site password gate is on
+// (except /start?src=prolific). Flip to true on Oct 1 to open to everyone.
+export const LAUNCH_OPEN = false;
+
+// Shown to Prolific participants after they finish /study/done.
+export const PROLIFIC_COMPLETION_CODE = "PROLIFIC_CODE_HERE";
