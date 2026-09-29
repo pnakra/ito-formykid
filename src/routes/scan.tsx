@@ -105,7 +105,7 @@ function ScanPage() {
     setText(starter);
     requestAnimationFrame(() => {
       const el = textRef.current;
-      if (!el) return;
+      if (!el || el.value !== starter) return;
       const at = starter.indexOf(BLANK);
       el.focus();
       el.setSelectionRange(at, at + BLANK.length);
