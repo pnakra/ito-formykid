@@ -39,7 +39,7 @@ export function StudyTasks() {
   // Study steps (notice, consent, screener) must be finished before any task page.
   useEffect(() => {
     if (!studyVariant() || pathname === "/start" || pathname === "/help") return;
-    if (!getConsent() || !screenerDone()) navigate({ to: "/start", replace: true });
+    if (!getConsent() || !screenerDone()) navigate({ to: "/start", search: { src: undefined, pid: undefined }, replace: true });
   }, [pathname, navigate]);
 
   if (!variant) return null;
