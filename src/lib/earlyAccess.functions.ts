@@ -9,7 +9,20 @@ async function token(pw: string) {
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+function isPreviewHost() {
+  const hosts = [
+    getRequestHeader("x-forwarded-host"),
+    getRequestHeader("host"),
+    getRequestHeader("referer"),
+    getRequestHeader("origin"),
+  ]
+    .filter(Boolean)
+    .join(" ");
+  return /id-preview--|-dev\.lovable\.app|localhost|127\.0\.0\.1|lovableproject\.com/.test(hosts);
+}
+
 export const checkAccess = createServerFn({ method: "GET" }).handler(async () => {
+  if (isPreviewHost()) return { ok: true };
   const pw = process.env["SITE_ACCESS_PASSWORD"];
   if (!pw) return { ok: false };
   return { ok: getCookie(COOKIE) === (await token(pw)) };
