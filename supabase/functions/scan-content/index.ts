@@ -6,6 +6,10 @@ import {
 } from "./identity-guard.ts";
 import { AI_GATEWAY_URL, ANALYSIS_MODEL, TRIAGE_MODEL } from "../_shared/ai-config.ts";
 import { runAnalysis, GatewayError } from "./analysis.ts";
+import { preCheck, highest, type SafetyCategory } from "../_shared/safetyPatterns.ts";
+
+// Accounts allowed to use model-skipped safety test mode.
+const ADMIN_TEST_EMAILS = ["pnakra@gmail.com"];
 import {
   ESCALATION_CATEGORIES,
   ESCALATION_RULES_FOR_ANALYSIS,
@@ -321,17 +325,23 @@ type EscalationCategory =
   | "ABUSE_DISCLOSURE"
   | "IMMEDIATE_DANGER";
 
-const TRIAGE_PROMPT = `You are a safety triage classifier for a parenting support tool. You read what a parent wrote about their child and decide whether the situation needs professional help right now, rather than a content explainer.
+const TRIAGE_PROMPT = `You are a safety triage classifier for a parenting support tool. You read what a parent wrote about a young person and decide whether the situation needs outside help, rather than only a content explainer.
 
 Categories:
-${ESCALATION_CATEGORIES}
+- immediate_danger: someone may be hurt or in danger right now or today (threats, a planned meeting with an adult, a missing child).
+- suicide_self_harm: signs a young person wants to die, is hurting themselves, or has overdosed.
+- sextortion_image: sexual or private images requested, shared, or used as a threat.
+- adult_contact: an adult or much older person contacting a minor privately, sending gifts, or asking to move apps.
+- abuse_disclosure: a young person says they were touched, abused, or assaulted.
+- harmful_sexual_behavior: the young person pressured, touched, recorded, or shared images of someone else sexually.
+- eating_disorder: restricting food, purging, or following pro-eating-disorder content.
 
 Bias strongly toward recall. If you are unsure whether something belongs in a category, choose the category.
 
 ${IDENTITY_GUARD_TRIAGE}
 
 Respond with ONLY valid JSON:
-{"escalate": true|false, "category": "ACUTE_EATING_DISORDER"|"SELF_HARM_OR_SUICIDALITY"|"ABUSE_DISCLOSURE"|"IMMEDIATE_DANGER"|null}`;
+{"category": "immediate_danger"|"suicide_self_harm"|"sextortion_image"|"adult_contact"|"abuse_disclosure"|"harmful_sexual_behavior"|"eating_disorder"|null}`;
 
 
 const RESOURCES: Record<EscalationCategory, { name: string; number: string; tel: string }[]> = {
@@ -426,7 +436,7 @@ async function runTriage(
   apiKey: string,
   content: string,
   inputType: string
-): Promise<EscalationCategory | null> {
+): Promise<SafetyCategory | null> {
   try {
     const res = await fetch(AI_GATEWAY_URL, {
       method: "POST",
@@ -443,14 +453,15 @@ async function runTriage(
         max_tokens: 200,
       }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      await res.body?.cancel();
+      return null;
+    }
     const data = await res.json();
     const text = data.choices?.[0]?.message?.content;
     if (!text) return null;
-    const parsed = extractJson(text) as { escalate?: boolean; category?: string };
-    if (!parsed.escalate) return null;
-    const cat = parsed.category as EscalationCategory;
-    return cat && cat in RESOURCES ? cat : null;
+    const parsed = extractJson(text) as { category?: string };
+    return highest([parsed.category]);
   } catch (err) {
     console.error(JSON.stringify({ error_type: "triage_failed", name: err instanceof Error ? err.name : "unknown" }));
     return null;
