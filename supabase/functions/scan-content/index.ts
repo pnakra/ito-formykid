@@ -21,7 +21,7 @@ const corsHeaders = {
 
 const SYSTEM_PROMPT = `You are the engine behind 'is this ok? for my kid,' built by Override Labs — an Illinois nonprofit focused on youth harm prevention. Help parents of young people aged 11–18 understand potentially harmful online content and stay meaningfully connected with their child.
 
-You will receive: child's age, gender identity, type of content concerned about, behavioral signals noticed, and a specific creator, term, game, or community to analyze.
+You will receive: an optional age band, where it came up, how often, which question is on the parent's mind (is my kid being harmed / harming someone else / harming themselves), and either a description of what happened or a creator, term, game, or community to analyze. You are never told the child's gender; do not assume one.
 
 Content domains you are equipped to assess:
 
@@ -593,7 +593,7 @@ serve(async (req) => {
             risk_level: "Escalated",
             summary: escalation.why_escalated,
             guidance: escalation.immediate_guidance.join(" "),
-            age_context: intake?.age || null,
+            age_context: intake?.age_band || intake?.age || null,
             status: "watching",
             escalated: true,
             escalation_category: escalationCategory,
@@ -609,6 +609,7 @@ serve(async (req) => {
     }
 
 
+    const ctx = `Age band: ${intake?.age_band || intake?.age || "not provided"}\nWhere: ${intake?.where || "not provided"}\nHow often: ${intake?.frequency || "not provided"}\nParent's question: ${intake?.question_on_mind || "not provided"}`;
     const response = await fetch(
       AI_GATEWAY_URL,
       {
@@ -625,8 +626,8 @@ serve(async (req) => {
               role: "user",
               content:
                 inputType === "description"
-                  ? `INPUT TYPE: behavioral description\n\nPARENT'S DESCRIPTION:\n${content}\n\nCHILD CONTEXT:\nAge: ${intake?.age || "not provided"}\nGender: ${intake?.gender || "not provided"}\nObservations checked: ${(intake?.observations || []).join(", ") || "none"}`
-                  : `INPUT TYPE: lookup\n\nSEARCH TERM: ${content}\n\nCHILD CONTEXT:\nAge: ${intake?.age || "not provided"}\nGender: ${intake?.gender || "not provided"}\nConcerns: ${(intake?.concerns || []).join(", ") || "none"}\nObservations: ${(intake?.observations || []).join(", ") || "none"}`,
+                  ? `INPUT TYPE: behavioral description\n\nPARENT'S DESCRIPTION:\n${content}\n\nCONTEXT:\n${ctx}`
+                  : `INPUT TYPE: lookup\n\nSEARCH TERM: ${content}\n\nCONTEXT:\n${ctx}`,
             },
           ],
           max_tokens: 3500,
@@ -694,7 +695,7 @@ serve(async (req) => {
           domain_category:
             (result as any).result_type === "outside_scope" ? "outside_scope" : null,
           confidence: (result as any).confidence ?? null,
-          age_context: intakeData.age || null,
+          age_context: intakeData.age_band || intakeData.age || null,
           concern_areas:
             Array.isArray(intakeData.concerns) && intakeData.concerns.length > 0
               ? intakeData.concerns
