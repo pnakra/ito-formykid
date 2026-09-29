@@ -485,11 +485,9 @@ function ErrorFallbackView({ error, onRetry }: { error: string; onRetry: () => v
         </p>
       </header>
 
-      <Divider />
-
-      <Section label="What happened">
+      <div className="border-t border-border pt-7">
         <p className="text-[17px] text-muted-foreground leading-relaxed">{error}</p>
-      </Section>
+      </div>
 
       <div className="pt-8">
         <Button onClick={onRetry}>Try again</Button>
