@@ -20,3 +20,11 @@
 - Reddit ad launch — user's call
 - Looksmaxxing guide page — undecided
 - [x] Pre-study polish: study task checklist, required questions + follow-up + attention check, anon_id on study answers, immediate-danger help-only, unnamed-creator rule, DIGEST_SIGNUP_ENABLED=false, 390/1280 study path tested
+
+## Study round 2 (Sep 29)
+- [x] Safety pre-check on all AI entry points; new adult_contact patterns; 2 evals added
+- [x] Screener/consent saved with retry; study steps enforced before tasks
+- [x] Clarifying question card, starters, 13+ age bands, concrete "can't tell you whether"
+- [x] Consent-gated typed text; src=prolific2 study mode
+- [ ] Full live runs of both studies at 390/1280 — blocked: AI monthly spending limit (100 credits) reached
+- [ ] Real PROLIFIC2_COMPLETION_CODE — waiting on user
