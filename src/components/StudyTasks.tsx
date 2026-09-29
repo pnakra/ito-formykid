@@ -8,10 +8,10 @@ const PROMPT =
   "My 13-year-old keeps saying a creator's phrase about how girls should act. I don't know who he is.";
 
 const ITEMS: { key: TaskKey; label: string }[] = [
-  { key: "joke", label: "Open the joke sample" },
-  { key: "screenshot", label: "Open the screenshot sample and find what to say" },
-  { key: "image", label: "Open the image sample and find where to get help" },
-  { key: "live", label: "Type this into the tool yourself:" },
+  { key: "joke", label: "Open the joke sample and answer 3 quick questions" },
+  { key: "screenshot", label: "Open the screenshot sample and answer 3 quick questions" },
+  { key: "image", label: "Open the image sample and answer 2 quick questions" },
+  { key: "live", label: "Type this into the tool yourself, then answer 2 quick questions:" },
 ];
 
 export function StudyTasks() {

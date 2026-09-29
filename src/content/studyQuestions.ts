@@ -27,7 +27,7 @@ export const IMAGE_QS: QQ[] = [
     ],
   },
   { key: "felt_off", label: "Did anything on this page feel scary, preachy, or confusing?", type: "choice", options: [{ value: "no", label: "No" }, { value: "yes", label: "Yes" }], required: true },
-  { key: "felt_off_what", label: "What felt that way?", type: "text", required: true, showIf: (a) => a.felt_off === "yes" },
+  { key: "felt_off_what", label: "What felt that way?", type: "text", showIf: (a) => a.felt_off === "yes" },
 ];
 
 export const LIVE_QS: QQ[] = [

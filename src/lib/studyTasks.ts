@@ -20,11 +20,5 @@ export function tickTask(k: TaskKey) {
   window.dispatchEvent(new Event(TASKS_EVENT));
 }
 
-// Called from track(): ticks tasks from existing events.
-export function tickFromEvent(event: string, props: Record<string, unknown>) {
-  if (event === "sample_opened") {
-    const id = props.sample_id;
-    if (id === "joke" || id === "screenshot" || id === "image") tickTask(id);
-  }
-  if (event === "result_viewed" && props.is_sample === false) tickTask("live");
-}
+// Tasks tick only when that page's Quick questions card is submitted.
+export function tickFromEvent(_event: string, _props: Record<string, unknown>) {}
