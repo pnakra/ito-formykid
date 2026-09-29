@@ -513,7 +513,7 @@ function clientIp(req: Request) {
 }
 
 // User identity comes only from a verified Authorization token, never the body.
-async function resolveUserId(req: Request): Promise<string | null> {
+async function resolveUser(req: Request): Promise<{ id: string; email: string | null } | null> {
   const auth = req.headers.get("Authorization") ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
   if (!token || token.split(".").length !== 3) return null;
@@ -522,7 +522,7 @@ async function resolveUserId(req: Request): Promise<string | null> {
   try {
     const { data, error } = await admin.auth.getUser(token);
     if (error || !data?.user) return null;
-    return data.user.id;
+    return { id: data.user.id, email: data.user.email ?? null };
   } catch {
     return null;
   }
@@ -582,44 +582,63 @@ serve(async (req) => {
       }
     }
 
-    const userId = await resolveUserId(req);
+    const caller = await resolveUser(req);
+    const userId = caller?.id ?? null;
+
+    // 1. Deterministic pre-check. Runs before any model call; models can add
+    //    a category but never clear this one.
+    const preCategory = preCheck(`${parentText}\n${content}`, intake?.danger_now);
+
+    // Admin-only test mode: skip every model call, return only the pre-check.
+    if (body?.test_mode === true) {
+      const email = caller?.email?.toLowerCase() ?? "";
+      if (!ADMIN_TEST_EMAILS.includes(email)) {
+        logEvent({ requestId, startedAt, status: 403, errorType: "test_mode_forbidden" });
+        return json({ error: "Not allowed." }, 403);
+      }
+      logEvent({ requestId, startedAt, status: 200, category: `test:${preCategory ?? "none"}` });
+      return json({ result_type: "safety_test", safety_category: preCategory ?? "none", models_called: false });
+    }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const inputKind = inputType === "description" ? "description" : "text";
+
+    const persist = async (row: Record<string, unknown>, category: string) => {
+      try {
+        if (!admin) return;
+        const { error: insErr } = await admin.from("scans").insert({
+          user_id: userId,
+          input_type: inputKind,
+          input_content: content,
+          age_context: intake?.age_band || intake?.age || null,
+          status: "watching",
+          ...row,
+        });
+        if (insErr) logEvent({ requestId, startedAt, status: 0, category, errorType: `persist_failed_${insErr.code ?? "unknown"}` });
+      } catch {
+        logEvent({ requestId, startedAt, status: 0, category, errorType: "persist_failed" });
+      }
+    };
+
+    // Returned whenever the models fail but the pre-check found something.
+    const safetyOnly = async (cat: SafetyCategory, errorType: string) => {
+      await persist({
+        risk_level: "Escalated", summary: "", guidance: "", escalated: true, escalation_category: cat,
+      }, cat);
+      logEvent({ requestId, startedAt, status: 200, category: `safety_only:${cat}`, errorType });
+      return json({ result_type: "safety_only", safety_category: cat });
+    };
+
     if (!LOVABLE_API_KEY) {
+      if (preCategory) return safetyOnly(preCategory, "missing_api_key");
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Safety triage runs before any analysis.
-    const escalationCategory = suppressIdentityEscalation(
+    // 2. Triage model (can only add). Identity exploration alone never escalates.
+    const triageCategory = suppressIdentityEscalation(
       await runTriage(LOVABLE_API_KEY, content, inputType || "text"),
       content
-    ) as EscalationCategory | null;
-    if (escalationCategory) {
-      const escalation = buildEscalation(escalationCategory);
-      try {
-        if (admin) {
-          const { error: insErr } = await admin.from("scans").insert({
-            user_id: userId,
-            input_type: inputType === "description" ? "description" : "text",
-            input_content: content,
-            risk_level: "Escalated",
-            summary: escalation.why_escalated,
-            guidance: escalation.immediate_guidance.join(" "),
-            age_context: intake?.age_band || intake?.age || null,
-            status: "watching",
-            escalated: true,
-            escalation_category: escalationCategory,
-          });
-          if (insErr) logEvent({ requestId, startedAt, status: 0, category: escalationCategory, errorType: "persist_failed" });
-        }
-      } catch {
-        logEvent({ requestId, startedAt, status: 0, category: escalationCategory, errorType: "persist_failed" });
-      }
-
-      logEvent({ requestId, startedAt, status: 200, category: `escalation:${escalationCategory}` });
-      return json(escalation);
-    }
-
+    ) as SafetyCategory | null;
 
     const ctx = `Age band: ${intake?.age_band || intake?.age || "not provided"}\nWhere: ${intake?.where || "not provided"}\nHow often: ${intake?.frequency || "not provided"}\nParent's question: ${intake?.question_on_mind || "not provided"}`;
     const parentWords = typeof intake?.query === "string" && intake.query.trim() ? intake.query : content;
@@ -633,6 +652,8 @@ serve(async (req) => {
       analysis = await runAnalysis(LOVABLE_API_KEY, userMessage);
     } catch (err) {
       const status = err instanceof GatewayError ? err.status : 502;
+      const fallback = highest([preCategory, triageCategory]);
+      if (fallback) return safetyOnly(fallback, `gateway_http_${status}`);
       if (status === 429) {
         logEvent({ requestId, startedAt, status: 429, errorType: "gateway_rate_limited" });
         return json({ error: RATE_LIMIT_MESSAGE, code: "rate_limited" }, 429);
@@ -646,49 +667,49 @@ serve(async (req) => {
     }
 
     if (!analysis.result) {
+      const fallback = highest([preCategory, triageCategory]);
+      if (fallback) return safetyOnly(fallback, "model_invalid_after_retry");
       // Never log the model reply, only the error type.
       logEvent({ requestId, startedAt, status: 502, errorType: "model_invalid_after_retry" });
       return json({ error: "We couldn't finish this check. Please try again in a moment." }, 502);
     }
     const v2 = analysis.result;
 
-    // Identity is never a risk classification (old guard, adapted).
-    const flagged = v2.lenses.length > 0 || v2.escalation_category !== "none";
-    const guarded = enforceIdentityGuard(
-      { spectrum_label: flagged ? "Concerning" : null },
-      content,
+    // 3. Union rule: highest priority among pre-check, triage, and analysis.
+    const analysisCategory = suppressIdentityEscalation(
+      v2.escalation_category === "none" ? null : v2.escalation_category,
+      content
     );
+    const safetyCategory = highest([preCategory, triageCategory, analysisCategory]);
+
+    // Identity is never a risk classification. Only applies when no safety
+    // category fired.
+    const flagged = v2.lenses.length > 0;
+    const guarded = safetyCategory
+      ? {}
+      : enforceIdentityGuard({ spectrum_label: flagged ? "Concerning" : null }, content);
     const result: Record<string, unknown> =
-      guarded.result_type === "identity_affirming" ? guarded : { result_type: "report_v2", ...v2 };
+      guarded.result_type === "identity_affirming"
+        ? guarded
+        : { result_type: "report_v2", ...v2, safety_category: safetyCategory ?? "none" };
 
     const category =
-      result.result_type === "identity_affirming" ? "identity_affirming" : `v2:${v2.in_scope}`;
+      result.result_type === "identity_affirming"
+        ? "identity_affirming"
+        : `v2:${v2.in_scope}${safetyCategory ? `:${safetyCategory}` : ""}`;
 
-    // Persist the scan server-side using the service role.
-    // Works for both authenticated users (user_id set) and anonymous scans (user_id null).
-    try {
-      if (admin) {
-        const intakeData = intake ?? {};
-        const { error: insErr } = await admin.from("scans").insert({
-          user_id: userId,
-          input_type: inputType === "description" ? "description" : "text",
-          input_content: content,
-          risk_level: v2.in_scope,
-          summary: v2.short_answer,
-          guidance: v2.next_step.action,
-          domain_category: v2.in_scope,
-          confidence: v2.how_sure,
-          age_context: intakeData.age_band || intakeData.age || null,
-          concern_areas: v2.lenses.length ? v2.lenses.map((l) => l.key) : null,
-          spectrum_label: v2.recognized,
-          summary_verdict: v2.short_answer,
-          status: "watching",
-        });
-        if (insErr) logEvent({ requestId, startedAt, status: 0, category, errorType: `persist_failed_${insErr.code ?? "unknown"}` });
-      }
-    } catch {
-      logEvent({ requestId, startedAt, status: 0, category, errorType: "persist_failed" });
-    }
+    await persist({
+      risk_level: safetyCategory ? "Escalated" : v2.in_scope,
+      summary: v2.short_answer,
+      guidance: v2.next_step.action,
+      domain_category: v2.in_scope,
+      confidence: v2.how_sure,
+      concern_areas: v2.lenses.length ? v2.lenses.map((l) => l.key) : null,
+      spectrum_label: v2.recognized,
+      summary_verdict: v2.short_answer,
+      escalated: !!safetyCategory,
+      escalation_category: safetyCategory,
+    }, category);
 
     logEvent({ requestId, startedAt, status: 200, category });
     return json(result);
