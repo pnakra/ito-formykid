@@ -15,6 +15,8 @@ import { ReportV2, type ReportV2Data } from "@/components/ReportV2";
 import { SafetyHelpBlock } from "@/components/SafetyHelpBlock";
 import { isSafetyCategory } from "@/content/safetyCopy";
 import { FeedbackBox } from "@/components/FeedbackBox";
+import { QuickQuestions } from "@/components/QuickQuestions";
+import { LIVE_QS } from "@/content/studyQuestions";
 import { track } from "@/lib/track";
 
 
@@ -89,6 +91,7 @@ const SPECTRUM_POSITIONS: Record<string, number> = {
 
 
 function ResultsPage() {
+  const studyMode = useIsStudy();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [result, setResult] = useState<ScanResult | null>(null);
@@ -437,7 +440,7 @@ function ResultsPage() {
                 saved={saved}
                 user={user}
                 feedback={
-                  <FeedbackBox
+                  studyMode ? <QuickQuestions pageKey="live" questions={LIVE_QS} /> : <FeedbackBox
                     inScope={(result as any).in_scope}
                     safetyCategory={isSafetyCategory((result as any).safety_category) ? (result as any).safety_category : null}
                   />

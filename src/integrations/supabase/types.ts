@@ -335,6 +335,33 @@ export type Database = {
         }
         Relationships: []
       }
+      study_answers: {
+        Row: {
+          anon_id: string | null
+          answers: Json
+          created_at: string
+          id: string
+          page_key: string
+          pid: string | null
+        }
+        Insert: {
+          anon_id?: string | null
+          answers?: Json
+          created_at?: string
+          id?: string
+          page_key: string
+          pid?: string | null
+        }
+        Update: {
+          anon_id?: string | null
+          answers?: Json
+          created_at?: string
+          id?: string
+          page_key?: string
+          pid?: string | null
+        }
+        Relationships: []
+      }
       study_responses: {
         Row: {
           anon_id: string | null

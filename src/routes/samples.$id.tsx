@@ -9,6 +9,10 @@ import { FeedbackBox } from "@/components/FeedbackBox";
 import { isSafetyCategory } from "@/content/safetyCopy";
 import { track } from "@/lib/track";
 import { PracticePanel } from "@/components/PracticePanel";
+import { QuickQuestions } from "@/components/QuickQuestions";
+import { SAMPLE_QS } from "@/content/studyQuestions";
+import { useIsStudy } from "@/lib/entrySource";
+import type { TaskKey } from "@/lib/studyTasks";
 
 export const Route = createFileRoute("/samples/$id")({
   loader: ({ params }) => {
@@ -39,6 +43,8 @@ export const Route = createFileRoute("/samples/$id")({
 function SamplePage() {
   const { user } = useAuth();
   const { sample } = Route.useLoaderData();
+  const isStudy = useIsStudy();
+  const qs = SAMPLE_QS[sample.id];
   const r = sample.result;
   const cat = isSafetyCategory(r.safety_category) ? r.safety_category : null;
 
@@ -62,7 +68,11 @@ function SamplePage() {
           afterWhatToSay={sample.id === "joke" ? <PracticePanel /> : undefined}
           actions={
             <div className="space-y-7">
-              <FeedbackBox inScope={r.in_scope} safetyCategory={cat} sampleId={sample.id} />
+              {isStudy && qs ? (
+                <QuickQuestions key={sample.id} pageKey={sample.id as TaskKey} questions={qs} />
+              ) : (
+                <FeedbackBox inScope={r.in_scope} safetyCategory={cat} sampleId={sample.id} />
+              )}
               <Link to="/samples" className="text-[16px] text-primary underline underline-offset-4">See other samples</Link>
             </div>
           }
