@@ -609,6 +609,12 @@ serve(async (req) => {
       return json({ result_type: "safety_only", safety_category: cat });
     };
 
+    // Immediate danger: return only the help block. No model is called.
+    if (preCategory === "immediate_danger") {
+      logEvent({ requestId, startedAt, status: 200, category: "safety_only:immediate_danger" });
+      return json({ result_type: "safety_only", safety_category: "immediate_danger", danger_only: true });
+    }
+
     if (!LOVABLE_API_KEY) {
       if (preCategory) return safetyOnly(preCategory, "missing_api_key");
       throw new Error("LOVABLE_API_KEY is not configured");
