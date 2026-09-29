@@ -582,8 +582,7 @@ serve(async (req) => {
       }
     }
 
-    const caller = await resolveUser(req);
-    const userId = caller?.id ?? null;
+    const caller = body?.test_mode === true ? await resolveUser(req) : null;
 
     // 1. Deterministic pre-check. Runs before any model call; models can add
     //    a category but never clear this one.
@@ -601,30 +600,10 @@ serve(async (req) => {
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    const inputKind = inputType === "description" ? "description" : "text";
-
-    const persist = async (row: Record<string, unknown>, category: string) => {
-      try {
-        if (!admin) return;
-        const { error: insErr } = await admin.from("scans").insert({
-          user_id: userId,
-          input_type: inputKind,
-          input_content: content,
-          age_context: intake?.age_band || intake?.age || null,
-          status: "watching",
-          ...row,
-        });
-        if (insErr) logEvent({ requestId, startedAt, status: 0, category, errorType: `persist_failed_${insErr.code ?? "unknown"}` });
-      } catch {
-        logEvent({ requestId, startedAt, status: 0, category, errorType: "persist_failed" });
-      }
-    };
 
     // Returned whenever the models fail but the pre-check found something.
+    // Nothing is stored.
     const safetyOnly = async (cat: SafetyCategory, errorType: string) => {
-      await persist({
-        risk_level: "Escalated", summary: "", guidance: "", escalated: true, escalation_category: cat,
-      }, cat);
       logEvent({ requestId, startedAt, status: 200, category: `safety_only:${cat}`, errorType });
       return json({ result_type: "safety_only", safety_category: cat });
     };
@@ -698,18 +677,9 @@ serve(async (req) => {
         ? "identity_affirming"
         : `v2:${v2.in_scope}${safetyCategory ? `:${safetyCategory}` : ""}`;
 
-    await persist({
-      risk_level: safetyCategory ? "Escalated" : v2.in_scope,
-      summary: v2.short_answer,
-      guidance: v2.next_step.action,
-      domain_category: v2.in_scope,
-      confidence: v2.how_sure,
-      concern_areas: v2.lenses.length ? v2.lenses.map((l) => l.key) : null,
-      spectrum_label: v2.recognized,
-      summary_verdict: v2.short_answer,
-      escalated: !!safetyCategory,
-      escalation_category: safetyCategory,
-    }, category);
+    // Nothing is stored here. Only a signed-in parent choosing "Save this"
+    // writes a row (from the browser, under their own account).
+
 
     logEvent({ requestId, startedAt, status: 200, category });
     return json(result);
