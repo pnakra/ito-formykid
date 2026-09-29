@@ -18,7 +18,7 @@ export const deleteMyAccount = createServerFn({ method: "POST" })
       ["profiles", "id"],
     ] as const;
     for (const [table, col] of tables) {
-      const { error } = await supabaseAdmin.from(table).delete().eq(col, userId);
+      const { error } = await (supabaseAdmin.from(table as any) as any).delete().eq(col, userId);
       if (error) throw new Error("We couldn't delete your data. Please try again.");
     }
     const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
