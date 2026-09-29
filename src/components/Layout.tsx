@@ -10,11 +10,11 @@ export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boo
   const isStudy = study ?? storedStudy;
   return (
     <header className="border-b bg-background">
-      <div className={`mx-auto flex min-h-14 max-w-3xl items-center justify-between gap-2 px-5 py-2 ${isLoggedIn && !isStudy ? "flex-wrap sm:flex-nowrap" : ""}`}>
+      <div className="mx-auto flex min-h-14 max-w-3xl flex-wrap items-center justify-between gap-x-2 gap-y-1 px-5 py-2 sm:flex-nowrap">
         <Link to={isStudy ? "/start" : "/"} className="shrink-0 font-display text-[18px] font-semibold text-foreground">
           is this ok?
         </Link>
-        <nav className={`flex items-center gap-1 ${isLoggedIn && !isStudy ? "w-full flex-wrap sm:w-auto" : ""}`}>
+        <nav className="-mx-2 flex min-w-0 flex-wrap items-center gap-1 sm:mx-0 sm:flex-nowrap">
           <Link to="/help" onClick={() => track("get_help_clicked", { page: typeof window !== "undefined" ? window.location.pathname : "" })}>
             <Button variant="ghost" size="sm" className="text-[15px]">Get help</Button>
           </Link>
