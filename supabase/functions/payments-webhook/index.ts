@@ -1,6 +1,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { type StripeEnv, verifyWebhook } from "../_shared/stripe.ts";
+import { PAYMENTS_ENABLED } from "../_shared/flags.ts";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -10,6 +11,13 @@ const supabase = createClient(
 serve(async (req) => {
   if (req.method !== "POST") {
     return new Response("Method not allowed", { status: 405 });
+  }
+
+  if (!PAYMENTS_ENABLED) {
+    return new Response(JSON.stringify({ error: "Payments are disabled" }), {
+      status: 410,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
   const url = new URL(req.url);
