@@ -451,7 +451,7 @@ async function runTriage(
     const cat = parsed.category as EscalationCategory;
     return cat && cat in RESOURCES ? cat : null;
   } catch (err) {
-    console.error("triage error:", err);
+    console.error(JSON.stringify({ error_type: "triage_failed", name: err instanceof Error ? err.name : "unknown" }));
     return null;
   }
 }
