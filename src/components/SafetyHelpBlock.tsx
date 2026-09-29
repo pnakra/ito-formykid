@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { track } from "@/lib/track";
 import { Phone, ExternalLink } from "lucide-react";
 import { SAFETY_COPY, type SafetyCategory, type HelpResource } from "@/content/safetyCopy";
 
@@ -32,6 +34,7 @@ export function ResourceItem({ r }: { r: HelpResource }) {
 
 export function SafetyHelpBlock({ category }: { category: SafetyCategory }) {
   const block = SAFETY_COPY[category];
+  useEffect(() => { track("help_block_viewed", { safety_category: category }); }, [category]);
   return (
     <section className="rounded-2xl border border-primary/50 bg-card p-5" aria-live="polite">
       <h2 className="font-display text-[22px] font-medium leading-snug text-foreground">{block.title}</h2>
