@@ -220,12 +220,11 @@ function ResultsPage() {
       }
       if (payload?.result_type !== "report_v2") throw new Error("We couldn't finish this check. Please try again.");
       setResult(payload as ScanResult);
-
+      setSaved(false);
 
       localStorage.setItem("itook_first_scan_done", "true");
 
-      // Scan persistence happens server-side in the edge function so that
-      // anonymous scans are also stored. scan_count is no longer bumped.
+      // Nothing is stored unless a signed-in parent taps "Save this".
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -258,6 +257,23 @@ function ResultsPage() {
   const handleSaveReport = async () => {
     if (!user) {
       navigate({ to: "/signup" });
+      return;
+    }
+    if (saved || !result || !intake) return;
+    const r = result as any;
+    const { error: saveErr } = await supabase.from("scans").insert({
+      user_id: user.id,
+      input_type: (intake as any).inputMode === "description" ? "description" : "text",
+      input_content: intake.query ?? "",
+      result_json: r,
+      risk_level: r.in_scope ?? r.result_type ?? "saved",
+      summary: r.short_answer ?? "",
+      guidance: r.next_step?.action ?? "",
+      escalated: !!r.safety_category,
+      escalation_category: r.safety_category ?? null,
+    } as any);
+    if (saveErr) {
+      setError("We couldn't save this. Please try again.");
       return;
     }
     setSaved(true);
@@ -479,9 +495,19 @@ function ResultActions({
       <Button onClick={onScanAnother} size="lg">Ask about something else</Button>
       {!isStudy && (
         <div className="pt-6 flex flex-col gap-3 items-start">
-          <button onClick={onSaveReport} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
-            {saved ? "Saved" : user ? "Save this" : "Sign in to save this"}
-          </button>
+          <div>
+            <button onClick={onSaveReport} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
+              {saved ? "Saved" : user ? "Save this" : "Sign in to save this"}
+            </button>
+            {saved && (
+              <Link to="/history" className="ml-3 text-[15px] text-primary underline underline-offset-4">
+                Add a note in Saved
+              </Link>
+            )}
+            <p className="mt-1 text-[13px] text-hint">
+              Saved items are visible only to you. You can delete them anytime.
+            </p>
+          </div>
           <button onClick={onShowDigest} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
             Get a monthly email
           </button>

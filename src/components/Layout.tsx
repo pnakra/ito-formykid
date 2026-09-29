@@ -29,7 +29,7 @@ export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boo
                 <Button variant="ghost" size="sm" className="text-[15px]">Stay ahead</Button>
               </Link>
               <Link to="/history">
-                <Button variant="ghost" size="sm" className="text-[15px]">History</Button>
+                <Button variant="ghost" size="sm" className="text-[15px]">Saved</Button>
               </Link>
               <Link to="/account">
                 <Button variant="ghost" size="sm" className="text-[15px]">Account</Button>
