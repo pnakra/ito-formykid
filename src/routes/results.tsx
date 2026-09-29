@@ -10,6 +10,7 @@ import { IdentityResult, type IdentityResultData } from "@/components/IdentityRe
 import { RefinementPanel, type RefinementValues } from "@/components/RefinementPanel";
 import { SHOW_RISK_SPECTRUM } from "@/config/features";
 import { useIsStudy } from "@/lib/entrySource";
+import { ReportV2, type ReportV2Data } from "@/components/ReportV2";
 
 
 export const Route = createFileRoute("/results")({
@@ -209,11 +210,8 @@ function ResultsPage() {
         return;
       }
 
-      const scanResult: ScanResult = payload;
-      if (!scanResult.result_type) {
-        scanResult.result_type = scanResult.confidence === "Low" ? "low_confidence" : "normal";
-      }
-      setResult(scanResult);
+      if (payload?.result_type !== "report_v2") throw new Error("We couldn't finish this check. Please try again.");
+      setResult(payload as ScanResult);
 
 
       localStorage.setItem("itook_first_scan_done", "true");
@@ -337,7 +335,6 @@ function ResultsPage() {
   if (!result || !intake) return null;
 
 
-  const resultType = result.result_type;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -359,23 +356,21 @@ function ResultsPage() {
           )}
 
 
-          {resultType === "not_enough_signal" ? (
-            <NotEnoughSignalView result={result} intake={intake} onScanAnother={handleScanAnother} />
-          ) : resultType === "ambiguous" ? (
-            <AmbiguousView result={result} intake={intake} onScanAnother={handleScanAnother} />
-          ) : resultType === "outside_scope" ? (
-            <OutsideScopeView result={result} intake={intake} onScanAnother={handleScanAnother} />
-          ) : (
-            <BriefingView
-              result={result}
-              intake={intake}
-              onScanAnother={handleScanAnother}
-              onSaveReport={handleSaveReport}
-              onShowDigest={() => setShowDigest(true)}
-              saved={saved}
-              user={user}
-            />
-          )}
+          <ReportV2
+            result={result as unknown as ReportV2Data}
+            actions={
+              <ResultActions
+                onScanAnother={handleScanAnother}
+                onSaveReport={handleSaveReport}
+                onShowDigest={() => setShowDigest(true)}
+                saved={saved}
+                user={user}
+              />
+            }
+          />
+          <p className="mt-8 text-[13px] text-hint leading-relaxed">
+            This is not a diagnosis. Free, from a nonprofit. We never see your child's phone.
+          </p>
 
           <RefinementPanel
             values={{
@@ -440,193 +435,16 @@ function ResultsPage() {
 
 /* ─── Briefing view — the editorial report ─── */
 
-function BriefingView({
-  result,
-  intake,
-  onScanAnother,
-  onSaveReport,
-  onShowDigest,
-  saved,
-  user,
+function ResultActions({
+  onScanAnother, onSaveReport, onShowDigest, saved, user,
 }: {
-  result: ScanResult;
-  intake: IntakeData;
-  onScanAnother: () => void;
-  onSaveReport: () => void;
-  onShowDigest: () => void;
-  saved: boolean;
-  user: any;
+  onScanAnother: () => void; onSaveReport: () => void; onShowDigest: () => void;
+  saved: boolean; user: any;
 }) {
-  const isLowConfidence = result.result_type === "low_confidence";
   const isStudy = useIsStudy();
-
   return (
-    <article className="space-y-0">
-
-      {/* ── Header block ── */}
-      <header className="pb-8">
-        <p className="label-text mb-4">WHAT WE FOUND</p>
-        <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-3">
-          {result.summary_verdict || result.what_it_is}
-        </h1>
-        <p className="text-[15px] text-hint leading-relaxed">
-          You asked about <span className="text-foreground font-medium">{intake.query}</span>
-          {intake.age && <> · age {intake.age}</>}
-        </p>
-        <p className="mt-5 text-[17px] text-muted-foreground leading-relaxed">
-          We can't tell you if your child is safe. We can tell you what this is and how to talk about it.
-        </p>
-      </header>
-
-      {/* ── Low confidence notice ── */}
-      {isLowConfidence && (
-        <div className="border-l-[3px] border-border pl-4 pb-8">
-          <p className="text-[17px] text-muted-foreground leading-relaxed">
-            {result.limitations_note || result.confidence_note || "We aren't sure yet. Treat this as a starting point."}
-          </p>
-        </div>
-      )}
-
-      <Divider />
-
-      {/* 1 — What this is */}
-      <Section label="What this is">
-        <p className="text-[18px] text-foreground leading-relaxed">{result.what_it_is}</p>
-      </Section>
-
-      {/* 2 — Normalization line */}
-      {(result.normalization_line || result.age_specific_note) && (
-        <div className="pt-4">
-          <p className="text-[18px] text-foreground leading-relaxed">
-            {result.normalization_line || result.age_specific_note}
-          </p>
-        </div>
-      )}
-
-      <Divider />
-
-      {/* 3 — What not to do */}
-      <Section label="What not to do">
-        <ul className="space-y-2">
-          {result.what_not_to_do.map((s, i) => (
-            <li key={i} className="flex items-start gap-3 text-[18px] text-foreground leading-relaxed">
-              <span className="mt-[9px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-              <span className="flex-1">{s}</span>
-            </li>
-          ))}
-        </ul>
-      </Section>
-
-      <Divider />
-
-      {/* 4 — Opening question */}
-      <Section label="One way to start">
-        <div className="rounded-[12px] bg-card border px-5 py-4">
-          <p className="text-[18px] text-foreground italic leading-relaxed">
-            "{result.opening_question}"
-          </p>
-        </div>
-        <p className="text-[15px] text-hint mt-3">Use your own words.</p>
-      </Section>
-
-      <Divider />
-
-      {/* 5 — Why it appeals */}
-      {result.why_it_appeals && (
-        <>
-          <Section label="Why it appeals">
-            <p className="text-[17px] text-foreground leading-relaxed">{result.why_it_appeals}</p>
-          </Section>
-          <Divider />
-        </>
-      )}
-
-      {/* 6 — Where this sits */}
-      {SHOW_RISK_SPECTRUM && result.spectrum_label && (
-        <>
-          <Section label="Where this sits">
-            <div className="mb-4">
-              <div className="relative h-[3px] rounded-full bg-border">
-                {result.spectrum_label !== "Not enough signal" && (
-                  <div
-                    className="absolute top-1/2 w-[9px] h-[9px] rounded-full bg-foreground"
-                    style={{ left: `${SPECTRUM_POSITIONS[result.spectrum_label] ?? 0}%`, transform: "translate(-50%, -50%)" }}
-                  />
-                )}
-              </div>
-            </div>
-            <p className="text-[18px] font-medium text-foreground">{result.spectrum_label}</p>
-            {result.spectrum_reasoning && (
-              <p className="text-[17px] text-foreground leading-relaxed mt-2">{result.spectrum_reasoning}</p>
-            )}
-            {result.confidence && (
-              <p className="text-[15px] text-hint leading-relaxed mt-3">
-                {result.confidence} confidence. {result.confidence_note}
-              </p>
-            )}
-          </Section>
-          <Divider />
-        </>
-      )}
-
-      {/* 7 — Context, collapsed */}
-      {(result.platform_context ||
-        result.pipeline_context ||
-        (result.age_specific_note && intake.age) ||
-        result.values_promoted?.length > 0) && (
-        <>
-          <Expander label="More context">
-            <div className="space-y-5">
-              {result.platform_context && (
-                <p className="text-[17px] text-foreground leading-relaxed">{result.platform_context}</p>
-              )}
-              {result.pipeline_context && (
-                <p className="text-[17px] text-foreground leading-relaxed">{result.pipeline_context}</p>
-              )}
-              {result.age_specific_note && intake.age && (
-                <p className="text-[17px] text-foreground leading-relaxed">{result.age_specific_note}</p>
-              )}
-              {result.values_promoted?.length > 0 && (
-                <ul className="space-y-2">
-                  {result.values_promoted.map((v, i) => (
-                    <li key={i} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
-                      <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-                      <span className="flex-1">{v}</span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </Expander>
-          <Divider />
-        </>
-      )}
-
-      {/* 8 — What to watch for, collapsed */}
-      {(result.warning_signs?.length > 0 || result.return_signals?.length > 0) && (
-        <Expander label="What to watch for">
-          <ul className="space-y-2">
-            {result.warning_signs?.map((s, i) => (
-              <li key={i} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
-                <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-                <span className="flex-1">{s}</span>
-              </li>
-            ))}
-            {result.return_signals?.map((s, i) => (
-              <li key={`r-${i}`} className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
-                <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-                <span className="flex-1">{s}</span>
-              </li>
-            ))}
-          </ul>
-        </Expander>
-      )}
-
-
-      <div className="pt-12">
-        <Button onClick={onScanAnother} size="lg">Ask about something else</Button>
-      </div>
-
+    <div className="border-t border-border/80 pt-7">
+      <Button onClick={onScanAnother} size="lg">Ask about something else</Button>
       {!isStudy && (
         <div className="pt-6 flex flex-col gap-3 items-start">
           <button onClick={onSaveReport} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
@@ -637,220 +455,9 @@ function BriefingView({
           </button>
         </div>
       )}
-
-      <TrustFooter />
-
-    </article>
+    </div>
   );
 }
-
-/* ─── Layout primitives ─── */
-
-function Divider() {
-  return <div className="py-10"><div className="border-t border-border" /></div>;
-}
-
-function Expander({ label, children }: { label: string; children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <section>
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between text-left"
-      >
-        <span className="label-text">{label.toUpperCase()}</span>
-        <span className="text-[15px] text-hint">{open ? "Hide" : "Show"}</span>
-      </button>
-      {open && <div className="mt-4">{children}</div>}
-    </section>
-  );
-}
-
-function Section({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <section>
-      <p className="label-text mb-3">{label.toUpperCase()}</p>
-      {children}
-    </section>
-  );
-}
-
-/* ─── Ambiguous view ─── */
-
-function AmbiguousView({ result, intake, onScanAnother }: { result: ScanResult; intake: IntakeData; onScanAnother: () => void }) {
-  const handleTrySpecific = (term: string) => {
-    const stored = sessionStorage.getItem("scanIntake");
-    if (stored) {
-      const data = JSON.parse(stored);
-      data.query = term;
-      sessionStorage.setItem("scanIntake", JSON.stringify(data));
-      window.location.reload();
-    }
-  };
-
-  return (
-    <article className="space-y-0">
-      <header className="pb-8">
-        <p className="label-text mb-4">WHAT WE FOUND</p>
-        <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-2">
-          {result.summary_verdict || "This could mean a few things"}
-        </h1>
-        <p className="text-[15px] text-hint">
-          You asked about <span className="text-foreground font-medium">{intake.query}</span>
-        </p>
-        <p className="mt-5 text-[17px] text-muted-foreground leading-relaxed">
-          We can't tell you if your child is safe. We can tell you what this is and how to talk about it.
-        </p>
-      </header>
-
-      {result.what_it_is && (
-        <>
-          <Divider />
-          <Section label="What we know">
-            <p className="text-[17px] text-foreground leading-relaxed">{result.what_it_is}</p>
-          </Section>
-        </>
-      )}
-
-      {result.disambiguation_options && result.disambiguation_options.length > 0 && (
-        <>
-          <Divider />
-          <Section label="Did you mean one of these?">
-            <div className="space-y-2">
-              {result.disambiguation_options.map((option, i) => (
-                <button
-                  key={i}
-                  onClick={() => handleTrySpecific(option)}
-                  className="w-full rounded-[10px] border bg-card p-3.5 text-left hover:bg-accent/50 transition-colors"
-                >
-                  <p className="text-[17px] text-foreground">{option}</p>
-                </button>
-              ))}
-            </div>
-          </Section>
-        </>
-      )}
-
-      <Divider />
-      <div className="pb-2">
-        <p className="text-[15px] text-hint leading-relaxed">
-          Try adding the app name, or describe what you saw them do.
-        </p>
-      </div>
-
-      <TrustFooter />
-    </article>
-  );
-}
-
-/* ─── Outside scope view ─── */
-
-function NotEnoughSignalView({ result, intake, onScanAnother }: { result: ScanResult; intake: IntakeData; onScanAnother: () => void }) {
-  return (
-    <article className="space-y-0">
-      <header className="pb-8">
-        <p className="label-text mb-4">WHAT WE FOUND</p>
-        <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-2">
-          Not enough to go on yet
-        </h1>
-        <p className="text-[15px] text-hint">
-          You asked about <span className="text-foreground font-medium">{intake.query}</span>
-        </p>
-        <p className="mt-5 text-[17px] text-muted-foreground leading-relaxed">
-          We can't tell you if your child is safe. We can tell you what this is and how to talk about it.
-        </p>
-      </header>
-
-      <Divider />
-
-      <Section label="What we can say">
-        <p className="text-[18px] text-foreground leading-relaxed">
-          {result.what_we_can_say || result.summary_verdict || result.what_it_is}
-        </p>
-      </Section>
-
-      <Divider />
-
-      <Section label="What would help">
-        <p className="text-[18px] text-foreground leading-relaxed">
-          {result.what_would_help || "Write down the next thing you notice — the exact words, and when it happened."}
-        </p>
-      </Section>
-
-      {result.opening_question && (
-        <>
-          <Divider />
-          <Section label="One way to open the conversation">
-            <div className="rounded-[12px] bg-card border px-5 py-4">
-              <p className="text-[18px] text-foreground italic leading-relaxed">
-                "{result.opening_question}"
-              </p>
-            </div>
-          </Section>
-        </>
-      )}
-
-      <div className="pt-12">
-        <Button onClick={onScanAnother} size="lg">Ask about something else</Button>
-      </div>
-    </article>
-  );
-}
-
-function OutsideScopeView({ result, intake, onScanAnother }: { result: ScanResult; intake: IntakeData; onScanAnother: () => void }) {
-  return (
-    <article className="space-y-0">
-      <header className="pb-8">
-        <p className="label-text mb-4">WHAT WE FOUND</p>
-        <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-2">
-          {result.summary_verdict || "We don't cover this yet"}
-        </h1>
-        <p className="text-[15px] text-hint">
-          You asked about <span className="text-foreground font-medium">{intake.query}</span>
-        </p>
-        <p className="mt-5 text-[17px] text-muted-foreground leading-relaxed">
-          We can't tell you if your child is safe. We can tell you what this is and how to talk about it.
-        </p>
-      </header>
-
-      {result.what_it_is && (
-        <>
-          <Divider />
-          <Section label="What we can tell you">
-            <p className="text-[17px] text-foreground leading-relaxed">{result.what_it_is}</p>
-          </Section>
-        </>
-      )}
-
-      {result.scope_note && (
-        <>
-          <Divider />
-          <Section label="What we currently cover">
-            <p className="text-[17px] text-muted-foreground leading-relaxed">{result.scope_note}</p>
-          </Section>
-        </>
-      )}
-
-      <Divider />
-      <Section label="Things you can try">
-        <ul className="space-y-2">
-          <li className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
-            <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-            <span>Name the person, app, or group.</span>
-          </li>
-          <li className="flex items-start gap-3 text-[17px] text-foreground leading-relaxed">
-            <span className="mt-[8px] h-[5px] w-[5px] rounded-full bg-hint shrink-0" />
-            <span>Describe what you saw them do.</span>
-          </li>
-        </ul>
-      </Section>
-
-      <TrustFooter />
-    </article>
-  );
-}
-
-/* ─── Shared components ─── */
 
 function TrustFooter() {
   return (
