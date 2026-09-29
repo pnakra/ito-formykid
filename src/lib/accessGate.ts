@@ -9,11 +9,19 @@ export function markUnlocked() {
   unlocked = true;
 }
 
-export async function enforceAccess(pathname: string, search?: Record<string, unknown>) {
+export async function enforceAccess(
+  pathname: string,
+  search?: Record<string, unknown>,
+  href?: string,
+) {
   if (LAUNCH_OPEN) return;
   // Preview/dev builds are never gated, so every page can be reviewed.
   if (import.meta.env.DEV) return;
-  if (typeof window !== "undefined" && window.location.hostname.includes("id-preview")) return;
+  const previewLocation = typeof window !== "undefined" ? window.location.href : href;
+  if (
+    previewLocation &&
+    /(?:id-preview--[^./]+\.lovable\.app|\.lovableproject\.com)(?:[/:]|$)/i.test(previewLocation)
+  ) return;
   if (pathname.startsWith("/lovable/")) return;
   if (PUBLIC.some((p) => pathname === p || pathname.startsWith(p + "/"))) return;
   if (unlocked) return;

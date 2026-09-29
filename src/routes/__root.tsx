@@ -30,7 +30,11 @@ function NotFoundComponent() {
 
 export const Route = createRootRoute({
   beforeLoad: ({ location }) =>
-    enforceAccess(location.pathname, location.search as Record<string, unknown>),
+    enforceAccess(
+      location.pathname,
+      location.search as Record<string, unknown>,
+      location.href,
+    ),
   head: () => ({
     meta: [
       { charSet: "utf-8" },
