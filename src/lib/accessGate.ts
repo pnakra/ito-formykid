@@ -23,9 +23,9 @@ export async function enforceAccess(
     /(?:id-preview--[^./]+\.lovable\.app|\.lovableproject\.com)(?:[/:]|$)/i.test(previewLocation)
   ) return;
   if (pathname.startsWith("/lovable/")) return;
-  // Prolific participants get in without the password. Must run before the
-  // public-path check so the access cookie is always set for /start?src=prolific.
-  if (pathname === "/start" && search?.src === "prolific") {
+  // Anyone who opens /start gets in without the password (study or not).
+  void search;
+  if (pathname === "/start") {
     await grantStudyAccess();
     if (typeof window !== "undefined") unlocked = true;
     return;
