@@ -63,7 +63,7 @@ export const SAMPLES: Sample[] = [
       "source_ids": [
         "cdc_stop_sv"
       ],
-      "safety_category": "none"
+      "safety_category": null
     }
   },
   {
