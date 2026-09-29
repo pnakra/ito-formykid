@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { tickFromEvent } from "@/lib/studyTasks";
 
 // Privacy rule: props must never hold concern text, notes, result text, or pid.
 type Prop = string | number | boolean | null | string[];
@@ -6,7 +7,7 @@ export type TrackProps = Record<string, Prop>;
 
 const ANON_KEY = "itok_anon_id";
 
-function anonId(): string {
+export function anonId(): string {
   let id = localStorage.getItem(ANON_KEY);
   if (!id) {
     id = crypto.randomUUID();
@@ -22,6 +23,7 @@ export function currentSource(): string {
 
 export function track(event: string, props: TrackProps = {}): void {
   if (typeof window === "undefined") return;
+  tickFromEvent(event, props);
   void (async () => {
     try {
       const { data } = await supabase.auth.getSession();

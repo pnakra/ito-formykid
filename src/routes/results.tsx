@@ -1,3 +1,4 @@
+import { DIGEST_SIGNUP_ENABLED } from "@/config/features";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Header, Footer } from "@/components/Layout";
@@ -410,9 +411,11 @@ function ResultsPage() {
 
           {(result as any).result_type === "safety_only" ? (
             <div className="space-y-6">
-              <p className="text-[17px] text-muted-foreground">
-                We couldn't finish the full answer right now. The help above is what matters most.
-              </p>
+              {!(result as any).danger_only && (
+                <p className="text-[17px] text-muted-foreground">
+                  We couldn't finish the full answer right now. The help above is what matters most.
+                </p>
+              )}
               <Button onClick={handleScanAnother} size="lg">Ask about something else</Button>
             </div>
           ) : (result as any).safety_category === "immediate_danger" && !showAnyway ? (
@@ -537,9 +540,9 @@ function ResultActions({
               Saved items are visible only to you. You can delete them anytime.
             </p>
           </div>
-          <button onClick={onShowDigest} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
+          {DIGEST_SIGNUP_ENABLED && <button onClick={onShowDigest} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
             Get a monthly email
-          </button>
+          </button>}
         </div>
       )}
     </div>
