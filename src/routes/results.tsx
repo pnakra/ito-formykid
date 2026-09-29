@@ -13,6 +13,8 @@ import { useIsStudy } from "@/lib/entrySource";
 import { ReportV2, type ReportV2Data } from "@/components/ReportV2";
 import { SafetyHelpBlock } from "@/components/SafetyHelpBlock";
 import { isSafetyCategory } from "@/content/safetyCopy";
+import { FeedbackBox } from "@/components/FeedbackBox";
+import { track } from "@/lib/track";
 
 
 export const Route = createFileRoute("/results")({
@@ -164,6 +166,16 @@ function ResultsPage() {
         observations: intakeData.observations ?? [],
       };
 
+      track("concern_submitted", {
+        age_band: intakeData.age_band || null,
+        where: intakeData.where || null,
+        frequency: intakeData.frequency || null,
+        question_on_mind: intakeData.question_on_mind || null,
+        char_count: intakeData.query.length,
+        input_type: isDescribe ? "description" : "lookup",
+      });
+      const startedAt = performance.now();
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scan-content`,
         {
@@ -221,6 +233,14 @@ function ResultsPage() {
       if (payload?.result_type !== "report_v2") throw new Error("We couldn't finish this check. Please try again.");
       setResult(payload as ScanResult);
       setSaved(false);
+      track("result_viewed", {
+        in_scope: payload.in_scope ?? null,
+        safety_category: isSafetyCategory(payload.safety_category) ? payload.safety_category : null,
+        recognized: payload.recognized ?? null,
+        lens_keys: (payload.lenses ?? []).map((l: { key: string }) => l.key),
+        latency_ms: Math.round(performance.now() - startedAt),
+        is_sample: false,
+      });
 
       localStorage.setItem("itook_first_scan_done", "true");
 
@@ -277,6 +297,7 @@ function ResultsPage() {
       return;
     }
     setSaved(true);
+    track("result_saved");
   };
 
   const handleDigestSubmit = (e: React.FormEvent) => {
@@ -412,6 +433,12 @@ function ResultsPage() {
                 onShowDigest={() => setShowDigest(true)}
                 saved={saved}
                 user={user}
+                feedback={
+                  <FeedbackBox
+                    inScope={(result as any).in_scope}
+                    safetyCategory={isSafetyCategory((result as any).safety_category) ? (result as any).safety_category : null}
+                  />
+                }
               />
             }
           />
@@ -484,14 +511,16 @@ function ResultsPage() {
 /* ─── Briefing view — the editorial report ─── */
 
 function ResultActions({
-  onScanAnother, onSaveReport, onShowDigest, saved, user,
+  onScanAnother, onSaveReport, onShowDigest, saved, user, feedback,
 }: {
   onScanAnother: () => void; onSaveReport: () => void; onShowDigest: () => void;
-  saved: boolean; user: any;
+  saved: boolean; user: any; feedback?: React.ReactNode;
 }) {
   const isStudy = useIsStudy();
   return (
-    <div className="border-t border-border/80 pt-7">
+    <>
+    {feedback}
+    <div className="border-t border-border/80 pt-7 mt-7">
       <Button onClick={onScanAnother} size="lg">Ask about something else</Button>
       {!isStudy && (
         <div className="pt-6 flex flex-col gap-3 items-start">
@@ -514,6 +543,7 @@ function ResultActions({
         </div>
       )}
     </div>
+    </>
   );
 }
 

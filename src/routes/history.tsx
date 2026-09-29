@@ -6,6 +6,7 @@ import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import { track } from "@/lib/track";
 
 export const Route = createFileRoute("/history")({
   head: () => ({
@@ -70,6 +71,7 @@ function SavedPage() {
     if (!window.confirm("Delete this saved item and its note? This can't be undone.")) return;
     setBusy(true);
     await supabase.from("scans").delete().eq("id", id);
+    track("result_deleted");
     setBusy(false);
     await load();
   };
