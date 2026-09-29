@@ -39,16 +39,16 @@ function StatsPage() {
       <main className="mx-auto w-full max-w-5xl flex-1 px-5 py-10 space-y-10">
         <h1 className="font-display text-[32px] font-bold text-foreground">Stats</h1>
         {loading ? null : !user ? (
-          <p className="text-muted-foreground">Sign in first.</p>
+          <p className="text-hint">Sign in first.</p>
         ) : q.isLoading ? (
-          <p className="text-muted-foreground">Loading.</p>
+          <p className="text-hint">Loading.</p>
         ) : q.error || !q.data ? (
           <p className="text-error">Not allowed.</p>
         ) : (
           <>
-            <section className="overflow-x-auto">
+            <section className="overflow-x-auto rounded-2xl border border-border/80 bg-card p-5">
               <h2 className="label-text text-primary mb-3">EVENTS BY SOURCE</h2>
-              <table className="w-full text-left text-[15px] text-foreground">
+              <table className="w-full text-left text-[18px] text-foreground">
                 <thead className="text-hint">
                   <tr><th className="py-2 pr-4">Event</th>{q.data.sources.map((s) => <th key={s} className="py-2 pr-4">{s}</th>)}<th className="py-2">Total</th></tr>
                 </thead>
@@ -63,9 +63,9 @@ function StatsPage() {
                 </tbody>
               </table>
             </section>
-            <section className="overflow-x-auto">
+            <section className="overflow-x-auto rounded-2xl border border-border/80 bg-card p-5">
               <h2 className="label-text text-primary mb-3">FEEDBACK ({q.data.feedback.length})</h2>
-              <table className="w-full text-left text-[14px] text-foreground">
+              <table className="w-full text-left text-[18px] text-foreground">
                 <thead className="text-hint">
                   <tr>{["When", "Source", "PID", "Sample", "Scope", "Safety", "Helped", "Comment"].map((h) => <th key={h} className="py-2 pr-3">{h}</th>)}</tr>
                 </thead>
