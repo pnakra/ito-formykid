@@ -1,4 +1,4 @@
-import { track } from "@/lib/track";
+import { track, anonId } from "@/lib/track";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Header, Footer } from "@/components/Layout";
@@ -36,6 +36,8 @@ type Answers = {
   vs_google_chatgpt: string;
   problem_wording: string;
   helped_decide: string;
+  follow_up_ok: string;
+  attention_check: string;
 };
 
 const EMPTY: Answers = {
@@ -48,7 +50,19 @@ const EMPTY: Answers = {
   vs_google_chatgpt: "",
   problem_wording: "",
   helped_decide: "",
+  follow_up_ok: "",
+  attention_check: "",
 };
+
+const REQUIRED: { key: keyof Answers; label: string }[] = [
+  { key: "is_parent_11_18", label: "Are you a parent of a child aged 11 to 18?" },
+  { key: "tool_purpose", label: "What is this tool for?" },
+  { key: "tone_rating", label: "How did the results feel?" },
+  { key: "would_use_words", label: "Would you use the words?" },
+  { key: "helped_decide", label: "Did this help you decide?" },
+  { key: "follow_up_ok", label: "Can we invite you to a follow-up survey?" },
+  { key: "attention_check", label: "The last question" },
+];
 
 function Question({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -100,6 +114,7 @@ function StudyDone() {
   const [a, setA] = useState<Answers>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [missing, setMissing] = useState<string[]>([]);
   const [done, setDone] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -115,11 +130,17 @@ function StudyDone() {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+    const miss = REQUIRED.filter((r) => !a[r.key].trim()).map((r) => r.label);
+    setMissing(miss);
+    if (miss.length) return;
     setSubmitting(true);
     setError("");
     const orNull = (s: string) => (s.trim() ? s.trim() : null);
     const { error: err } = await supabase.from("study_responses").insert({
       pid: getPid(),
+      anon_id: anonId(),
+      follow_up_ok: orNull(a.follow_up_ok),
+      attention_check: orNull(a.attention_check),
       is_parent_11_18: orNull(a.is_parent_11_18),
       tool_purpose: orNull(a.tool_purpose),
       could_not_tell: orNull(a.could_not_tell),
@@ -234,6 +255,39 @@ function StudyDone() {
               />
             </Question>
 
+            <Question label="Can we invite you to a 2-minute follow-up survey in about a week?">
+              <Choices
+                name="follow_up"
+                value={a.follow_up_ok}
+                onChange={set("follow_up_ok")}
+                options={[
+                  { value: "yes", label: "Yes" },
+                  { value: "no", label: "No" },
+                ]}
+              />
+            </Question>
+
+            <Question label="To show you're reading, select 'Somewhat' below.">
+              <Choices
+                name="attention"
+                value={a.attention_check}
+                onChange={set("attention_check")}
+                options={[
+                  { value: "yes", label: "Yes" },
+                  { value: "somewhat", label: "Somewhat" },
+                  { value: "no", label: "No" },
+                ]}
+              />
+            </Question>
+
+            {missing.length > 0 && (
+              <div role="alert" className="rounded-2xl border border-error/60 bg-card p-5">
+                <p className="text-[17px] font-medium text-foreground">Please answer these first:</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-[16px] text-error">
+                  {missing.map((m) => <li key={m}>{m}</li>)}
+                </ul>
+              </div>
+            )}
             {error && <p className="text-[16px] text-error">{error}</p>}
             <Button type="submit" size="lg" disabled={submitting} className="h-14 w-full rounded-full text-[18px]">
               {submitting ? "Sending…" : "Submit"}
