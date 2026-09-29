@@ -17,3 +17,4 @@
 - Roles picker required? — undecided
 - Reddit ad launch — user's call
 - Looksmaxxing guide page — undecided
+- [x] Pre-study polish: study task checklist, required questions + follow-up + attention check, anon_id on study answers, immediate-danger help-only, unnamed-creator rule, DIGEST_SIGNUP_ENABLED=false, 390/1280 study path tested
