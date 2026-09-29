@@ -605,14 +605,16 @@ function BriefingView({
         <Button onClick={onScanAnother} size="lg">Ask about something else</Button>
       </div>
 
-      <div className="pt-6 flex flex-col gap-3 items-start">
-        <button onClick={onSaveReport} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
-          {saved ? "Saved" : user ? "Save this" : "Sign in to save this"}
-        </button>
-        <button onClick={onShowDigest} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
-          Get a monthly email
-        </button>
-      </div>
+      {!isStudy && (
+        <div className="pt-6 flex flex-col gap-3 items-start">
+          <button onClick={onSaveReport} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
+            {saved ? "Saved" : user ? "Save this" : "Sign in to save this"}
+          </button>
+          <button onClick={onShowDigest} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
+            Get a monthly email
+          </button>
+        </div>
+      )}
 
       <TrustFooter />
 
