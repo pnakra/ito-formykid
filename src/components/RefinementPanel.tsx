@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
-import { CONCERN_OPTIONS, OBSERVATION_GROUPS, GENDER_OPTIONS, AGE_OPTIONS } from "@/config/intake";
+import { CONCERN_OPTIONS, OBSERVATION_GROUPS, AGE_OPTIONS } from "@/config/intake";
 import { Button } from "@/components/ui/button";
 
 export interface RefinementValues {
   age: string;
-  gender: string;
   concerns: string[];
   observations: string[];
 }
 
 const same = (a: RefinementValues, b: RefinementValues) =>
   a.age === b.age &&
-  a.gender === b.gender &&
   a.concerns.length === b.concerns.length &&
   a.concerns.every((c) => b.concerns.includes(c)) &&
   a.observations.length === b.observations.length &&
@@ -78,19 +76,6 @@ export function RefinementPanel({
                     <option key={a} value={a}>{a}</option>
                   ))}
                 </select>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {GENDER_OPTIONS.map((g) => (
-                  <button
-                    key={g}
-                    type="button"
-                    onClick={() => setDraft({ ...draft, gender: draft.gender === g ? "" : g })}
-                    className={chip(draft.gender === g)}
-                  >
-                    {g}
-                  </button>
-                ))}
               </div>
 
               <div className="grid gap-2">
