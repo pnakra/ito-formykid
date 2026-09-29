@@ -2,7 +2,7 @@ import { redirect } from "@tanstack/react-router";
 import { checkAccess, grantStudyAccess } from "./earlyAccess.functions";
 import { LAUNCH_OPEN } from "@/config/features";
 
-const PUBLIC = ["/early-access", "/unlock", "/help"];
+const PUBLIC = ["/early-access", "/unlock", "/help", "/start"];
 let unlocked = false;
 
 export function markUnlocked() {
