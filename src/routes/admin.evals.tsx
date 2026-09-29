@@ -97,7 +97,7 @@ function EvalsPage() {
           {progress && <span role="status" className="self-center text-hint">{progress}</span>}
         </div>
         <div className="mt-8 space-y-4 md:hidden">
-          {EVAL_CASES.map((c, i) => { const n = i + 1; const r = rows[n]?.result; return <article key={n} className="rounded-2xl border border-border/80 bg-card p-5 text-[16px]">
+          {EVAL_CASES.map((c, i) => { const n = i + 1; const r = rows[n]?.result; return <article key={n} className="rounded-2xl border border-border/80 bg-card p-5 text-[18px]">
             <p className="label-text text-primary">CASE {n}</p><p className="mt-2 text-foreground">{c.input}</p>
             <p className="mt-3 text-hint">Expected: {c.expected}</p>
             <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-foreground">
@@ -114,7 +114,7 @@ function EvalsPage() {
           </article>; })}
         </div>
         <div className="mt-8 hidden overflow-x-auto rounded-2xl border border-border/80 bg-card md:block">
-          <table className="w-full min-w-[1100px] text-left text-[15px] text-foreground">
+          <table className="w-full min-w-[1100px] text-left text-[18px] text-foreground">
             <thead className="label-text text-hint"><tr>{["#", "Input", "Expected", "In scope", "Safety", "Recognized", "Lenses", "Short answer", "Pass"].map((h) => <th key={h} className="p-3 align-top">{h}</th>)}</tr></thead>
             <tbody>{EVAL_CASES.map((c, i) => { const n = i + 1; const row = rows[n]; const r = row?.result; return <tr key={n} className="border-t border-border/80 align-top">
               <td className="p-3">{n}</td><td className="w-48 p-3">{c.input}</td><td className="w-40 p-3 text-hint">{c.expected}</td>
