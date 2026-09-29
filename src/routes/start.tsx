@@ -10,6 +10,8 @@ import {
   storeEntry,
   studyNoticeSeen,
 } from "@/lib/entrySource";
+import { saveStudyAnswers } from "@/lib/studyAnswers";
+import { ChoicePills, YES_NO } from "@/components/QuickQuestions";
 
 const TITLE = "Get started — is this ok for my kid?";
 const DESC =
@@ -39,6 +41,10 @@ function StartPage() {
   const { user } = useAuth();
   const [isStudy, setIsStudy] = useState(src === "prolific");
   const [showNotice, setShowNotice] = useState(false);
+  const [showScreener, setShowScreener] = useState(false);
+  const [screener, setScreener] = useState("");
+  const [screenerMissing, setScreenerMissing] = useState(false);
+  const [screenerBusy, setScreenerBusy] = useState(false);
 
   useEffect(() => {
     if (src) {
@@ -71,6 +77,29 @@ function StartPage() {
               onClick={() => {
                 markStudyNoticeSeen();
                 setShowNotice(false);
+                setShowScreener(true);
+              }}
+            >
+              Continue
+            </Button>
+          </section>
+        ) : showScreener ? (
+          <section className="rounded-3xl border border-border/80 bg-card p-6 lg:p-8">
+            <p className="mb-4 text-[18px] font-medium leading-snug text-foreground">
+              Are you a parent or guardian of a child aged 13 to 18?
+            </p>
+            <ChoicePills label="Are you a parent or guardian of a child aged 13 to 18?" value={screener} options={YES_NO} onChange={(v) => { setScreener(v); setScreenerMissing(false); }} />
+            {screenerMissing && <p role="alert" className="mt-4 text-[16px] text-error">Please pick Yes or No.</p>}
+            <Button
+              size="lg"
+              disabled={screenerBusy}
+              className="mt-8 h-14 w-full rounded-full text-[18px] sm:w-auto sm:px-10"
+              onClick={async () => {
+                if (!screener) { setScreenerMissing(true); return; }
+                setScreenerBusy(true);
+                await saveStudyAnswers("screener", { parent_13_18: screener });
+                setScreenerBusy(false);
+                setShowScreener(false);
               }}
             >
               Continue

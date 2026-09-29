@@ -28,41 +28,25 @@ export const Route = createFileRoute("/study/done")({
 });
 
 type Answers = {
-  is_parent_11_18: string;
   tool_purpose: string;
-  could_not_tell: string;
-  tone_rating: string;
-  would_use_words: string;
-  would_use_words_why: string;
   vs_google_chatgpt: string;
   problem_wording: string;
-  helped_decide: string;
   follow_up_ok: string;
   attention_check: string;
   mockup_picks: string[];
 };
 
 const EMPTY: Answers = {
-  is_parent_11_18: "",
   tool_purpose: "",
-  could_not_tell: "",
-  tone_rating: "",
-  would_use_words: "",
-  would_use_words_why: "",
   vs_google_chatgpt: "",
   problem_wording: "",
-  helped_decide: "",
   follow_up_ok: "",
   attention_check: "",
   mockup_picks: [],
 };
 
 const REQUIRED: { key: keyof Answers; label: string }[] = [
-  { key: "is_parent_11_18", label: "Are you a parent of a child aged 11 to 18?" },
   { key: "tool_purpose", label: "What is this tool for?" },
-  { key: "tone_rating", label: "How did the results feel?" },
-  { key: "would_use_words", label: "Would you use the words?" },
-  { key: "helped_decide", label: "Did this help you decide?" },
   { key: "follow_up_ok", label: "Can we invite you to a follow-up survey?" },
   { key: "attention_check", label: "The last question" },
 ];
@@ -145,15 +129,9 @@ function StudyDone() {
       anon_id: anonId(),
       follow_up_ok: orNull(a.follow_up_ok),
       attention_check: orNull(a.attention_check),
-      is_parent_11_18: orNull(a.is_parent_11_18),
       tool_purpose: orNull(a.tool_purpose),
-      could_not_tell: orNull(a.could_not_tell),
-      tone_rating: a.tone_rating ? Number(a.tone_rating) : null,
-      would_use_words: orNull(a.would_use_words),
-      would_use_words_why: orNull(a.would_use_words_why),
       vs_google_chatgpt: orNull(a.vs_google_chatgpt),
       problem_wording: orNull(a.problem_wording),
-      helped_decide: orNull(a.helped_decide),
       mockup_picks: a.mockup_picks,
     });
     setSubmitting(false);
@@ -191,73 +169,14 @@ function StudyDone() {
               A few last questions
             </h1>
 
-            <Question label="Are you a parent or guardian of a child aged 11 to 18?">
-              <Choices
-                name="parent"
-                value={a.is_parent_11_18}
-                onChange={set("is_parent_11_18")}
-                options={[
-                  { value: "yes", label: "Yes" },
-                  { value: "no", label: "No" },
-                ]}
-              />
-            </Question>
-
             <Question label="In your own words, what is this tool for?">{text("tool_purpose")}</Question>
-
-            <Question label="In the last scenario you typed in, what did the tool say it could NOT tell you about the child?">
-              {text("could_not_tell")}
-            </Question>
-
-            <Question label="How did the joke and screenshot results feel?">
-              <Choices
-                name="tone"
-                value={a.tone_rating}
-                onChange={set("tone_rating")}
-                options={[
-                  { value: "1", label: "1 Too alarming" },
-                  { value: "2", label: "2" },
-                  { value: "3", label: "3 About right" },
-                  { value: "4", label: "4" },
-                  { value: "5", label: "5 Too dismissive" },
-                ]}
-              />
-            </Question>
-
-            <Question label="Would you use the suggested conversation words with a real teen?">
-              <Choices
-                name="words"
-                value={a.would_use_words}
-                onChange={set("would_use_words")}
-                options={[
-                  { value: "yes", label: "Yes" },
-                  { value: "yes_with_edits", label: "Yes, with edits" },
-                  { value: "no", label: "No" },
-                ]}
-              />
-              <label className="block pt-2 text-[16px] text-muted-foreground">Why?</label>
-              {text("would_use_words_why")}
-            </Question>
 
             <Question label="What does this give you that Google or ChatGPT would not?">
               {text("vs_google_chatgpt")}
             </Question>
 
-            <Question label="Was any wording preachy, scary, invasive, or unusable? Which?">
+            <Question label="Was any wording across the pages preachy, scary, invasive, or unusable? Which?">
               {text("problem_wording")}
-            </Question>
-
-            <Question label="Did this help you decide what to do next?">
-              <Choices
-                name="decide"
-                value={a.helped_decide}
-                onChange={set("helped_decide")}
-                options={[
-                  { value: "yes", label: "Yes" },
-                  { value: "somewhat", label: "Somewhat" },
-                  { value: "no", label: "No" },
-                ]}
-              />
             </Question>
 
             <Question label="Which of these would you actually use? Pick up to two.">

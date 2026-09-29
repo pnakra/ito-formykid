@@ -91,6 +91,7 @@ const SPECTRUM_POSITIONS: Record<string, number> = {
 
 
 function ResultsPage() {
+  const studyMode = useIsStudy();
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [result, setResult] = useState<ScanResult | null>(null);
