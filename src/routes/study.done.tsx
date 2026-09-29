@@ -265,7 +265,7 @@ function StudyDone() {
                 {MOCKUPS.map(({ id, label, Component }) => {
                   const selected = a.mockup_picks.includes(id);
                   return <div key={id}>
-                    <Button type="button" variant="outline" aria-pressed={selected} onClick={() => setA((old) => ({ ...old, mockup_picks: selected ? old.mockup_picks.filter((x) => x !== id) : old.mockup_picks.length < 2 ? [...old.mockup_picks, id] : old.mockup_picks }))} className={`mb-2 h-auto min-h-11 w-full whitespace-normal text-[16px] ${selected ? "border-primary bg-primary text-primary-foreground" : ""}`}>
+                    <Button type="button" variant="outline" aria-pressed={selected} onClick={() => setA((old) => { const picks = old.mockup_picks.filter((x) => x !== "none"); return { ...old, mockup_picks: selected ? picks.filter((x) => x !== id) : picks.length < 2 ? [...picks, id] : picks }; })} className={`mb-2 h-auto min-h-11 w-full whitespace-normal text-[16px] ${selected ? "border-primary bg-primary text-primary-foreground" : ""}`}>
                       {selected ? "✓ " : ""}{label}
                     </Button>
                     <div className="pointer-events-none"><Component /></div>
