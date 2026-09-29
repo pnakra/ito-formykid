@@ -57,6 +57,13 @@
       "when": 1790662938098,
       "tag": "0007_saved_scans_owner_only",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790663440787,
+      "tag": "0008_events_and_feedback",
+      "breakpoints": true
     }
   ]
 }

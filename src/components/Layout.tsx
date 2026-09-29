@@ -1,3 +1,4 @@
+import { track } from "@/lib/track";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Shield, MessageCircle, Eye } from "lucide-react";
@@ -13,7 +14,7 @@ export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boo
           is this ok?
         </Link>
         <nav className="flex items-center gap-1">
-          <Link to="/help">
+          <Link to="/help" onClick={() => track("get_help_clicked", { page: typeof window !== "undefined" ? window.location.pathname : "" })}>
             <Button variant="ghost" size="sm" className="text-[15px]">Get help</Button>
           </Link>
           {isStudy ? (

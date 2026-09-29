@@ -1,3 +1,4 @@
+import { track } from "@/lib/track";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { Header, Footer } from "@/components/Layout";
@@ -134,6 +135,7 @@ function StudyDone() {
       setError("That didn't save. Please try again.");
       return;
     }
+    track("study_completed");
     setDone(true);
     window.scrollTo({ top: 0 });
   };

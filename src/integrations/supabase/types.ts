@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      events: {
+        Row: {
+          anon_id: string
+          created_at: string
+          event: string
+          id: string
+          props: Json
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          anon_id: string
+          created_at?: string
+          event: string
+          id?: string
+          props?: Json
+          source?: string
+          user_id?: string | null
+        }
+        Update: {
+          anon_id?: string
+          created_at?: string
+          event?: string
+          id?: string
+          props?: Json
+          source?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      feedback: {
+        Row: {
+          comment: string | null
+          created_at: string
+          helped: string
+          id: string
+          in_scope: string | null
+          pid: string | null
+          safety_category: string | null
+          sample_id: string | null
+          source: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          helped: string
+          id?: string
+          in_scope?: string | null
+          pid?: string | null
+          safety_category?: string | null
+          sample_id?: string | null
+          source?: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          helped?: string
+          id?: string
+          in_scope?: string | null
+          pid?: string | null
+          safety_category?: string | null
+          sample_id?: string | null
+          source?: string
+        }
+        Relationships: []
+      }
       monthly_briefing_cache: {
         Row: {
           age_group: string

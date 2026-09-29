@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { track } from "@/lib/track";
 import { ChevronDown, Copy, Check } from "lucide-react";
 import { SOURCES } from "@/content/sources";
 
@@ -52,7 +53,7 @@ function Note({ children }: { children: ReactNode }) {
   );
 }
 
-function CopyLine({ label, text }: { label?: string; text: string }) {
+function CopyLine({ label, text, field }: { label?: string; text: string; field: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="rounded-2xl border border-border/80 bg-card p-4">
@@ -62,6 +63,7 @@ function CopyLine({ label, text }: { label?: string; text: string }) {
         type="button"
         onClick={async () => {
           await navigator.clipboard.writeText(text);
+          track("conversation_copied", { field });
           setCopied(true);
           setTimeout(() => setCopied(false), 1800);
         }}
@@ -165,11 +167,11 @@ export function ReportV2({ result, actions }: { result: ReportV2Data; actions?: 
       {!outOfScope && (c?.opener || c?.questions?.length > 0) && (
         <Section title="What to say">
           <div className="space-y-3">
-            {c.opener && <CopyLine label="To open" text={c.opener} />}
-            {c.questions?.map((q) => <CopyLine key={q} label="To ask" text={q} />)}
-            {c.boundary_statement && <CopyLine label="A boundary" text={c.boundary_statement} />}
-            {c.repair_step && <CopyLine label="Making it right" text={c.repair_step} />}
-            {c.disclosure_response && <CopyLine label="If they tell you something hard" text={c.disclosure_response} />}
+            {c.opener && <CopyLine field="opener" label="To open" text={c.opener} />}
+            {c.questions?.map((q) => <CopyLine key={q} field="question" label="To ask" text={q} />)}
+            {c.boundary_statement && <CopyLine field="boundary" label="A boundary" text={c.boundary_statement} />}
+            {c.repair_step && <CopyLine field="repair" label="Making it right" text={c.repair_step} />}
+            {c.disclosure_response && <CopyLine field="disclosure" label="If they tell you something hard" text={c.disclosure_response} />}
           </div>
         </Section>
       )}
@@ -178,7 +180,7 @@ export function ReportV2({ result, actions }: { result: ReportV2Data; actions?: 
         <section className="border-t border-border/80 pt-7">
           <button
             type="button"
-            onClick={() => setOpenWhy(!openWhy)}
+            onClick={() => { if (!openWhy) track("why_expanded"); setOpenWhy(!openWhy); }}
             aria-expanded={openWhy}
             className="flex w-full items-center justify-between text-left"
           >
@@ -215,7 +217,7 @@ export function ReportV2({ result, actions }: { result: ReportV2Data; actions?: 
         <h2 className="label-text mb-3 text-primary">GET MORE HELP</h2>
         <p className="text-[17px] text-muted-foreground">
           If this feels bigger than a conversation,{" "}
-          <Link to="/help" className="text-primary underline underline-offset-4">
+          <Link to="/help" onClick={() => track("get_help_clicked", { page: "result" })} className="text-primary underline underline-offset-4">
             see who can help
           </Link>
           .
