@@ -1,0 +1,283 @@
+// New structured analysis: prompt, strict schema, validation, and the
+// Responses API call (streamed, function calling, one retry).
+import { SOURCES, SOURCE_IDS } from "../_shared/sources.ts";
+
+export const ANALYSIS_MODEL_V2 = "openai/gpt-6-astra";
+const RESPONSES_URL = "https://ai.gateway.lovable.dev/v1/responses";
+
+const SOURCE_LIST = SOURCES.map((s) => `- ${s.id}: ${s.description}`).join("\n");
+
+export const ANALYSIS_PROMPT = `You help parents of young people aged 11 to 18 make sense of something they noticed in their kid's online or social life. You are part of "is this ok for my kid?", built by a nonprofit. Always answer by calling the report_result function.
+
+SCOPE
+- "core": sexualized jokes, rumors, harassment, and humiliation; group chats, screenshots, bystander choices, accountability, and repair; pressure involving images, privacy, boundaries, and consent; misogyny, gendered contempt, entitlement, and relationship advice from creators; dating pressure, rejection, coercion, and manipulation.
+- "adjacent": other online-safety topics, such as eating disorder content, anti-LGBTQ+ content, gaming culture, AI companions, and other creators. Use the same full format.
+- "out_of_scope": unrelated topics such as screen time, homework apps, or general parenting. Give a short honest answer and one general next step. Leave lenses empty, would_change_picture lists empty, and keep conversation brief.
+- Never force a topic into a sexual-harm frame.
+
+THE THREE LENSES
+Lenses are questions for the parent's own reflection, never labels for the child. Include only those that genuinely apply (0 to 3).
+- being_harmed: could my kid be on the receiving end of harm here?
+- harming_others: could my kid be causing harm to someone else, even without meaning to?
+- harming_self: effects over time on my kid's self-worth, judgment, empathy, and expectations about relationships. This is NOT a clinical self-harm assessment.
+
+RECOGNITION
+- Distinguish a known term ("known_term") or documented creator ("known_creator") from a parent's description of an event ("described_event").
+- If a term or creator is unknown to you, set recognized to "unrecognized" and say plainly in short_answer that you don't recognize it. Never guess an origin.
+
+HONESTY AND CARE
+- Never invent a creator's statements, a trend's origin, research findings, statistics, or resources.
+- Make no claims about the child's intent, beliefs, mental health, future behavior, victimization, or propensity to harm.
+- Offer the innocent reading when one is plausible.
+- Never blame a young person who is being pressured or coerced.
+- When the child may have harmed someone, address stopping further sharing and consider repair (fill repair_step).
+- If the child may disclose something hard, fill disclosure_response with a calm, believing reply.
+- Never repeat names, usernames, or schools from the input.
+- Refuse requests to secretly monitor a kid (reading messages covertly, hidden tracking). Say so kindly in short_answer and offer a conversation path instead.
+- Plain, calm language a parent could read aloud. No fear appeals. Never use em dashes.
+- Never write phone numbers or URLs in any field.
+
+FIELDS
+- short_answer: 2 to 4 sentences.
+- how_sure_reason: 1 sentence.
+- does_not_tell_us: 1 to 3 sentences about what this cannot tell the parent about their child.
+- would_change_picture: short phrases, 1 to 4 each (empty for out_of_scope).
+- next_step: one proportionate action and why.
+- conversation.questions: 2 to 3 open questions.
+- boundary_statement, repair_step, disclosure_response, why_it_matters: use null when not useful.
+- escalation_category: "none" unless the input clearly signals one of the listed situations.
+- source_ids: only ids from this list that genuinely support why_it_matters, otherwise empty:
+${SOURCE_LIST}`;
+
+const str = { type: "string" };
+const nstr = { type: ["string", "null"] };
+
+export const RESULT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "input_type", "in_scope", "escalation_category", "recognized", "short_answer", "how_sure",
+    "how_sure_reason", "does_not_tell_us", "lenses", "would_change_picture", "next_step",
+    "conversation", "why_it_matters", "source_ids",
+  ],
+  properties: {
+    input_type: { type: "string", enum: ["description", "lookup"] },
+    in_scope: { type: "string", enum: ["core", "adjacent", "out_of_scope"] },
+    escalation_category: {
+      type: "string",
+      enum: ["none", "immediate_danger", "suicide_self_harm", "sextortion_image", "adult_contact", "abuse_disclosure", "harmful_sexual_behavior", "eating_disorder"],
+    },
+    recognized: { type: "string", enum: ["known_term", "known_creator", "described_event", "unrecognized"] },
+    short_answer: str,
+    how_sure: { type: "string", enum: ["fairly sure", "somewhat sure", "not sure"] },
+    how_sure_reason: str,
+    does_not_tell_us: str,
+    lenses: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["key", "why"],
+        properties: {
+          key: { type: "string", enum: ["being_harmed", "harming_others", "harming_self"] },
+          why: str,
+        },
+      },
+    },
+    would_change_picture: {
+      type: "object",
+      additionalProperties: false,
+      required: ["more_concerning", "less_concerning"],
+      properties: {
+        more_concerning: { type: "array", items: str },
+        less_concerning: { type: "array", items: str },
+      },
+    },
+    next_step: {
+      type: "object",
+      additionalProperties: false,
+      required: ["action", "why"],
+      properties: { action: str, why: str },
+    },
+    conversation: {
+      type: "object",
+      additionalProperties: false,
+      required: ["opener", "questions", "boundary_statement", "repair_step", "disclosure_response"],
+      properties: {
+        opener: str,
+        questions: { type: "array", items: str },
+        boundary_statement: nstr,
+        repair_step: nstr,
+        disclosure_response: nstr,
+      },
+    },
+    why_it_matters: nstr,
+    source_ids: { type: "array", items: str },
+  },
+};
+
+export type AnalysisResult = {
+  input_type: "description" | "lookup";
+  in_scope: "core" | "adjacent" | "out_of_scope";
+  escalation_category: string;
+  recognized: "known_term" | "known_creator" | "described_event" | "unrecognized";
+  short_answer: string;
+  how_sure: string;
+  how_sure_reason: string;
+  does_not_tell_us: string;
+  lenses: { key: "being_harmed" | "harming_others" | "harming_self"; why: string }[];
+  would_change_picture: { more_concerning: string[]; less_concerning: string[] };
+  next_step: { action: string; why: string };
+  conversation: {
+    opener: string;
+    questions: string[];
+    boundary_statement?: string;
+    repair_step?: string;
+    disclosure_response?: string;
+  };
+  why_it_matters?: string;
+  source_ids: string[];
+};
+
+const ENUMS = RESULT_SCHEMA.properties;
+const isStr = (v: unknown) => typeof v === "string";
+const nonEmpty = (v: unknown) => typeof v === "string" && v.trim().length > 0;
+const strArr = (v: unknown) => Array.isArray(v) && v.every(isStr);
+const clean = (s: string) => s.replace(/\u2014/g, ", ").replace(/\s+,/g, ",").trim();
+const optStr = (v: unknown) => (nonEmpty(v) ? clean(v as string) : undefined);
+
+/** Validates and normalizes. Returns null when the shape is invalid. */
+export function validateResult(raw: unknown): AnalysisResult | null {
+  if (!raw || typeof raw !== "object") return null;
+  const r = raw as Record<string, any>;
+  const inEnum = (field: keyof typeof ENUMS, v: unknown) =>
+    (ENUMS[field] as { enum?: string[] }).enum?.includes(v as string) ?? false;
+  if (!inEnum("input_type", r.input_type) || !inEnum("in_scope", r.in_scope) ||
+      !inEnum("escalation_category", r.escalation_category) || !inEnum("recognized", r.recognized) ||
+      !inEnum("how_sure", r.how_sure)) return null;
+  if (!nonEmpty(r.short_answer) || !nonEmpty(r.how_sure_reason) || !isStr(r.does_not_tell_us)) return null;
+  if (!Array.isArray(r.lenses) || r.lenses.length > 3) return null;
+  const lensKeys = ["being_harmed", "harming_others", "harming_self"];
+  if (!r.lenses.every((l: any) => l && lensKeys.includes(l.key) && nonEmpty(l.why))) return null;
+  const w = r.would_change_picture;
+  if (!w || !strArr(w.more_concerning) || !strArr(w.less_concerning)) return null;
+  if (!r.next_step || !nonEmpty(r.next_step.action) || !isStr(r.next_step.why)) return null;
+  const c = r.conversation;
+  if (!c || !isStr(c.opener) || !strArr(c.questions)) return null;
+  if (!strArr(r.source_ids)) return null;
+
+  const seen = new Set<string>();
+  const lenses = r.lenses.filter((l: any) => (seen.has(l.key) ? false : (seen.add(l.key), true)));
+
+  return {
+    input_type: r.input_type,
+    in_scope: r.in_scope,
+    escalation_category: r.escalation_category,
+    recognized: r.recognized,
+    short_answer: clean(r.short_answer),
+    how_sure: r.how_sure,
+    how_sure_reason: clean(r.how_sure_reason),
+    does_not_tell_us: clean(r.does_not_tell_us),
+    lenses: lenses.map((l: any) => ({ key: l.key, why: clean(l.why) })),
+    would_change_picture: {
+      more_concerning: w.more_concerning.filter(nonEmpty).map(clean),
+      less_concerning: w.less_concerning.filter(nonEmpty).map(clean),
+    },
+    next_step: { action: clean(r.next_step.action), why: clean(r.next_step.why) },
+    conversation: {
+      opener: clean(c.opener),
+      questions: c.questions.filter(nonEmpty).map(clean).slice(0, 3),
+      boundary_statement: optStr(c.boundary_statement),
+      repair_step: optStr(c.repair_step),
+      disclosure_response: optStr(c.disclosure_response),
+    },
+    why_it_matters: optStr(r.why_it_matters),
+    source_ids: [...new Set(r.source_ids as string[])].filter((id) => SOURCE_IDS.has(id)),
+  };
+}
+
+export class GatewayError extends Error {
+  constructor(public status: number) {
+    super(`gateway_${status}`);
+    this.name = "GatewayError";
+  }
+}
+
+/** One streamed Responses call. Returns the function-call arguments string. */
+async function callOnce(apiKey: string, userMessage: string): Promise<string | null> {
+  const res = await fetch(RESPONSES_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Lovable-API-Key": apiKey,
+      "X-Lovable-AIG-SDK": "fetch",
+    },
+    body: JSON.stringify({
+      model: ANALYSIS_MODEL_V2,
+      instructions: ANALYSIS_PROMPT,
+      input: [{ role: "user", content: userMessage }],
+      tools: [{
+        type: "function",
+        name: "report_result",
+        description: "Return the parent-facing result.",
+        strict: true,
+        parameters: RESULT_SCHEMA,
+      }],
+      tool_choice: { type: "function", name: "report_result" },
+      stream: true,
+      store: false,
+      reasoning: { effort: "low", summary: "auto" },
+      include: ["reasoning.encrypted_content"],
+    }),
+  });
+  if (!res.ok || !res.body) {
+    await res.body?.cancel();
+    throw new GatewayError(res.status);
+  }
+
+  const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+  let buf = "";
+  let args: string | null = null;
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += value;
+    let idx;
+    while ((idx = buf.indexOf("\n\n")) !== -1) {
+      const block = buf.slice(0, idx);
+      buf = buf.slice(idx + 2);
+      for (const line of block.split("\n")) {
+        if (!line.startsWith("data:")) continue;
+        const data = line.slice(5).trim();
+        if (!data || data === "[DONE]") continue;
+        let evt: any;
+        try { evt = JSON.parse(data); } catch { continue; }
+        if (evt.type === "response.function_call_arguments.done" && typeof evt.arguments === "string") {
+          args = evt.arguments;
+        } else if (evt.type === "response.output_item.done" && evt.item?.type === "function_call") {
+          args = evt.item.arguments ?? args;
+        } else if (evt.type === "response.failed" || evt.type === "error") {
+          throw new GatewayError(502);
+        }
+      }
+    }
+  }
+  return args;
+}
+
+/** Calls the model, validates, retries once on invalid output. */
+export async function runAnalysis(
+  apiKey: string,
+  userMessage: string,
+): Promise<{ result: AnalysisResult | null; attempts: number }> {
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const args = await callOnce(apiKey, userMessage);
+    if (args) {
+      try {
+        const v = validateResult(JSON.parse(args));
+        if (v) return { result: v, attempts: attempt };
+      } catch { /* invalid JSON, retry */ }
+    }
+  }
+  return { result: null, attempts: 2 };
+}
