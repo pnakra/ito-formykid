@@ -234,7 +234,7 @@ function StudyDone() {
               />
             </Question>
 
-            {error && <p className="text-[16px] text-destructive">{error}</p>}
+            {error && <p className="text-[16px] text-error">{error}</p>}
             <Button type="submit" size="lg" disabled={submitting} className="h-14 w-full rounded-full text-[18px]">
               {submitting ? "Sending…" : "Submit"}
             </Button>

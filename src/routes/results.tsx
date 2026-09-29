@@ -465,7 +465,7 @@ function ResultsPage() {
       {/* Digest signup modal */}
       {showDigest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 p-5">
-          <div className="w-full max-w-md rounded-[14px] bg-background p-6 border">
+          <div className="w-full max-w-md rounded-3xl bg-card p-6 border border-border/80">
             {digestSubmitted ? (
               <div className="text-center">
                 <h2 className="text-xl font-medium text-foreground mb-4">You're signed up.</h2>
@@ -565,16 +565,16 @@ function ErrorFallbackView({ error, onRetry }: { error: string; onRetry: () => v
     <article className="space-y-0">
       <header className="pb-8">
         <p className="label-text mb-4">WHAT WE FOUND</p>
-        <h1 className="text-[22px] font-medium leading-[1.35] text-foreground mb-2">
+        <h1 className="font-display text-[28px] font-medium leading-[1.35] text-foreground mb-2">
           That didn't work
         </h1>
-        <p className="text-[17px] text-muted-foreground leading-relaxed">
+        <p className="text-[18px] text-muted-foreground leading-relaxed">
           Something went wrong on our end. Your question is still a good one.
         </p>
       </header>
 
       <div className="border-t border-border pt-7">
-        <p className="text-[17px] text-muted-foreground leading-relaxed">{error}</p>
+        <p className="text-[18px] text-muted-foreground leading-relaxed">{error}</p>
       </div>
 
       <div className="pt-8">

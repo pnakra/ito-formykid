@@ -62,8 +62,7 @@ function SignupPage() {
         <main className="flex-1 flex items-start justify-center pt-[12vh] pb-16 px-6 md:px-10">
           <div className="w-full max-w-sm">
             <h1
-              className="text-[26px] md:text-[30px] text-foreground leading-[1.25] mb-3"
-              style={{ fontFamily: "var(--font-serif)", fontWeight: 400 }}
+              className="font-display text-[30px] font-bold text-foreground leading-[1.25] mb-3"
             >
               Check your email
             </h1>
@@ -89,8 +88,7 @@ function SignupPage() {
       <main className="flex-1 flex items-start justify-center pt-[12vh] pb-16 px-6 md:px-10">
         <div className="w-full max-w-sm">
           <h1
-            className="text-[26px] md:text-[30px] text-foreground leading-[1.25] mb-2"
-            style={{ fontFamily: "var(--font-serif)", fontWeight: 400 }}
+            className="font-display text-[30px] font-bold text-foreground leading-[1.25] mb-2"
           >
             Create your account
           </h1>
@@ -125,7 +123,7 @@ function SignupPage() {
               <p className="text-sm text-error">{error}</p>
             )}
 
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="h-12 w-full rounded-full" disabled={loading}>
               {loading ? "Creating account…" : "Get started — it's free"}
             </Button>
           </form>

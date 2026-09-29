@@ -333,10 +333,10 @@ Categories:
 - sextortion_image: sexual or private images requested, shared, or used as a threat.
 - adult_contact: an adult or much older person contacting a minor privately, sending gifts, or asking to move apps.
 - abuse_disclosure: a young person says they were touched, abused, or assaulted.
-- harmful_sexual_behavior: the young person pressured, touched, recorded, or shared images of someone else sexually.
+- harmful_sexual_behavior: the young person sexually pressured or sexually touched someone, recorded or shared nude, sexual, or intimate images, or made an upskirt or locker-room recording. Require sexual content or an intimate recording. A non-sexual humiliating screenshot, bullying, or forwarding alone is NOT this category. Handle those in the normal report with harming_others, stopping further sharing, and repair.
 - eating_disorder: restricting food, purging, or following pro-eating-disorder content.
 
-Bias strongly toward recall. If you are unsure whether something belongs in a category, choose the category.
+Bias toward recall for immediate danger, self-harm, sextortion, adult contact, abuse, and eating disorders. Do not stretch harmful_sexual_behavior to non-sexual conduct.
 
 ${IDENTITY_GUARD_TRIAGE}
 
@@ -567,9 +567,13 @@ serve(async (req) => {
       );
     }
 
+    // The verified admin can run the internal evaluation set without consuming
+    // an IP's public quota. Never trust a body-supplied email for this exception.
+    const caller = await resolveUser(req);
+    const isAdmin = ADMIN_TEST_EMAILS.includes(caller?.email?.toLowerCase() ?? "");
     // Rate limit per IP (hashed; no concern text stored).
     const admin = adminClient();
-    if (admin) {
+    if (admin && !isAdmin) {
       const ipHash = await sha256Hex(`itok-rl:${clientIp(req)}`);
       const { data: verdict, error: rlErr } = await admin.rpc("check_scan_rate_limit", {
         _ip_hash: ipHash,
@@ -582,16 +586,13 @@ serve(async (req) => {
       }
     }
 
-    const caller = body?.test_mode === true ? await resolveUser(req) : null;
-
     // 1. Deterministic pre-check. Runs before any model call; models can add
     //    a category but never clear this one.
     const preCategory = preCheck(`${parentText}\n${content}`, intake?.danger_now);
 
     // Admin-only test mode: skip every model call, return only the pre-check.
     if (body?.test_mode === true) {
-      const email = caller?.email?.toLowerCase() ?? "";
-      if (!ADMIN_TEST_EMAILS.includes(email)) {
+      if (!isAdmin) {
         logEvent({ requestId, startedAt, status: 403, errorType: "test_mode_forbidden" });
         return json({ error: "Not allowed." }, 403);
       }

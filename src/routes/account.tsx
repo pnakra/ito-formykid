@@ -102,8 +102,8 @@ function AccountPage() {
 
           {/* ─── Account ─── */}
           <section>
-            <h1 className="text-2xl font-medium text-foreground mb-4">Account</h1>
-            <div className="rounded-[14px] border bg-card p-5 space-y-4">
+            <h1 className="font-display text-[32px] font-bold text-foreground mb-4">Account</h1>
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4">
               <div>
                 <p className="label-text mb-1">Email</p>
                 <p className="text-[18px] text-foreground">{profile?.email ?? user.email}</p>
@@ -126,8 +126,8 @@ function AccountPage() {
 
           {/* ─── Monthly Digest ─── */}
           <section>
-            <h2 className="text-lg font-medium text-foreground mb-3">Monthly email</h2>
-            <div className="rounded-[14px] border bg-card p-5 space-y-4">
+            <h2 className="font-display text-[22px] font-medium text-foreground mb-3">Monthly email</h2>
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-[18px] text-foreground">Send me a monthly email</p>
@@ -163,8 +163,8 @@ function AccountPage() {
 
           {/* ─── Saved + delete ─── */}
           <section>
-            <h2 className="text-lg font-medium text-foreground mb-3">Your data</h2>
-            <div className="rounded-[14px] border bg-card p-5 space-y-4">
+            <h2 className="font-display text-[22px] font-medium text-foreground mb-3">Your data</h2>
+            <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4">
               <Link to="/history" className="text-[17px] text-primary underline underline-offset-4">
                 See what you saved
               </Link>

@@ -70,55 +70,51 @@ export const SAMPLES: Sample[] = [
     "id": "screenshot",
     "scenario": "My 15-year-old forwarded a humiliating screenshot of a classmate and said everyone else did too.",
     "result": {
-      "result_type": "report_v2",
-      "input_type": "description",
-      "in_scope": "core",
-      "escalation_category": "none",
-      "recognized": "described_event",
-      "short_answer": "Forwarding a humiliating screenshot can extend a classmate's embarrassment, even when lots of others are doing it. Your teen may have been joining in without thinking through the impact, but that does not remove their responsibility. Focus on stopping the spread and making a thoughtful repair rather than labeling your child.",
-      "how_sure": "fairly sure",
-      "how_sure_reason": "The forwarding is clear from your description, but the content, audience, and wider circumstances are unknown.",
-      "does_not_tell_us": "This does not tell us that your child intended to hurt the classmate or that this is a pattern. It also does not tell us whether your teen felt pressure to join in.",
-      "lenses": [
-        {
-          "key": "harming_others",
-          "why": "Forwarding can widen the audience for someone's humiliation, even if your teen did not create the screenshot."
-        },
-        {
-          "key": "harming_self",
-          "why": "Treating widespread participation as permission can make it harder to practice empathy and independent judgment."
-        }
-      ],
-      "would_change_picture": {
-        "more_concerning": [
-          "Repeated sharing or targeting of the same classmate",
-          "Private or sexual content, threats, or identifying details",
-          "Continued sharing after being asked to stop"
-        ],
-        "less_concerning": [
-          "A one-off incident followed by recognition of the impact",
-          "Your teen has stopped sharing and asked recipients not to forward it",
-          "Willingness to make repair without drawing more attention to the classmate"
-        ]
-      },
-      "next_step": {
-        "action": "Have a calm conversation today and agree on a stop-sharing plan: no further forwarding, remove their own shared post where possible, and ask recipients not to pass it on without reattaching the screenshot.",
-        "why": "This limits further harm while giving your teen a concrete way to take responsibility."
-      },
-      "conversation": {
-        "opener": "I want to understand what happened, not label you. Sharing something humiliating can hurt someone even when everyone else joins in.",
-        "questions": [
-          "What was happening in the group when you decided to forward it?",
-          "What do you think it might be like for the classmate to know it is being shared?",
-          "What could you do now to limit the harm without putting them on the spot?"
-        ],
-        "boundary_statement": "We do not forward content that humiliates someone, even when friends are doing it.",
-        "repair_step": "Consider a brief private apology that owns the forwarding without saying 'everyone did it.' Do not demand a reply or forgiveness, and avoid a public apology that draws fresh attention to the screenshot.",
-        "disclosure_response": "Thank you for telling me. If anyone pressured or threatened you, I will take that seriously and help you handle it. We can address that while also putting right your part."
-      },
-      "why_it_matters": "Stopping the spread and practicing accountability give your teen ways to resist group pressure and protect another person's dignity.",
-      "source_ids": [],
-      "safety_category": "harmful_sexual_behavior"
+          "result_type": "report_v2",
+          "input_type": "description",
+          "in_scope": "core",
+          "escalation_category": "none",
+          "recognized": "described_event",
+          "short_answer": "Forwarding a humiliating screenshot can widen the harm, even when lots of other people are doing it. Your child may have been joining in without thinking through the impact, but that does not remove their responsibility. This calls for a calm conversation about stopping the spread and making things right, rather than labeling your child.",
+          "how_sure": "fairly sure",
+          "how_sure_reason": "The forwarding is clear, but the screenshot's content, context, and impact are not.",
+          "does_not_tell_us": "This one action does not tell us your child's intent or usual treatment of others. Saying everyone else did it could reflect peer pressure, an attempt to minimize responsibility, or both.",
+          "lenses": [
+                {
+                      "key": "harming_others",
+                      "why": "Could your child's forwarding have exposed the classmate to more ridicule, even if your child did not create the screenshot?"
+                }
+          ],
+          "would_change_picture": {
+                "more_concerning": [
+                      "Repeated sharing or coordinated targeting",
+                      "Threats or pressure to join in",
+                      "Nude, sexual, or intimate content"
+                ],
+                "less_concerning": [
+                      "Stopping sharing and asking others not to pass it on",
+                      "Recognizing the impact without blaming the classmate",
+                      "Willingness to make a private, respectful repair"
+                ]
+          },
+          "next_step": {
+                "action": "Have a private conversation today to agree on stopping further sharing, removing the forwarded post where possible, and asking recipients not to pass it on.",
+                "why": "This limits further exposure while giving your child a concrete way to take responsibility."
+          },
+          "conversation": {
+                "opener": "I want to understand what happened, not label you. Forwarding something humiliating can hurt someone even when other people are doing it too.",
+                "questions": [
+                      "What was happening in the chat when you decided to forward it?",
+                      "How do you think the classmate might experience people passing it around?",
+                      "What could you do now to stop it spreading and make things right without drawing more attention to them?"
+                ],
+                "boundary_statement": "We do not pass along someone else's humiliation. Other people doing it does not make it okay.",
+                "repair_step": "Consider a brief private apology that owns the forwarding without excuses or asking for forgiveness. Avoid a public apology that repeats the content or puts the classmate on the spot, and respect their wish for no contact.",
+                "disclosure_response": "Thank you for telling me. If someone pressured or threatened you to share it, I take that seriously, and we can work on that while also stopping the harm."
+          },
+          "why_it_matters": "Every additional share can extend the audience and make it harder for the classmate to move on. Taking responsibility means limiting the spread, not just explaining why it happened.",
+          "source_ids": [],
+          "safety_category": null
     }
   },
   {

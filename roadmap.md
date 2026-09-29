@@ -1,5 +1,11 @@
 # Roadmap
 
+## Active
+- [ ] Calibrate triage and refresh screenshot sample from a live check
+- [ ] Add admin evaluation page and run 16 cases plus safety-only checks
+- [ ] Align listed pages with early-access theme and inspect phone screenshots
+- [ ] Clean up evaluation data
+
 ## Done
 - [x] Payments cleanup: PAYMENTS_ENABLED=false, 410 Gone in 3 payment functions (verified live), profiles column lock, pricing wording removed, scan_count bumps stopped
 - [x] STAY_AHEAD_ENABLED=false: tab + content hidden on /home, direct links fall back to Understand now

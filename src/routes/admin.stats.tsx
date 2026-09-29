@@ -37,7 +37,7 @@ function StatsPage() {
     <div className="flex min-h-screen flex-col bg-background">
       <Header isLoggedIn={!!user} />
       <main className="mx-auto w-full max-w-5xl flex-1 px-5 py-10 space-y-10">
-        <h1 className="font-display text-[28px] font-bold text-foreground">Stats</h1>
+        <h1 className="font-display text-[32px] font-bold text-foreground">Stats</h1>
         {loading ? null : !user ? (
           <p className="text-muted-foreground">Sign in first.</p>
         ) : q.isLoading ? (
@@ -54,7 +54,7 @@ function StatsPage() {
                 </thead>
                 <tbody>
                   {Object.entries(q.data.counts).sort().map(([ev, bySrc]) => (
-                    <tr key={ev} className="border-t border-border/60">
+                    <tr key={ev} className="border-t border-border/80">
                       <td className="py-2 pr-4">{ev}</td>
                       {q.data!.sources.map((s) => <td key={s} className="py-2 pr-4">{bySrc[s] ?? 0}</td>)}
                       <td className="py-2">{Object.values(bySrc).reduce((a, b) => a + b, 0)}</td>
@@ -71,7 +71,7 @@ function StatsPage() {
                 </thead>
                 <tbody>
                   {q.data.feedback.map((f) => (
-                    <tr key={f.id} className="border-t border-border/60 align-top">
+                    <tr key={f.id} className="border-t border-border/80 align-top">
                       <td className="py-2 pr-3 whitespace-nowrap">{new Date(f.created_at).toLocaleString()}</td>
                       <td className="py-2 pr-3">{f.source}</td>
                       <td className="py-2 pr-3">{f.pid ?? ""}</td>
