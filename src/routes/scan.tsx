@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Header, Footer } from "@/components/Layout";
@@ -10,8 +10,8 @@ import {
   FREQUENCY_OPTIONS,
   QUESTION_OPTIONS,
   DANGER_OPTIONS,
-  AUTOFILL_EXAMPLES,
-  DESCRIBE_EXAMPLES,
+  STARTERS,
+  BLANK,
 } from "@/config/intake";
 
 const TITLE = "What are you trying to make sense of? — is this ok for my kid?";
@@ -97,15 +97,26 @@ function ScanPage() {
     sessionStorage.setItem(MODE_KEY, next);
   };
 
-  const examples = mode === "describe" ? DESCRIBE_EXAMPLES : AUTOFILL_EXAMPLES;
   const trimmed = text.trim();
+  const hasBlank = text.includes(BLANK);
+
+  const useStarter = (starter: string) => {
+    setText(starter);
+    requestAnimationFrame(() => {
+      const el = textRef.current;
+      if (!el) return;
+      const at = starter.indexOf(BLANK);
+      el.focus();
+      el.setSelectionRange(at, at + BLANK.length);
+    });
+  };
 
   const handleSubmit = () => {
     if (danger === "Yes") {
       navigate({ to: "/help" });
       return;
     }
-    if (!trimmed || text.length > MAX) return;
+    if (!trimmed || hasBlank || text.length > MAX) return;
     sessionStorage.setItem(MODE_KEY, mode);
     sessionStorage.setItem(
       "scanIntake",
@@ -175,18 +186,22 @@ function ScanPage() {
             </span>
           </div>
 
-          <div className="mt-5 flex flex-wrap gap-2">
-            {examples.map((example) => (
+          <p className="mt-5 text-[15px] text-hint">Not sure how to start? Tap one and fill in the blank.</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {STARTERS.map((starter) => (
               <button
-                key={example}
+                key={starter}
                 type="button"
-                onClick={() => setText(example)}
+                onClick={() => useStarter(starter)}
                 className="rounded-full border border-border bg-card px-3 py-1.5 text-left text-[15px] text-muted-foreground transition-colors hover:border-primary/60 hover:text-foreground"
               >
-                {example}
+                {starter}
               </button>
             ))}
           </div>
+          {hasBlank && (
+            <p className="mt-3 text-[15px] text-hint">Replace the ___ with what happened, then tap Get context.</p>
+          )}
 
           <div className="mt-10 space-y-8">
             <p className="label-text text-primary">OPTIONAL. SKIP ANY OF THESE.</p>
