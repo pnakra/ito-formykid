@@ -28,6 +28,7 @@ export interface ReportV2Data {
   };
   why_it_matters?: string;
   source_ids: string[];
+  clarifying_question?: string;
 }
 
 const LENS_QUESTION: Record<LensKey, string> = {
@@ -113,11 +114,20 @@ export function ReportV2({ result, actions, afterWhatToSay }: { result: ReportV2
         )}
       </header>
 
-      {!outOfScope && result.does_not_tell_us && (
-        <Section title="What this does not tell us">
-          <p className={body}>{result.does_not_tell_us}</p>
-        </Section>
-      )}
+      {!outOfScope && result.does_not_tell_us && (() => {
+        const points = result.does_not_tell_us.split(/\n+/).map((s) => s.replace(/^[-•*\d.\s]+/, "").trim()).filter(Boolean);
+        return (
+          <Section title="What this does not tell us">
+            {points.length > 1 ? (
+              <ul className="list-disc space-y-2 pl-5 text-[18px] leading-[1.6] text-foreground max-w-[65ch]">
+                {points.map((p) => <li key={p}>{p}</li>)}
+              </ul>
+            ) : (
+              <p className={body}>{result.does_not_tell_us}</p>
+            )}
+          </Section>
+        );
+      })()}
 
       {!outOfScope && result.lenses?.length > 0 && (
         <Section title="Your three questions">
