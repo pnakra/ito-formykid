@@ -137,7 +137,7 @@ function ScanPage() {
             What are you trying to make sense of?
           </h1>
 
-          <p className="mt-6 rounded-2xl border border-border/80 bg-card p-4 text-[16px] leading-[1.55] text-muted-foreground">
+          <p className="mt-6 rounded-2xl border border-border/80 bg-card p-4 text-[18px] leading-[1.55] text-muted-foreground">
             Please leave out names, usernames, schools, contact details, passwords, and identifying
             details. Describe what happened in your own words instead of pasting private messages.
           </p>
@@ -168,7 +168,7 @@ function ScanPage() {
               I'm looking up a term or creator
             </label>
             <span
-              className={`text-[14px] tabular-nums ${text.length >= MAX ? "text-destructive" : "text-hint"}`}
+              className={`text-[14px] tabular-nums ${text.length >= MAX ? "text-error" : "text-hint"}`}
               aria-live="polite"
             >
               {text.length} / {MAX}

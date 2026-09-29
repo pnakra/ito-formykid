@@ -3,17 +3,18 @@ import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { Shield, MessageCircle, Eye } from "lucide-react";
 import { useIsStudy } from "@/lib/entrySource";
+import { STAY_AHEAD_ENABLED } from "@/config/features";
 
 export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boolean }) {
   const storedStudy = useIsStudy();
   const isStudy = study ?? storedStudy;
   return (
     <header className="border-b bg-background">
-      <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-5">
-        <Link to={isStudy ? "/start" : "/"} className="text-[18px] font-medium text-foreground">
+      <div className={`mx-auto flex min-h-14 max-w-3xl items-center justify-between gap-2 px-5 py-2 ${isLoggedIn && !isStudy ? "flex-wrap sm:flex-nowrap" : ""}`}>
+        <Link to={isStudy ? "/start" : "/"} className="shrink-0 font-display text-[18px] font-semibold text-foreground">
           is this ok?
         </Link>
-        <nav className="flex items-center gap-1">
+        <nav className={`flex items-center gap-1 ${isLoggedIn && !isStudy ? "w-full flex-wrap sm:w-auto" : ""}`}>
           <Link to="/help" onClick={() => track("get_help_clicked", { page: typeof window !== "undefined" ? window.location.pathname : "" })}>
             <Button variant="ghost" size="sm" className="text-[15px]">Get help</Button>
           </Link>
@@ -26,9 +27,9 @@ export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boo
               <Link to="/home" search={{ tab: "understand" }}>
                 <Button variant="ghost" size="sm" className="text-[15px]">Understand now</Button>
               </Link>
-              <Link to="/home" search={{ tab: "stay_ahead" }}>
+              {STAY_AHEAD_ENABLED && <Link to="/home" search={{ tab: "stay_ahead" }}>
                 <Button variant="ghost" size="sm" className="text-[15px]">Stay ahead</Button>
-              </Link>
+              </Link>}
               <Link to="/history">
                 <Button variant="ghost" size="sm" className="text-[15px]">Saved</Button>
               </Link>
@@ -60,10 +61,10 @@ export function Footer() {
     <footer className="border-t py-8">
       <div className="mx-auto max-w-3xl px-5">
         <div className="flex flex-col items-center gap-3 text-center">
-          <p className="text-[15px] text-hint">
+          <p className="text-[18px] text-hint">
             Free. Built by a nonprofit. We never see your child's phone.
           </p>
-          <div className="flex items-center gap-4 text-[15px] text-hint">
+          <div className="flex items-center gap-4 text-[18px] text-hint">
             <Link
               to="/why"
               className="underline underline-offset-4 hover:text-foreground"
@@ -95,12 +96,12 @@ export function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="rounded-[14px] border bg-card p-5">
-      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-[10px] bg-accent">
+    <div className="rounded-2xl border border-border/80 bg-card p-5">
+      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-full bg-accent">
         <Icon className="h-4 w-4 text-foreground" />
       </div>
-      <h3 className="mb-1 text-[18px] font-medium text-foreground">{title}</h3>
-      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+      <h3 className="mb-1 font-display text-[18px] font-medium text-foreground">{title}</h3>
+      <p className="text-[18px] leading-relaxed text-hint">{description}</p>
     </div>
   );
 }

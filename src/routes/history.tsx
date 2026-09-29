@@ -83,13 +83,13 @@ function SavedPage() {
       <Header isLoggedIn={true} />
       <main className="flex-1 py-10">
         <div className="mx-auto max-w-[34rem] px-5">
-          <h1 className="text-2xl font-medium text-foreground mb-2">Saved</h1>
-          <p className="text-[15px] text-hint mb-6">Only you can see these.</p>
+          <h1 className="font-display text-[32px] font-bold text-foreground mb-2">Saved</h1>
+          <p className="text-[18px] text-hint mb-6">Only you can see these.</p>
 
           {loading ? (
             <p className="text-hint">Loading.</p>
           ) : items.length === 0 ? (
-            <div className="rounded-[14px] border bg-card p-5 text-center">
+            <div className="rounded-2xl border border-border/80 bg-card p-5 text-center">
               <p className="text-[17px] text-hint">Nothing saved yet.</p>
               <Link to="/scan">
                 <Button size="sm" className="mt-3">Check something</Button>
@@ -100,7 +100,7 @@ function SavedPage() {
               {items.map((item) => {
                 const firstLine = item.input_content.split("\n")[0].trim() || "Saved check";
                 return (
-                  <li key={item.id} className="rounded-[14px] border bg-card p-4 space-y-3">
+                  <li key={item.id} className="rounded-2xl border border-border/80 bg-card p-4 space-y-3">
                     <div>
                       <p className="text-[13px] text-hint">{format(new Date(item.created_at), "MMM d, yyyy")}</p>
                       <p className="text-[18px] text-foreground truncate">{firstLine}</p>
