@@ -36,7 +36,16 @@ export const OBSERVATION_GROUPS = [
   },
 ];
 
-export const GENDER_OPTIONS = ["Boy", "Girl", "Nonbinary", "Prefer not to say"];
+export const AGE_BANDS = ["11-12", "13-14", "15-16", "17-18", "Prefer not to say"];
+export const WHERE_OPTIONS = ["Group chat", "Social app", "Game", "In person", "A creator or video", "Not sure"];
+export const FREQUENCY_OPTIONS = ["One time", "Recurring", "Not sure"];
+export const QUESTION_OPTIONS = [
+  "Is my kid being harmed?",
+  "Is my kid harming someone else?",
+  "Is my kid harming themselves?",
+  "Not sure",
+];
+export const DANGER_OPTIONS = ["Yes", "No", "Not sure"];
 
 export const AGE_OPTIONS = Array.from({ length: 8 }, (_, i) => String(i + 11));
 

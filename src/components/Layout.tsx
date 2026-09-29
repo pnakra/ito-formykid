@@ -13,6 +13,9 @@ export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boo
           is this ok?
         </Link>
         <nav className="flex items-center gap-1">
+          <Link to="/help">
+            <Button variant="ghost" size="sm" className="text-[15px]">Get help</Button>
+          </Link>
           {isStudy ? (
             <Link to="/study/done">
               <Button size="sm">Finish study</Button>

@@ -19,6 +19,7 @@ import { Route as ResultsRouteImport } from './routes/results'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as EarlyAccessRouteImport } from './routes/early-access'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
@@ -75,6 +76,11 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const EarlyAccessRoute = EarlyAccessRouteImport.update({
   id: '/early-access',
   path: '/early-access',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/early-access': typeof EarlyAccessRoute
+  '/help': typeof HelpRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/early-access': typeof EarlyAccessRoute
+  '/help': typeof HelpRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/early-access': typeof EarlyAccessRoute
+  '/help': typeof HelpRoute
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/early-access'
+    | '/help'
     | '/history'
     | '/home'
     | '/login'
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/early-access'
+    | '/help'
     | '/history'
     | '/home'
     | '/login'
@@ -194,6 +205,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/early-access'
+    | '/help'
     | '/history'
     | '/home'
     | '/login'
@@ -212,6 +224,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   EarlyAccessRoute: typeof EarlyAccessRoute
+  HelpRoute: typeof HelpRoute
   HistoryRoute: typeof HistoryRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
@@ -298,6 +311,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/early-access': {
       id: '/early-access'
       path: '/early-access'
@@ -340,6 +360,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   EarlyAccessRoute: EarlyAccessRoute,
+  HelpRoute: HelpRoute,
   HistoryRoute: HistoryRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,

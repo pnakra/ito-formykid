@@ -43,7 +43,6 @@ function LandingPage() {
       "scanIntake",
       JSON.stringify({
         age: "",
-        gender: "",
         concerns: [],
         observations: [],
         query: value,

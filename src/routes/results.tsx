@@ -57,7 +57,11 @@ interface ScanResult {
 
 interface IntakeData {
   age: string;
-  gender: string;
+  age_band?: string;
+  where?: string;
+  frequency?: string;
+  question_on_mind?: string;
+  danger_now?: string;
   concerns: string[];
   observations: string[];
   query: string;
@@ -126,8 +130,11 @@ function ResultsPage() {
       const isDescribe = intakeData.inputMode === "describe";
 
       const contextParts: string[] = [];
-      if (intakeData.age) contextParts.push(`Child's age: ${intakeData.age}`);
-      if (intakeData.gender) contextParts.push(`Gender identity: ${intakeData.gender}`);
+      if (intakeData.age_band) contextParts.push(`Child's age band: ${intakeData.age_band}`);
+      else if (intakeData.age) contextParts.push(`Child's age: ${intakeData.age}`);
+      if (intakeData.where) contextParts.push(`Where this came up: ${intakeData.where}`);
+      if (intakeData.frequency) contextParts.push(`How often: ${intakeData.frequency}`);
+      if (intakeData.question_on_mind) contextParts.push(`Parent's question: ${intakeData.question_on_mind}`);
       if (intakeData.concerns?.length) contextParts.push(`Type of content concerned about: ${intakeData.concerns.join(", ")}`);
       if (intakeData.observations?.length) contextParts.push(`Behavioral signals noticed: ${intakeData.observations.join(", ")}`);
       if (!isDescribe) {
@@ -137,6 +144,20 @@ function ResultsPage() {
       }
 
       const content = contextParts.join("\n");
+
+      // Only send known fields. Gender is never sent.
+      const intakePayload = {
+        query: intakeData.query,
+        inputMode: intakeData.inputMode,
+        age: intakeData.age || undefined,
+        age_band: intakeData.age_band || undefined,
+        where: intakeData.where || undefined,
+        frequency: intakeData.frequency || undefined,
+        question_on_mind: intakeData.question_on_mind || undefined,
+        danger_now: intakeData.danger_now || undefined,
+        concerns: intakeData.concerns ?? [],
+        observations: intakeData.observations ?? [],
+      };
 
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/scan-content`,
@@ -149,7 +170,7 @@ function ResultsPage() {
           body: JSON.stringify({
             content,
             inputType: isDescribe ? "description" : "text",
-            intake: intakeData,
+            intake: intakePayload,
           }),
         }
       );
@@ -359,7 +380,6 @@ function ResultsPage() {
           <RefinementPanel
             values={{
               age: intake.age ?? "",
-              gender: intake.gender ?? "",
               concerns: intake.concerns ?? [],
               observations: intake.observations ?? [],
             }}

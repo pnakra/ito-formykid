@@ -397,14 +397,12 @@ function HomePage() {
     if (!text) return;
     const intakeData: {
       age: string;
-      gender: string;
       concerns: string[];
       observations: string[];
       query: string;
       inputMode: InputMode;
     } = {
       age: "",
-      gender: "",
       concerns: [],
       observations: [],
       query: text,
