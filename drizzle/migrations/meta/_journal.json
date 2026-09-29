@@ -85,6 +85,13 @@
       "when": 1790695182442,
       "tag": "0011_create_study_answers",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1790701334410,
+      "tag": "0012_create_study_texts",
+      "breakpoints": true
     }
   ]
 }

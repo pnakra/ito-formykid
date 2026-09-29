@@ -419,6 +419,33 @@ export type Database = {
         }
         Relationships: []
       }
+      study_texts: {
+        Row: {
+          anon_id: string | null
+          content: Json
+          created_at: string
+          id: string
+          kind: string
+          pid: string | null
+        }
+        Insert: {
+          anon_id?: string | null
+          content?: Json
+          created_at?: string
+          id?: string
+          kind: string
+          pid?: string | null
+        }
+        Update: {
+          anon_id?: string | null
+          content?: Json
+          created_at?: string
+          id?: string
+          kind?: string
+          pid?: string | null
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean | null
