@@ -186,6 +186,8 @@ export type Database = {
           id: string
           input_content: string
           input_type: string
+          note: string | null
+          result_json: Json | null
           risk_level: string
           spectrum_label: string | null
           status: string
@@ -206,6 +208,8 @@ export type Database = {
           id?: string
           input_content: string
           input_type: string
+          note?: string | null
+          result_json?: Json | null
           risk_level: string
           spectrum_label?: string | null
           status?: string
@@ -226,6 +230,8 @@ export type Database = {
           id?: string
           input_content?: string
           input_type?: string
+          note?: string | null
+          result_json?: Json | null
           risk_level?: string
           spectrum_label?: string | null
           status?: string
