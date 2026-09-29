@@ -456,21 +456,121 @@ async function runTriage(
   }
 }
 
+const MAX_INPUT_CHARS = 1500;
+const RATE_LIMIT_MESSAGE =
+  "You've run a lot of checks in a short time. Please wait a few minutes and try again.";
+
+// Logs may contain only request id, category, latency, status, and error type.
+function logEvent(fields: {
+  requestId: string;
+  status: number;
+  startedAt: number;
+  category?: string | null;
+  errorType?: string;
+}) {
+  const line = JSON.stringify({
+    request_id: fields.requestId,
+    category: fields.category ?? null,
+    latency_ms: Date.now() - fields.startedAt,
+    status: fields.status,
+    error_type: fields.errorType ?? null,
+  });
+  if (fields.errorType) console.error(line);
+  else console.log(line);
+}
+
+function adminClient() {
+  const url = Deno.env.get("SUPABASE_URL");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) return null;
+  return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+}
+
+async function sha256Hex(s: string) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function clientIp(req: Request) {
+  return (
+    req.headers.get("cf-connecting-ip") ||
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    "unknown"
+  );
+}
+
+// User identity comes only from a verified Authorization token, never the body.
+async function resolveUserId(req: Request): Promise<string | null> {
+  const auth = req.headers.get("Authorization") ?? "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!token || token.split(".").length !== 3) return null;
+  const admin = adminClient();
+  if (!admin) return null;
+  try {
+    const { data, error } = await admin.auth.getUser(token);
+    if (error || !data?.user) return null;
+    return data.user.id;
+  } catch {
+    return null;
+  }
+}
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 serve(async (req) => {
 
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const { content, inputType, intake, userId } = await req.json();
+  const requestId = crypto.randomUUID();
+  const startedAt = Date.now();
 
-    if (!content || typeof content !== "string" || content.length > 10000) {
-      return new Response(
-        JSON.stringify({ error: "Invalid content" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+  try {
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      logEvent({ requestId, startedAt, status: 400, errorType: "bad_json" });
+      return json({ error: "Invalid request" }, 400);
+    }
+    const { content, inputType, intake } = body ?? {};
+
+    if (!content || typeof content !== "string") {
+      logEvent({ requestId, startedAt, status: 400, errorType: "invalid_content" });
+      return json({ error: "Invalid content" }, 400);
+    }
+    const parentText: string = typeof intake?.query === "string" ? intake.query : content;
+    if (parentText.length > MAX_INPUT_CHARS || content.length > MAX_INPUT_CHARS + 1000) {
+      logEvent({ requestId, startedAt, status: 400, errorType: "input_too_long" });
+      return json(
+        { error: `Please keep it under ${MAX_INPUT_CHARS} characters and try again.` },
+        400
       );
     }
+
+    // Rate limit per IP (hashed; no concern text stored).
+    const admin = adminClient();
+    if (admin) {
+      const ipHash = await sha256Hex(`itok-rl:${clientIp(req)}`);
+      const { data: verdict, error: rlErr } = await admin.rpc("check_scan_rate_limit", {
+        _ip_hash: ipHash,
+      });
+      if (rlErr) {
+        logEvent({ requestId, startedAt, status: 0, errorType: "rate_limit_check_failed" });
+      } else if (verdict !== "ok") {
+        logEvent({ requestId, startedAt, status: 429, errorType: `rate_limited_${verdict}` });
+        return json({ error: RATE_LIMIT_MESSAGE, code: "rate_limited" }, 429);
+      }
+    }
+
+    const userId = await resolveUserId(req);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
