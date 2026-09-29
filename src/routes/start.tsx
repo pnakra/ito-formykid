@@ -1,3 +1,4 @@
+import { track } from "@/lib/track";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Header, Footer } from "@/components/Layout";
@@ -48,6 +49,7 @@ function StartPage() {
     } else {
       setIsStudy(sessionStorage.getItem("itok_src") === "prolific");
     }
+    track("start_viewed");
   }, [src, pid]);
 
   return (
