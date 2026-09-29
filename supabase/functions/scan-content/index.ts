@@ -589,7 +589,7 @@ serve(async (req) => {
         if (admin) {
           const { error: insErr } = await admin.from("scans").insert({
             user_id: userId,
-            input_type: inputType || "text",
+            input_type: inputType === "description" ? "description" : "text",
             input_content: content,
             risk_level: "Escalated",
             summary: escalation.why_escalated,
@@ -660,7 +660,7 @@ serve(async (req) => {
         const intakeData = intake ?? {};
         const { error: insErr } = await admin.from("scans").insert({
           user_id: userId,
-          input_type: inputType || "text",
+          input_type: inputType === "description" ? "description" : "text",
           input_content: content,
           risk_level: v2.in_scope,
           summary: v2.short_answer,
