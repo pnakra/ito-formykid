@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Shield, MessageCircle, Eye } from "lucide-react";
 import { useIsStudy } from "@/lib/entrySource";
 import { STAY_AHEAD_ENABLED } from "@/config/features";
+import { StudyTasks } from "@/components/StudyTasks";
 
 export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boolean }) {
   const storedStudy = useIsStudy();
   const isStudy = study ?? storedStudy;
   return (
+    <>
     <header className="border-b bg-background">
       <div className="mx-auto flex min-h-14 max-w-3xl flex-wrap items-center justify-between gap-x-2 gap-y-1 px-5 py-2 sm:flex-nowrap">
         <Link to={isStudy ? "/start" : "/"} className="shrink-0 font-display text-[18px] font-semibold text-foreground">
@@ -53,6 +55,8 @@ export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boo
         </nav>
       </div>
     </header>
+    {isStudy && <StudyTasks />}
+    </>
   );
 }
 
