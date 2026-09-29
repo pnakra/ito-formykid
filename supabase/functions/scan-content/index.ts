@@ -585,14 +585,9 @@ serve(async (req) => {
     if (escalationCategory) {
       const escalation = buildEscalation(escalationCategory);
       try {
-        const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-        const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-        if (SUPABASE_URL && SERVICE_ROLE_KEY) {
-          const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
-            auth: { persistSession: false, autoRefreshToken: false },
-          });
-          await admin.from("scans").insert({
-            user_id: userId ?? null,
+        if (admin) {
+          const { error: insErr } = await admin.from("scans").insert({
+            user_id: userId,
             input_type: inputType || "text",
             input_content: content,
             risk_level: "Escalated",
@@ -603,14 +598,14 @@ serve(async (req) => {
             escalated: true,
             escalation_category: escalationCategory,
           });
+          if (insErr) logEvent({ requestId, startedAt, status: 0, category: escalationCategory, errorType: "persist_failed" });
         }
-      } catch (persistErr) {
-        console.error("Failed to persist escalated scan:", persistErr);
+      } catch {
+        logEvent({ requestId, startedAt, status: 0, category: escalationCategory, errorType: "persist_failed" });
       }
 
-      return new Response(JSON.stringify(escalation), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      logEvent({ requestId, startedAt, status: 200, category: `escalation:${escalationCategory}` });
+      return json(escalation);
     }
 
 
@@ -640,21 +635,17 @@ serve(async (req) => {
     );
 
     if (!response.ok) {
+      await response.body?.cancel();
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limited. Please try again in a moment." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        logEvent({ requestId, startedAt, status: 429, errorType: "gateway_rate_limited" });
+        return json({ error: RATE_LIMIT_MESSAGE, code: "rate_limited" }, 429);
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Service temporarily unavailable." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        logEvent({ requestId, startedAt, status: 402, errorType: "gateway_payment_required" });
+        return json({ error: "Service temporarily unavailable." }, 402);
       }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      throw new Error("AI analysis failed");
+      logEvent({ requestId, startedAt, status: 502, errorType: `gateway_http_${response.status}` });
+      return json({ error: "We couldn't finish this check. Please try again." }, 502);
     }
 
     const aiData = await response.json();
@@ -663,13 +654,18 @@ serve(async (req) => {
     let result;
     const toolCall = message?.tool_calls?.[0];
 
-    if (toolCall?.function?.arguments) {
-      result = JSON.parse(toolCall.function.arguments);
-    } else if (message?.content) {
-      result = extractJson(message.content);
-    } else {
-      console.error("AI response structure:", JSON.stringify(aiData).substring(0, 1000));
-      throw new Error("No usable response from AI");
+    try {
+      if (toolCall?.function?.arguments) {
+        result = JSON.parse(toolCall.function.arguments);
+      } else if (message?.content) {
+        result = extractJson(message.content);
+      } else {
+        throw new Error("empty");
+      }
+    } catch {
+      // Never log the model reply — only the error type.
+      logEvent({ requestId, startedAt, status: 502, errorType: "model_parse_failed" });
+      return json({ error: "We couldn't finish this check. Please try again." }, 502);
     }
 
     // Ensure result_type is always set
@@ -681,19 +677,15 @@ serve(async (req) => {
     // Identity is never a risk classification.
     result = enforceIdentityGuard(result, content);
 
+    const category = String((result as any).result_type ?? "briefing");
 
     // Persist the scan server-side using the service role.
     // Works for both authenticated users (user_id set) and anonymous scans (user_id null).
     try {
-      const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-      const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-      if (SUPABASE_URL && SERVICE_ROLE_KEY) {
-        const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
-          auth: { persistSession: false, autoRefreshToken: false },
-        });
+      if (admin) {
         const intakeData = intake ?? {};
-        await admin.from("scans").insert({
-          user_id: userId ?? null,
+        const { error: insErr } = await admin.from("scans").insert({
+          user_id: userId,
           input_type: inputType || "text",
           input_content: content,
           risk_level: (result as any).spectrum_label ?? "Unknown",
@@ -711,25 +703,21 @@ serve(async (req) => {
           summary_verdict: (result as any).summary_verdict ?? null,
           status: "watching",
         });
+        if (insErr) logEvent({ requestId, startedAt, status: 0, category, errorType: "persist_failed" });
       }
-    } catch (persistErr) {
-      // Don't fail the request if persistence fails — log and move on.
-      console.error("Failed to persist scan:", persistErr);
+    } catch {
+      logEvent({ requestId, startedAt, status: 0, category, errorType: "persist_failed" });
     }
 
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    logEvent({ requestId, startedAt, status: 200, category });
+    return json(result);
   } catch (e) {
-    console.error("scan-content error:", e);
-    return new Response(
-      JSON.stringify({
-        error: e instanceof Error ? e.message : "Unknown error",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    logEvent({
+      requestId,
+      startedAt,
+      status: 500,
+      errorType: e instanceof Error ? e.name : "unknown",
+    });
+    return json({ error: "Something went wrong. Please try again." }, 500);
   }
 });
