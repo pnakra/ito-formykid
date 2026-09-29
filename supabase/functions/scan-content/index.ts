@@ -5,6 +5,7 @@ import {
   suppressIdentityEscalation,
 } from "./identity-guard.ts";
 import { AI_GATEWAY_URL, ANALYSIS_MODEL, TRIAGE_MODEL } from "../_shared/ai-config.ts";
+import { runAnalysis, GatewayError } from "./analysis.ts";
 import {
   ESCALATION_CATEGORIES,
   ESCALATION_RULES_FOR_ANALYSIS,
@@ -610,75 +611,47 @@ serve(async (req) => {
 
 
     const ctx = `Age band: ${intake?.age_band || intake?.age || "not provided"}\nWhere: ${intake?.where || "not provided"}\nHow often: ${intake?.frequency || "not provided"}\nParent's question: ${intake?.question_on_mind || "not provided"}`;
-    const response = await fetch(
-      AI_GATEWAY_URL,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: ANALYSIS_MODEL,
-          messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            {
-              role: "user",
-              content:
-                inputType === "description"
-                  ? `INPUT TYPE: behavioral description\n\nPARENT'S DESCRIPTION:\n${content}\n\nCONTEXT:\n${ctx}`
-                  : `INPUT TYPE: lookup\n\nSEARCH TERM: ${content}\n\nCONTEXT:\n${ctx}`,
-            },
-          ],
-          max_tokens: 3500,
-        }),
-      }
-    );
+    const parentWords = typeof intake?.query === "string" && intake.query.trim() ? intake.query : content;
+    const userMessage =
+      inputType === "description"
+        ? `INPUT TYPE: description\n\nPARENT'S DESCRIPTION:\n${parentWords}\n\nCONTEXT:\n${ctx}`
+        : `INPUT TYPE: lookup\n\nTERM OR CREATOR TO LOOK UP:\n${parentWords}\n\nCONTEXT:\n${ctx}`;
 
-    if (!response.ok) {
-      await response.body?.cancel();
-      if (response.status === 429) {
+    let analysis: Awaited<ReturnType<typeof runAnalysis>>;
+    try {
+      analysis = await runAnalysis(LOVABLE_API_KEY, userMessage);
+    } catch (err) {
+      const status = err instanceof GatewayError ? err.status : 502;
+      if (status === 429) {
         logEvent({ requestId, startedAt, status: 429, errorType: "gateway_rate_limited" });
         return json({ error: RATE_LIMIT_MESSAGE, code: "rate_limited" }, 429);
       }
-      if (response.status === 402) {
+      if (status === 402) {
         logEvent({ requestId, startedAt, status: 402, errorType: "gateway_payment_required" });
         return json({ error: "Service temporarily unavailable." }, 402);
       }
-      logEvent({ requestId, startedAt, status: 502, errorType: `gateway_http_${response.status}` });
+      logEvent({ requestId, startedAt, status: 502, errorType: `gateway_http_${status}` });
       return json({ error: "We couldn't finish this check. Please try again." }, 502);
     }
 
-    const aiData = await response.json();
-    const message = aiData.choices?.[0]?.message;
-
-    let result;
-    const toolCall = message?.tool_calls?.[0];
-
-    try {
-      if (toolCall?.function?.arguments) {
-        result = JSON.parse(toolCall.function.arguments);
-      } else if (message?.content) {
-        result = extractJson(message.content);
-      } else {
-        throw new Error("empty");
-      }
-    } catch {
-      // Never log the model reply — only the error type.
-      logEvent({ requestId, startedAt, status: 502, errorType: "model_parse_failed" });
-      return json({ error: "We couldn't finish this check. Please try again." }, 502);
+    if (!analysis.result) {
+      // Never log the model reply, only the error type.
+      logEvent({ requestId, startedAt, status: 502, errorType: "model_invalid_after_retry" });
+      return json({ error: "We couldn't finish this check. Please try again in a moment." }, 502);
     }
+    const v2 = analysis.result;
 
-    // Ensure result_type is always set
-    result = classifyResult(result);
+    // Identity is never a risk classification (old guard, adapted).
+    const flagged = v2.lenses.length > 0 || v2.escalation_category !== "none";
+    const guarded = enforceIdentityGuard(
+      { spectrum_label: flagged ? "Concerning" : null },
+      content,
+    );
+    const result: Record<string, unknown> =
+      guarded.result_type === "identity_affirming" ? guarded : { result_type: "report_v2", ...v2 };
 
-    // Fill in any report fields the model left out.
-    result = ensureBriefingFields(result);
-
-    // Identity is never a risk classification.
-    result = enforceIdentityGuard(result, content);
-
-    const category = String((result as any).result_type ?? "briefing");
+    const category =
+      result.result_type === "identity_affirming" ? "identity_affirming" : `v2:${v2.in_scope}`;
 
     // Persist the scan server-side using the service role.
     // Works for both authenticated users (user_id set) and anonymous scans (user_id null).
@@ -689,19 +662,15 @@ serve(async (req) => {
           user_id: userId,
           input_type: inputType || "text",
           input_content: content,
-          risk_level: (result as any).spectrum_label ?? "Unknown",
-          summary: (result as any).what_it_is ?? "",
-          guidance: (result as any).why_it_appeals ?? "",
-          domain_category:
-            (result as any).result_type === "outside_scope" ? "outside_scope" : null,
-          confidence: (result as any).confidence ?? null,
+          risk_level: v2.in_scope,
+          summary: v2.short_answer,
+          guidance: v2.next_step.action,
+          domain_category: v2.in_scope,
+          confidence: v2.how_sure,
           age_context: intakeData.age_band || intakeData.age || null,
-          concern_areas:
-            Array.isArray(intakeData.concerns) && intakeData.concerns.length > 0
-              ? intakeData.concerns
-              : null,
-          spectrum_label: (result as any).spectrum_label ?? null,
-          summary_verdict: (result as any).summary_verdict ?? null,
+          concern_areas: v2.lenses.length ? v2.lenses.map((l) => l.key) : null,
+          spectrum_label: v2.recognized,
+          summary_verdict: v2.short_answer,
           status: "watching",
         });
         if (insErr) logEvent({ requestId, startedAt, status: 0, category, errorType: `persist_failed_${insErr.code ?? "unknown"}` });
