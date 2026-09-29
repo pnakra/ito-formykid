@@ -25,6 +25,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SamplesIndexRouteImport } from './routes/samples.index'
 import { Route as StudyDoneRouteImport } from './routes/study.done'
 import { Route as SamplesIdRouteImport } from './routes/samples.$id'
+import { Route as AdminStatsRouteImport } from './routes/admin.stats'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const WhyRoute = WhyRouteImport.update({
@@ -107,6 +108,11 @@ const SamplesIdRoute = SamplesIdRouteImport.update({
   path: '/samples/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminStatsRoute = AdminStatsRouteImport.update({
+  id: '/admin/stats',
+  path: '/admin/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
   '/why': typeof WhyRoute
+  '/admin/stats': typeof AdminStatsRoute
   '/samples/$id': typeof SamplesIdRoute
   '/study/done': typeof StudyDoneRoute
   '/samples/': typeof SamplesIndexRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByTo {
   '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
   '/why': typeof WhyRoute
+  '/admin/stats': typeof AdminStatsRoute
   '/samples/$id': typeof SamplesIdRoute
   '/study/done': typeof StudyDoneRoute
   '/samples': typeof SamplesIndexRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
   '/why': typeof WhyRoute
+  '/admin/stats': typeof AdminStatsRoute
   '/samples/$id': typeof SamplesIdRoute
   '/study/done': typeof StudyDoneRoute
   '/samples/': typeof SamplesIndexRoute
@@ -188,6 +197,7 @@ export interface FileRouteTypes {
     | '/start'
     | '/unlock'
     | '/why'
+    | '/admin/stats'
     | '/samples/$id'
     | '/study/done'
     | '/samples/'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/start'
     | '/unlock'
     | '/why'
+    | '/admin/stats'
     | '/samples/$id'
     | '/study/done'
     | '/samples'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/start'
     | '/unlock'
     | '/why'
+    | '/admin/stats'
     | '/samples/$id'
     | '/study/done'
     | '/samples/'
@@ -246,6 +258,7 @@ export interface RootRouteChildren {
   StartRoute: typeof StartRoute
   UnlockRoute: typeof UnlockRoute
   WhyRoute: typeof WhyRoute
+  AdminStatsRoute: typeof AdminStatsRoute
   SamplesIdRoute: typeof SamplesIdRoute
   StudyDoneRoute: typeof StudyDoneRoute
   SamplesIndexRoute: typeof SamplesIndexRoute
@@ -366,6 +379,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SamplesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/stats': {
+      id: '/admin/stats'
+      path: '/admin/stats'
+      fullPath: '/admin/stats'
+      preLoaderRoute: typeof AdminStatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -390,6 +410,7 @@ const rootRouteChildren: RootRouteChildren = {
   StartRoute: StartRoute,
   UnlockRoute: UnlockRoute,
   WhyRoute: WhyRoute,
+  AdminStatsRoute: AdminStatsRoute,
   SamplesIdRoute: SamplesIdRoute,
   StudyDoneRoute: StudyDoneRoute,
   SamplesIndexRoute: SamplesIndexRoute,
