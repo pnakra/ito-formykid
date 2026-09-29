@@ -1,3 +1,4 @@
+import { saveStudyText } from "@/lib/studyTexts";
 import { DIGEST_SIGNUP_ENABLED } from "@/config/features";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
