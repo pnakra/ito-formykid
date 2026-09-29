@@ -28,15 +28,14 @@ export function CollapsibleCard({ label, previewText, isOpen, onToggle, children
         <div className="flex-1 min-w-0">
           <p className="label-text mb-1">{label}</p>
           {!isOpen && (
-            <p className="text-[14px] leading-relaxed truncate" style={{ color: "#5C6B5A" }}>
+            <p className="text-[14px] leading-relaxed truncate text-muted-foreground">
               {previewText}
             </p>
           )}
         </div>
         <ChevronRight
-          className="h-4 w-4 shrink-0 mt-0.5 transition-transform duration-200"
+          className="h-4 w-4 shrink-0 mt-0.5 transition-transform duration-200 text-hint"
           style={{
-            color: "#9AA898",
             transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
           }}
         />

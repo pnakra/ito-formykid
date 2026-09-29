@@ -179,9 +179,8 @@ function HistoryPage() {
                           {query}
                         </p>
                         <ChevronRight
-                          className="h-4 w-4 shrink-0 mt-0.5 transition-transform duration-200"
+                          className="h-4 w-4 shrink-0 mt-0.5 transition-transform duration-200 text-hint"
                           style={{
-                            color: "#9AA898",
                             transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
                           }}
                         />
