@@ -37,3 +37,20 @@ export const LIVE_QS: QQ[] = [
 ];
 
 export const SAMPLE_QS: Record<string, QQ[]> = { joke: JOKE_QS, screenshot: SCREENSHOT_QS, image: IMAGE_QS };
+
+export const OWN_QS: QQ[] = [
+  {
+    key: "real", label: "Was this a real situation or one you imagined?", type: "choice", required: true,
+    options: [
+      { value: "real_now", label: "Real, happening now" },
+      { value: "real_past", label: "Real, in the past" },
+      { value: "worried", label: "Something I've worried about" },
+      { value: "heard", label: "Heard from another parent" },
+      { value: "made_up", label: "Made up" },
+    ],
+  },
+  { key: "understood", label: "Did the tool understand your situation?", type: "choice", required: true, options: [{ value: "yes", label: "Yes" }, { value: "partly", label: "Partly" }, { value: "no", label: "No" }] },
+  { key: "helped_decide", label: "Did this help you decide what to do next?", type: "choice", required: true, options: [{ value: "yes", label: "Yes" }, { value: "somewhat", label: "Somewhat" }, { value: "no", label: "No" }] },
+  { key: "cant_tell", label: "According to this result, what can't it tell you about your child?", type: "text", required: true },
+  { key: "missing", label: "What felt missing, unclear, or hard to trust?", type: "text" },
+];

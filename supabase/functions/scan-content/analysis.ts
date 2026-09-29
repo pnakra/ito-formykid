@@ -42,7 +42,9 @@ HONESTY AND CARE
 FIELDS
 - short_answer: 2 to 4 sentences.
 - how_sure_reason: 1 sentence.
-- does_not_tell_us: 1 to 3 sentences about what this cannot tell the parent about their child.
+- does_not_tell_us: 2 to 3 short points, one per line (separate with a newline). Write each exactly as "This can't tell you whether ___" with the blank filled in with something specific to this situation (for example "This can't tell you whether your kid knows what the phrase means."). No bullets or numbers.
+- Age: if the age band in CONTEXT and any age in the parent's words do not match, never open short_answer with that. Mention it, at most, briefly in how_sure_reason. Otherwise ignore the mismatch.
+- clarifying_question: when recognized is "unrecognized", or the input is short and vague (under about 12 words with no specific phrase, creator name, or description of what happened), write ONE short question asking for the single detail that would sharpen the answer most (for example "What's the exact phrase?" or "What happened right before?"). Otherwise null.
 - would_change_picture: short phrases, 1 to 4 each (empty for out_of_scope).
 - next_step: one proportionate action and why.
 - conversation.questions: 2 to 3 open questions.
@@ -60,7 +62,7 @@ export const RESULT_SCHEMA = {
   required: [
     "input_type", "in_scope", "escalation_category", "recognized", "short_answer", "how_sure",
     "how_sure_reason", "does_not_tell_us", "lenses", "would_change_picture", "next_step",
-    "conversation", "why_it_matters", "source_ids",
+    "conversation", "why_it_matters", "source_ids", "clarifying_question",
   ],
   properties: {
     input_type: { type: "string", enum: ["description", "lookup"] },
@@ -115,6 +117,7 @@ export const RESULT_SCHEMA = {
     },
     why_it_matters: nstr,
     source_ids: { type: "array", items: str },
+    clarifying_question: nstr,
   },
 };
 
@@ -139,13 +142,14 @@ export type AnalysisResult = {
   };
   why_it_matters?: string;
   source_ids: string[];
+  clarifying_question?: string;
 };
 
 const ENUMS = RESULT_SCHEMA.properties;
 const isStr = (v: unknown) => typeof v === "string";
 const nonEmpty = (v: unknown) => typeof v === "string" && v.trim().length > 0;
 const strArr = (v: unknown) => Array.isArray(v) && v.every(isStr);
-const clean = (s: string) => s.replace(/\u2014/g, ", ").replace(/\s+,/g, ",").trim();
+const clean = (s: string) => s.replace(/\u2014/g, ", ").replace(/[ \t]+,/g, ",").trim();
 const optStr = (v: unknown) => (nonEmpty(v) ? clean(v as string) : undefined);
 
 /** Validates and normalizes. Returns null when the shape is invalid. */
@@ -195,6 +199,7 @@ export function validateResult(raw: unknown): AnalysisResult | null {
     },
     why_it_matters: optStr(r.why_it_matters),
     source_ids: [...new Set(r.source_ids as string[])].filter((id) => SOURCE_IDS.has(id)),
+    clarifying_question: optStr(r.clarifying_question)?.slice(0, 200),
   };
 }
 

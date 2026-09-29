@@ -1,31 +1,49 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getTasks, TASKS_EVENT, type TaskKey } from "@/lib/studyTasks";
+import { getConsent, screenerDone, studyVariant, type StudyVariant } from "@/lib/entrySource";
 
 const PROMPT =
   "My 13-year-old keeps saying a creator's phrase about how girls should act. I don't know who he is.";
 
-const ITEMS: { key: TaskKey; label: string }[] = [
+const ITEMS_1: { key: TaskKey; label: string }[] = [
   { key: "joke", label: "Open the joke sample and answer 3 quick questions" },
   { key: "screenshot", label: "Open the screenshot sample and answer 3 quick questions" },
   { key: "image", label: "Open the image sample and answer 2 quick questions" },
   { key: "live", label: "Type this into the tool yourself, then answer 2 quick questions:" },
+];
+const ITEMS_2: { key: TaskKey; label: string }[] = [
+  { key: "own1", label: "Look up your first situation and answer the quick questions" },
+  { key: "own2", label: "Look up a second situation and answer the quick questions" },
 ];
 
 export function StudyTasks() {
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [open, setOpen] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [variant, setVariant] = useState<StudyVariant | null>(null);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const sync = () => setDone(getTasks());
     sync();
+    setVariant(studyVariant());
     setOpen(sessionStorage.getItem("itok_tasks_open") !== "0");
     window.addEventListener(TASKS_EVENT, sync);
     return () => window.removeEventListener(TASKS_EVENT, sync);
   }, []);
+
+  // Study steps (notice, consent, screener) must be finished before any task page.
+  useEffect(() => {
+    if (!studyVariant() || pathname === "/start" || pathname === "/help") return;
+    if (!getConsent() || !screenerDone()) navigate({ to: "/start", search: { src: undefined, pid: undefined }, replace: true });
+  }, [pathname, navigate]);
+
+  if (!variant) return null;
+  const ITEMS = variant === 2 ? ITEMS_2 : ITEMS_1;
 
   const toggle = () => {
     setOpen((o) => {
@@ -52,7 +70,7 @@ export function StudyTasks() {
           className="flex w-full items-center justify-between gap-3 text-left"
         >
           <span className="font-display text-[17px] font-semibold text-foreground">
-            Your tasks <span className="text-hint font-normal">({count}/4)</span>
+            Your tasks <span className="text-hint font-normal">({count}/{ITEMS.length})</span>
           </span>
           <ChevronDown className={`h-5 w-5 shrink-0 text-hint transition-transform ${open ? "rotate-180" : ""}`} />
         </button>
@@ -61,6 +79,8 @@ export function StudyTasks() {
             <ol className="space-y-3">
               {ITEMS.map((item, i) => {
                 const ok = !!done[item.key];
+                const cls = `underline underline-offset-4 ${ok ? "text-hint line-through" : "text-foreground"}`;
+                const toScan = item.key === "live" || item.key === "own1" || item.key === "own2";
                 return (
                   <li key={item.key} className="flex items-start gap-3">
                     <span
@@ -74,12 +94,12 @@ export function StudyTasks() {
                       {ok && <Check className="h-4 w-4" />}
                     </span>
                     <div className="min-w-0 flex-1 text-[16px] leading-snug">
-                      {item.key === "live" ? (
-                        <Link to="/scan" className={`underline underline-offset-4 ${ok ? "text-hint line-through" : "text-foreground"}`}>
+                      {toScan ? (
+                        <Link to="/scan" className={cls}>
                           {i + 1}. {item.label}
                         </Link>
                       ) : (
-                        <Link to="/samples/$id" params={{ id: item.key }} className={`underline underline-offset-4 ${ok ? "text-hint line-through" : "text-foreground"}`}>
+                        <Link to="/samples/$id" params={{ id: item.key }} className={cls}>
                           {i + 1}. {item.label}
                         </Link>
                       )}

@@ -1,12 +1,12 @@
 import { track, anonId } from "@/lib/track";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { Header, Footer } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { PROLIFIC_COMPLETION_CODE } from "@/config/features";
-import { getPid } from "@/lib/entrySource";
+import { PROLIFIC_COMPLETION_CODE, PROLIFIC2_COMPLETION_CODE } from "@/config/features";
+import { getPid, studyVariant } from "@/lib/entrySource";
 import { MOCKUPS } from "@/components/mockups";
 import { notifyStudyCompletion } from "@/lib/studyCompletion.functions";
 
@@ -35,6 +35,8 @@ type Answers = {
   follow_up_ok: string;
   attention_check: string;
   mockup_picks: string[];
+  would_come_back: string;
+  come_back_why: string;
 };
 
 const EMPTY: Answers = {
@@ -44,7 +46,16 @@ const EMPTY: Answers = {
   follow_up_ok: "",
   attention_check: "",
   mockup_picks: [],
+  would_come_back: "",
+  come_back_why: "",
 };
+
+const REQUIRED_2: { key: keyof Answers; label: string }[] = [
+  { key: "vs_google_chatgpt", label: "What does this give you that Google or ChatGPT would not?" },
+  { key: "would_come_back", label: "Would you come back to this tool?" },
+  { key: "follow_up_ok", label: "Can we invite you to a follow-up survey?" },
+  { key: "attention_check", label: "The last question" },
+];
 
 const REQUIRED: { key: keyof Answers; label: string }[] = [
   { key: "tool_purpose", label: "What is this tool for?" },
@@ -105,6 +116,9 @@ function StudyDone() {
   const [missing, setMissing] = useState<string[]>([]);
   const [done, setDone] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [v2, setV2] = useState(false);
+  useEffect(() => setV2(studyVariant() === 2), []);
+  const CODE = v2 ? PROLIFIC2_COMPLETION_CODE : PROLIFIC_COMPLETION_CODE;
 
   const set = (k: keyof Answers) => (v: string) => setA((p) => ({ ...p, [k]: v }));
   const text = (k: keyof Answers) => (
@@ -118,7 +132,7 @@ function StudyDone() {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    const miss = REQUIRED.filter((r) => !String(a[r.key]).trim()).map((r) => r.label);
+    const miss = (v2 ? REQUIRED_2 : REQUIRED).filter((r) => !String(a[r.key]).trim()).map((r) => r.label);
     if (!a.mockup_picks.length) miss.push("Which of these would you actually use? Pick up to two.");
     setMissing(miss);
     if (miss.length) return;
@@ -134,6 +148,9 @@ function StudyDone() {
       vs_google_chatgpt: orNull(a.vs_google_chatgpt),
       problem_wording: orNull(a.problem_wording),
       mockup_picks: a.mockup_picks,
+      study_version: v2 ? "prolific2" : "prolific",
+      would_come_back: v2 ? orNull(a.would_come_back) : null,
+      come_back_why: v2 ? orNull(a.come_back_why) : null,
     });
     setSubmitting(false);
     if (err) {
@@ -147,7 +164,7 @@ function StudyDone() {
   };
 
   const copy = async () => {
-    await navigator.clipboard.writeText(PROLIFIC_COMPLETION_CODE);
+    await navigator.clipboard.writeText(CODE);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -159,7 +176,7 @@ function StudyDone() {
         {done ? (
           <section className="rounded-3xl border border-border/80 bg-card p-6 lg:p-8">
             <h1 className="font-display text-[28px] font-bold text-foreground">
-              Thank you. Your completion code is {PROLIFIC_COMPLETION_CODE}
+              Thank you. Your completion code is {CODE}
             </h1>
             <Button onClick={copy} size="lg" className="mt-6 h-14 rounded-full px-8 text-[18px]">
               {copied ? "Copied" : "Copy code"}
@@ -171,13 +188,22 @@ function StudyDone() {
               A few last questions
             </h1>
 
-            <Question label="In your own words, what is this tool for?">{text("tool_purpose")}</Question>
+            {!v2 && <Question label="In your own words, what is this tool for?">{text("tool_purpose")}</Question>}
 
             <Question label="What does this give you that Google or ChatGPT would not?">
               {text("vs_google_chatgpt")}
             </Question>
 
-            <Question label="Was any wording across the pages preachy, scary, invasive, or unusable? Which?">
+            {v2 && (
+              <>
+                <Question label="Would you come back to this tool the next time something comes up?">
+                  <Choices name="come_back" value={a.would_come_back} onChange={set("would_come_back")} options={[{ value: "yes", label: "Yes" }, { value: "maybe", label: "Maybe" }, { value: "no", label: "No" }]} />
+                </Question>
+                <Question label="Why? (optional)">{text("come_back_why")}</Question>
+              </>
+            )}
+
+            <Question label={v2 ? "Was any wording preachy, scary, invasive, or unusable? Which?" : "Was any wording across the pages preachy, scary, invasive, or unusable? Which?"}>
               {text("problem_wording")}
             </Question>
 

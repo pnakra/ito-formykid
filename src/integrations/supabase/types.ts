@@ -366,6 +366,7 @@ export type Database = {
         Row: {
           anon_id: string | null
           attention_check: string | null
+          come_back_why: string | null
           could_not_tell: string | null
           created_at: string
           follow_up_ok: string | null
@@ -375,15 +376,18 @@ export type Database = {
           mockup_picks: string[] | null
           pid: string | null
           problem_wording: string | null
+          study_version: string
           tone_rating: number | null
           tool_purpose: string | null
           vs_google_chatgpt: string | null
+          would_come_back: string | null
           would_use_words: string | null
           would_use_words_why: string | null
         }
         Insert: {
           anon_id?: string | null
           attention_check?: string | null
+          come_back_why?: string | null
           could_not_tell?: string | null
           created_at?: string
           follow_up_ok?: string | null
@@ -393,15 +397,18 @@ export type Database = {
           mockup_picks?: string[] | null
           pid?: string | null
           problem_wording?: string | null
+          study_version?: string
           tone_rating?: number | null
           tool_purpose?: string | null
           vs_google_chatgpt?: string | null
+          would_come_back?: string | null
           would_use_words?: string | null
           would_use_words_why?: string | null
         }
         Update: {
           anon_id?: string | null
           attention_check?: string | null
+          come_back_why?: string | null
           could_not_tell?: string | null
           created_at?: string
           follow_up_ok?: string | null
@@ -411,9 +418,11 @@ export type Database = {
           mockup_picks?: string[] | null
           pid?: string | null
           problem_wording?: string | null
+          study_version?: string
           tone_rating?: number | null
           tool_purpose?: string | null
           vs_google_chatgpt?: string | null
+          would_come_back?: string | null
           would_use_words?: string | null
           would_use_words_why?: string | null
         }

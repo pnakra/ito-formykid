@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { AI_GATEWAY_URL, BRIEFING_MODEL, SUMMARY_MODEL } from "../_shared/ai-config.ts";
+import { preCheck } from "../_shared/safetyPatterns.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -95,6 +96,15 @@ Deno.serve(async (req) => {
       }
 
       const notesText = notes.map((n: any) => `[${n.date}] ${n.category ? `(${n.category}) ` : ""}${n.text}`).join("\n");
+
+      // Deterministic safety pre-check runs before any model call, same as scan-content.
+      const safetyCategory = preCheck(notesText);
+      if (safetyCategory) {
+        return new Response(JSON.stringify({
+          pattern_summary: "Something in these notes may need more than a pattern summary. Please open Get help to see who can help.",
+          safety_category: safetyCategory,
+        }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
 
       const response = await fetch(AI_GATEWAY_URL, {
         method: "POST",

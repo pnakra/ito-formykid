@@ -140,7 +140,7 @@ function NextButton() {
     );
   if (n.to === "/scan")
     return (
-      <Link to="/scan" resetScroll className="block">
+      <Link to="/scan" resetScroll className="block" onClick={() => sessionStorage.removeItem("scanIntake")}>
         <Button size="lg" className={cls}>{n.next}</Button>
       </Link>
     );

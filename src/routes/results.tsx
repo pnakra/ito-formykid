@@ -11,13 +11,15 @@ import { EscalationResult, type EscalationResultData } from "@/components/Escala
 import { IdentityResult, type IdentityResultData } from "@/components/IdentityResult";
 import { RefinementPanel, type RefinementValues } from "@/components/RefinementPanel";
 import { SHOW_RISK_SPECTRUM } from "@/config/features";
-import { useIsStudy } from "@/lib/entrySource";
+import { useIsStudy, useStudyVariant } from "@/lib/entrySource";
+import { getTasks } from "@/lib/studyTasks";
+import { Textarea } from "@/components/ui/textarea";
 import { ReportV2, type ReportV2Data } from "@/components/ReportV2";
 import { SafetyHelpBlock } from "@/components/SafetyHelpBlock";
 import { isSafetyCategory } from "@/content/safetyCopy";
 import { FeedbackBox } from "@/components/FeedbackBox";
 import { QuickQuestions } from "@/components/QuickQuestions";
-import { LIVE_QS } from "@/content/studyQuestions";
+import { LIVE_QS, OWN_QS } from "@/content/studyQuestions";
 import { track } from "@/lib/track";
 
 
@@ -93,6 +95,8 @@ const SPECTRUM_POSITIONS: Record<string, number> = {
 
 function ResultsPage() {
   const studyMode = useIsStudy();
+  const variant = useStudyVariant();
+  const [ownKey, setOwnKey] = useState<"own1" | "own2">("own1");
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [result, setResult] = useState<ScanResult | null>(null);
@@ -130,6 +134,7 @@ function ResultsPage() {
     }
 
     const intakeData: IntakeData = JSON.parse(stored);
+    setOwnKey(getTasks().own1 ? "own2" : "own1");
     setIntake(intakeData);
     runScan(intakeData);
   }, []);
@@ -274,6 +279,25 @@ function ResultsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+
+  const handleClarify = async (detail: string) => {
+    if (!intake) return;
+    const stored = sessionStorage.getItem("scanIntake");
+    const inputMode = stored ? (JSON.parse(stored).inputMode ?? "describe") : "describe";
+    const query = `${intake.query.trim()}\n\nMore detail: ${detail.trim()}`.slice(0, 1500);
+    const updated = { ...intake, query, inputMode };
+    setIntake(updated);
+    sessionStorage.setItem("scanIntake", JSON.stringify(updated));
+    track("clarify_submitted");
+    setRefining(true);
+    setJustRefined(false);
+    setLoading(true);
+    window.scrollTo({ top: 0 });
+    await runScan(updated);
+    setRefining(false);
+    setJustRefined(true);
+    window.scrollTo({ top: 0 });
+  };
 
   const handleScanAnother = () => {
     sessionStorage.removeItem("scanIntake");
@@ -432,6 +456,8 @@ function ResultsPage() {
               Show guidance anyway
             </button>
           ) : (
+          <>
+          <ClarifyCard key={intake.query} result={result as any} onSubmit={handleClarify} busy={refining} />
           <ReportV2
             result={result as unknown as ReportV2Data}
             actions={
@@ -442,7 +468,7 @@ function ResultsPage() {
                 saved={saved}
                 user={user}
                 feedback={
-                  studyMode ? <QuickQuestions pageKey="live" questions={LIVE_QS} /> : <FeedbackBox
+                  variant === 2 ? <QuickQuestions key={ownKey} pageKey={ownKey} questions={OWN_QS} /> : studyMode ? <QuickQuestions pageKey="live" questions={LIVE_QS} /> : <FeedbackBox
                     inScope={(result as any).in_scope}
                     safetyCategory={isSafetyCategory((result as any).safety_category) ? (result as any).safety_category : null}
                   />
@@ -450,6 +476,7 @@ function ResultsPage() {
               />
             }
           />
+          </>
           )}
           <p className="mt-8 text-[13px] text-hint leading-relaxed">
             This is not a diagnosis. Free, from a nonprofit. We never see your child's phone.
@@ -552,6 +579,35 @@ function ResultActions({
       )}
     </div>
     </>
+  );
+}
+
+function ClarifyCard({ result, onSubmit, busy }: { result: { clarifying_question?: string; recognized?: string; in_scope?: string }; onSubmit: (d: string) => void; busy: boolean }) {
+  const [text, setText] = useState("");
+  const question =
+    result.clarifying_question ||
+    (result.recognized === "unrecognized" ? "What's the exact phrase, and where did you see or hear it?" : "");
+  if (!question || result.in_scope === "out_of_scope") return null;
+  return (
+    <section aria-label="Want a sharper answer?" className="mb-8 rounded-3xl border border-primary/50 bg-card p-5">
+      <p className="text-[18px] font-medium text-foreground">Want a sharper answer? Tell us one more thing:</p>
+      <p className="mt-2 text-[17px] text-muted-foreground">{question}</p>
+      <form
+        className="mt-4"
+        onSubmit={(e) => { e.preventDefault(); if (text.trim()) onSubmit(text); }}
+      >
+        <Textarea
+          aria-label={question}
+          value={text}
+          maxLength={500}
+          onChange={(e) => setText(e.target.value)}
+          className="min-h-[80px] text-[17px]"
+        />
+        <Button type="submit" disabled={busy || !text.trim()} className="mt-3 h-12 rounded-full px-6">
+          {busy ? "Checking again…" : "Check again with this"}
+        </Button>
+      </form>
+    </section>
   );
 }
 
