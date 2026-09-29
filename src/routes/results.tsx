@@ -9,6 +9,7 @@ import { EscalationResult, type EscalationResultData } from "@/components/Escala
 import { IdentityResult, type IdentityResultData } from "@/components/IdentityResult";
 import { RefinementPanel, type RefinementValues } from "@/components/RefinementPanel";
 import { SHOW_RISK_SPECTRUM } from "@/config/features";
+import { useIsStudy } from "@/lib/entrySource";
 
 
 export const Route = createFileRoute("/results")({
@@ -437,6 +438,7 @@ function BriefingView({
   user: any;
 }) {
   const isLowConfidence = result.result_type === "low_confidence";
+  const isStudy = useIsStudy();
 
   return (
     <article className="space-y-0">
