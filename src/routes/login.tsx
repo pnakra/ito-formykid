@@ -89,7 +89,7 @@ function LoginPage() {
             </div>
 
             {error && (
-              <p className="text-sm text-risk-high-foreground">{error}</p>
+              <p className="text-sm text-error">{error}</p>
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>

@@ -7,6 +7,7 @@ import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronRight, Search, TrendingUp } from "lucide-react";
+import { STAY_AHEAD_ENABLED } from "@/config/features";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -83,7 +84,7 @@ function HomePage() {
   } | null>(null);
 
   const [activeMode, setActiveMode] = useState<"understand" | "stay_ahead">(
-    (searchTab as "understand" | "stay_ahead") || "stay_ahead"
+    STAY_AHEAD_ENABLED ? (searchTab as "understand" | "stay_ahead") || "stay_ahead" : "understand"
   );
   const [query, setQuery] = useState("");
   const [showNormalizer, setShowNormalizer] = useState(false);
@@ -142,7 +143,7 @@ function HomePage() {
 
   // Sync search param to active mode
   useEffect(() => {
-    if (searchTab === "understand" || searchTab === "stay_ahead") {
+    if (searchTab === "understand" || (STAY_AHEAD_ENABLED && searchTab === "stay_ahead")) {
       setActiveMode(searchTab);
     }
   }, [searchTab]);
@@ -447,24 +448,26 @@ function HomePage() {
               onClick={() => setActiveMode("understand")}
               className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[17px] font-medium transition-all ${
                 activeMode === "understand"
-                  ? "bg-background text-foreground shadow-sm"
+                  ? "bg-background text-foreground"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <Search className="h-3.5 w-3.5" />
               Understand now
             </button>
-            <button
-              onClick={() => setActiveMode("stay_ahead")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[17px] font-medium transition-all ${
-                activeMode === "stay_ahead"
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <TrendingUp className="h-3.5 w-3.5" />
-              Stay ahead
-            </button>
+            {STAY_AHEAD_ENABLED && (
+              <button
+                onClick={() => setActiveMode("stay_ahead")}
+                className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[17px] font-medium transition-all ${
+                  activeMode === "stay_ahead"
+                    ? "bg-background text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <TrendingUp className="h-3.5 w-3.5" />
+                Stay ahead
+              </button>
+            )}
           </div>
 
           {/* ─── UNDERSTAND NOW ─── */}
@@ -617,7 +620,7 @@ function HomePage() {
           )}
 
           {/* ─── STAY AHEAD ─── */}
-          {activeMode === "stay_ahead" && (
+          {STAY_AHEAD_ENABLED && activeMode === "stay_ahead" && (
             <div className="space-y-8">
 
               {/* Section 1: Monthly briefing */}

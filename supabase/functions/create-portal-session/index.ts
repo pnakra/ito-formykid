@@ -11,9 +11,18 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 );
 
+import { PAYMENTS_ENABLED } from "../_shared/flags.ts";
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  if (!PAYMENTS_ENABLED) {
+    return new Response(JSON.stringify({ error: "Payments are disabled" }), {
+      status: 410,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
   try {

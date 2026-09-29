@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { EscalationResult, type EscalationResultData } from "@/components/EscalationResult";
 import { IdentityResult, type IdentityResultData } from "@/components/IdentityResult";
 import { RefinementPanel, type RefinementValues } from "@/components/RefinementPanel";
+import { SHOW_RISK_SPECTRUM } from "@/config/features";
 
 
 export const Route = createFileRoute("/results")({
@@ -86,7 +87,6 @@ function ResultsPage() {
   const [intake, setIntake] = useState<IntakeData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [scanCount, setScanCount] = useState<number | null>(null);
   const [showDigest, setShowDigest] = useState(false);
   const [digestEmail, setDigestEmail] = useState("");
   const [digestName, setDigestName] = useState("");
@@ -117,19 +117,6 @@ function ResultsPage() {
     setIntake(intakeData);
     runScan(intakeData);
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      supabase
-        .from("profiles")
-        .select("scan_count")
-        .eq("id", user.id)
-        .single()
-        .then(({ data }) => {
-          if (data) setScanCount(data.scan_count);
-        });
-    }
-  }, [user]);
 
   const runScan = async (intakeData: IntakeData & { inputMode?: "describe" | "lookup" }) => {
     try {
@@ -204,17 +191,8 @@ function ResultsPage() {
 
       localStorage.setItem("itook_first_scan_done", "true");
 
-      // Scan persistence now happens server-side in the edge function so that
-      // anonymous scans are also stored. For signed-in users we still bump scan_count.
-      if (user) {
-        const currentCount = scanCount ?? 0;
-        const newCount = currentCount + 1;
-        await supabase
-          .from("profiles")
-          .update({ scan_count: newCount })
-          .eq("id", user.id);
-        setScanCount(newCount);
-      }
+      // Scan persistence happens server-side in the edge function so that
+      // anonymous scans are also stored. scan_count is no longer bumped.
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -537,7 +515,7 @@ function BriefingView({
       )}
 
       {/* 6 — Where this sits */}
-      {result.spectrum_label && (
+      {SHOW_RISK_SPECTRUM && result.spectrum_label && (
         <>
           <Section label="Where this sits">
             <div className="mb-4">
