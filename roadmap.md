@@ -1,12 +1,10 @@
 # Roadmap
 
-## Active
-- [ ] Calibrate triage and refresh screenshot sample from a live check
-- [ ] Add admin evaluation page and run 16 cases plus safety-only checks
-- [ ] Align listed pages with early-access theme and inspect phone screenshots
-- [ ] Clean up evaluation data
-
 ## Done
+- [x] Calibrate triage and refresh screenshot sample from a live check
+- [x] Add admin evaluation page; run 16 live cases and six safety-only cases
+- [x] Align listed pages with early-access theme and inspect phone screenshots
+- [x] Remove synthetic browser events; eval checks do not save scans
 - [x] Payments cleanup: PAYMENTS_ENABLED=false, 410 Gone in 3 payment functions (verified live), profiles column lock, pricing wording removed, scan_count bumps stopped
 - [x] STAY_AHEAD_ENABLED=false: tab + content hidden on /home, direct links fall back to Understand now
 - [x] Risk spectrum hidden on /results (code kept behind SHOW_RISK_SPECTRUM)

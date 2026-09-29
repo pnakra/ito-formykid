@@ -61,10 +61,10 @@ export function Footer() {
     <footer className="border-t py-8">
       <div className="mx-auto max-w-3xl px-5">
         <div className="flex flex-col items-center gap-3 text-center">
-          <p className="text-[15px] text-hint">
+          <p className="text-[18px] text-hint">
             Free. Built by a nonprofit. We never see your child's phone.
           </p>
-          <div className="flex items-center gap-4 text-[15px] text-hint">
+          <div className="flex items-center gap-4 text-[18px] text-hint">
             <Link
               to="/why"
               className="underline underline-offset-4 hover:text-foreground"
@@ -101,7 +101,7 @@ export function FeatureCard({
         <Icon className="h-4 w-4 text-foreground" />
       </div>
       <h3 className="mb-1 font-display text-[18px] font-medium text-foreground">{title}</h3>
-      <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
+      <p className="text-[18px] leading-relaxed text-hint">{description}</p>
     </div>
   );
 }
