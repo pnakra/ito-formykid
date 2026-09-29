@@ -124,7 +124,7 @@ function StartPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <Header isLoggedIn={!!user} study={!!variant} />
+      <Header isLoggedIn={!!user} study={variant ? true : undefined} />
       <main className="mx-auto w-full max-w-2xl flex-1 px-5 pt-14 pb-16 lg:pt-20">
         {phase === "loading" ? null : phase === "notice" ? (
           <section className={card}>

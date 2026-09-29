@@ -13,5 +13,8 @@ export const LAUNCH_OPEN = false;
 // Shown to Prolific participants after they finish /study/done.
 export const PROLIFIC_COMPLETION_CODE = "CZE6F6V0";
 
+// Shown after the second (own-situation) study, src=prolific2.
+export const PROLIFIC2_COMPLETION_CODE = "PLACEHOLDER2";
+
 // "Get a monthly email" button on results. Off until the digest is live.
 export const DIGEST_SIGNUP_ENABLED = false;
