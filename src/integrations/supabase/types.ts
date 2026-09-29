@@ -155,6 +155,24 @@ export type Database = {
           },
         ]
       }
+      scan_rate_events: {
+        Row: {
+          created_at: string
+          id: number
+          ip_hash: string
+        }
+        Insert: {
+          created_at?: string
+          id?: never
+          ip_hash: string
+        }
+        Update: {
+          created_at?: string
+          id?: never
+          ip_hash?: string
+        }
+        Relationships: []
+      }
       scans: {
         Row: {
           age_context: string | null
@@ -349,7 +367,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_scan_rate_limit: { Args: { _ip_hash: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
