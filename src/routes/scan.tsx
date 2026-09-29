@@ -85,6 +85,7 @@ function ScanPage() {
   const [frequency, setFrequency] = useState("");
   const [question, setQuestion] = useState("");
   const [danger, setDanger] = useState("");
+  const textRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     const storedMode = sessionStorage.getItem(MODE_KEY);
@@ -158,6 +159,7 @@ function ScanPage() {
           </label>
           <Textarea
             id="scan-text"
+            ref={textRef}
             value={text}
             onChange={(e) => setText(e.target.value.slice(0, MAX))}
             maxLength={MAX}
@@ -230,7 +232,7 @@ function ScanPage() {
           <div className="mt-10">
             <Button
               onClick={handleSubmit}
-              disabled={danger !== "Yes" && !trimmed}
+              disabled={danger !== "Yes" && (!trimmed || hasBlank)}
               size="lg"
               className="h-14 w-full rounded-full text-[18px] sm:w-auto sm:px-10"
             >
