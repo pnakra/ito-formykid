@@ -11,6 +11,9 @@ export function markUnlocked() {
 
 export async function enforceAccess(pathname: string, search?: Record<string, unknown>) {
   if (LAUNCH_OPEN) return;
+  // Preview/dev builds are never gated, so every page can be reviewed.
+  if (import.meta.env.DEV) return;
+  if (typeof window !== "undefined" && window.location.hostname.includes("id-preview")) return;
   if (pathname.startsWith("/lovable/")) return;
   if (PUBLIC.some((p) => pathname === p || pathname.startsWith(p + "/"))) return;
   if (unlocked) return;
