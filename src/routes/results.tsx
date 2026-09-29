@@ -1,3 +1,4 @@
+import { saveStudyText } from "@/lib/studyTexts";
 import { DIGEST_SIGNUP_ENABLED } from "@/config/features";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
@@ -178,6 +179,7 @@ function ResultsPage() {
         char_count: intakeData.query.length,
         input_type: isDescribe ? "description" : "lookup",
       });
+      saveStudyText("scan", { text: content, input_type: isDescribe ? "description" : "lookup", intake: intakePayload });
       const startedAt = performance.now();
 
       const response = await fetch(
