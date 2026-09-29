@@ -52,8 +52,8 @@ export const AGE_OPTIONS = Array.from({ length: 8 }, (_, i) => String(i + 11));
 export const AUTOFILL_EXAMPLES = ["looksmaxxing", "Fresh & Fit", "sigma male", "redpill"];
 
 export const DESCRIBE_EXAMPLES = [
-  "He started referring to girls as 'females'",
-  "She stopped eating and started following fitness accounts",
-  "He said he didn't need to listen to his female teacher",
-  "His whole attitude toward women changed",
+  "My 14-year-old keeps repeating a joke from a group chat",
+  "Someone forwarded a screenshot of a classmate",
+  "My kid follows a creator who gives dating advice",
+  "A word I keep hearing in my kid's games",
 ];
