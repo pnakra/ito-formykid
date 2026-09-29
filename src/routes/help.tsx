@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
+import { HELP_PAGE_RESOURCES } from "@/content/safetyCopy";
 
 const TITLE = "Get help — is this ok for my kid?";
 const DESC = "Crisis lines and reporting services for kids and families in the US.";
@@ -19,54 +20,6 @@ export const Route = createFileRoute("/help")({
   component: HelpPage,
 });
 
-type Resource = {
-  name: string;
-  what: string;
-  phone?: { label: string; href: string };
-  link?: { label: string; href: string };
-};
-
-const RESOURCES: Resource[] = [
-  { name: "911", what: "If someone is in immediate danger.", phone: { label: "Call 911", href: "tel:911" } },
-  {
-    name: "988 Suicide and Crisis Lifeline",
-    what: "Call or text 988, any time.",
-    phone: { label: "Call or text 988", href: "tel:988" },
-  },
-  {
-    name: "NCMEC CyberTipline",
-    what: "Report online sexual exploitation of a child.",
-    phone: { label: "1-800-843-5678", href: "tel:18008435678" },
-    link: { label: "report.cybertip.org", href: "https://report.cybertip.org" },
-  },
-  {
-    name: "Take It Down",
-    what: "Help removing nude or sexual images of someone under 18.",
-    link: { label: "takeitdown.ncmec.org", href: "https://takeitdown.ncmec.org/" },
-  },
-  {
-    name: "Childhelp",
-    what: "Child abuse hotline.",
-    phone: { label: "1-800-422-4453", href: "tel:18004224453" },
-  },
-  {
-    name: "RAINN",
-    what: "Sexual assault hotline.",
-    phone: { label: "1-800-656-4673", href: "tel:18006564673" },
-  },
-  {
-    name: "Stop It Now",
-    what: "Confidential help if you're worried about a child's or adult's sexual behavior.",
-    phone: { label: "1-888-773-8368", href: "tel:18887738368" },
-    link: { label: "stopitnow.org/help", href: "https://stopitnow.org/help" },
-  },
-  {
-    name: "ANAD eating disorders helpline",
-    what: "Support and referrals. Not a crisis line.",
-    phone: { label: "1-888-375-7767", href: "tel:18883757767" },
-  },
-];
-
 function HelpPage() {
   const { user } = useAuth();
   return (
@@ -78,24 +31,24 @@ function HelpPage() {
           If someone could be in danger right now, reach out to one of these.
         </p>
         <ul className="mt-8 space-y-4">
-          {RESOURCES.map((r) => (
+          {HELP_PAGE_RESOURCES.map((r) => (
             <li key={r.name} className="rounded-3xl border border-border/80 bg-card p-5">
               <h2 className="text-[19px] font-semibold text-foreground">{r.name}</h2>
               <p className="mt-1 text-[17px] text-muted-foreground">{r.what}</p>
               <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-[17px]">
                 {r.phone && (
-                  <a href={r.phone.href} className="font-medium text-primary underline underline-offset-4">
+                  <a href={`tel:${r.phone.tel}`} className="font-medium text-primary underline underline-offset-4">
                     {r.phone.label}
                   </a>
                 )}
-                {r.link && (
+                {r.url && (
                   <a
-                    href={r.link.href}
+                    href={r.url.href}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-medium text-primary underline underline-offset-4"
                   >
-                    {r.link.label}
+                    {r.url.label}
                   </a>
                 )}
               </div>

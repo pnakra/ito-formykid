@@ -11,6 +11,8 @@ import { RefinementPanel, type RefinementValues } from "@/components/RefinementP
 import { SHOW_RISK_SPECTRUM } from "@/config/features";
 import { useIsStudy } from "@/lib/entrySource";
 import { ReportV2, type ReportV2Data } from "@/components/ReportV2";
+import { SafetyHelpBlock } from "@/components/SafetyHelpBlock";
+import { isSafetyCategory } from "@/content/safetyCopy";
 
 
 export const Route = createFileRoute("/results")({
@@ -88,6 +90,7 @@ function ResultsPage() {
   const navigate = useNavigate();
   const [result, setResult] = useState<ScanResult | null>(null);
   const [escalation, setEscalation] = useState<EscalationResultData | null>(null);
+  const [showAnyway, setShowAnyway] = useState(false);
   const [identity, setIdentity] = useState<IdentityResultData | null>(null);
 
   const [intake, setIntake] = useState<IntakeData | null>(null);
@@ -125,6 +128,7 @@ function ResultsPage() {
   }, []);
 
   const runScan = async (intakeData: IntakeData & { inputMode?: "describe" | "lookup" }) => {
+    setShowAnyway(false);
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
@@ -210,6 +214,10 @@ function ResultsPage() {
         return;
       }
 
+      if (payload?.result_type === "safety_only" && isSafetyCategory(payload.safety_category)) {
+        setResult(payload as ScanResult);
+        return;
+      }
       if (payload?.result_type !== "report_v2") throw new Error("We couldn't finish this check. Please try again.");
       setResult(payload as ScanResult);
 
@@ -356,6 +364,29 @@ function ResultsPage() {
           )}
 
 
+          {(() => {
+            const cat = (result as any).safety_category;
+            return isSafetyCategory(cat) ? (
+              <div className="mb-8"><SafetyHelpBlock category={cat} /></div>
+            ) : null;
+          })()}
+
+          {(result as any).result_type === "safety_only" ? (
+            <div className="space-y-6">
+              <p className="text-[17px] text-muted-foreground">
+                We couldn't finish the full answer right now. The help above is what matters most.
+              </p>
+              <Button onClick={handleScanAnother} size="lg">Ask about something else</Button>
+            </div>
+          ) : (result as any).safety_category === "immediate_danger" && !showAnyway ? (
+            <button
+              type="button"
+              onClick={() => setShowAnyway(true)}
+              className="text-[16px] text-hint underline underline-offset-4 hover:text-foreground"
+            >
+              Show guidance anyway
+            </button>
+          ) : (
           <ReportV2
             result={result as unknown as ReportV2Data}
             actions={
@@ -368,6 +399,7 @@ function ResultsPage() {
               />
             }
           />
+          )}
           <p className="mt-8 text-[13px] text-hint leading-relaxed">
             This is not a diagnosis. Free, from a nonprofit. We never see your child's phone.
           </p>
