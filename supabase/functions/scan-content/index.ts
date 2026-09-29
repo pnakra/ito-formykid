@@ -703,7 +703,7 @@ serve(async (req) => {
           summary_verdict: (result as any).summary_verdict ?? null,
           status: "watching",
         });
-        if (insErr) logEvent({ requestId, startedAt, status: 0, category, errorType: "persist_failed" });
+        if (insErr) logEvent({ requestId, startedAt, status: 0, category, errorType: `persist_failed_${insErr.code ?? "unknown"}` });
       }
     } catch {
       logEvent({ requestId, startedAt, status: 0, category, errorType: "persist_failed" });
