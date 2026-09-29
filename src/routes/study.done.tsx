@@ -203,7 +203,7 @@ function StudyDone() {
               </>
             )}
 
-            <Question label="Was any wording across the pages preachy, scary, invasive, or unusable? Which?">
+            <Question label={v2 ? "Was any wording preachy, scary, invasive, or unusable? Which?" : "Was any wording across the pages preachy, scary, invasive, or unusable? Which?"}>
               {text("problem_wording")}
             </Question>
 
