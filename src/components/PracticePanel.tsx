@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { practiceTurn } from "@/lib/practice.functions";
+import { saveStudyText } from "@/lib/studyTexts";
 import { track } from "@/lib/track";
 
 type Exchange = { parent: string; teen?: string };
@@ -27,10 +28,14 @@ export function PracticePanel() {
     try {
       const messages = [...turns, { parent }];
       const answer = await call({ data: { messages } });
-      if (answer.kind === "safety") { setSafety(true); setText(""); return; }
+      if (answer.kind === "safety") { saveStudyText("practice", { turn: turns.length + 1, parent, outcome: "safety" }); setSafety(true); setText(""); return; }
       if (answer.kind === "error") { setError(answer.message); return; }
-      if (answer.kind === "reply") setTurns([...turns, { parent, teen: answer.teen }]);
+      if (answer.kind === "reply") {
+        saveStudyText("practice", { turn: turns.length + 1, parent, teen: answer.teen });
+        setTurns([...turns, { parent, teen: answer.teen }]);
+      }
       if (answer.kind === "feedback") {
+        saveStudyText("practice", { turn: turns.length + 1, parent, feedback: answer.lines });
         setTurns(messages);
         setFeedback(answer.lines);
         track("practice_completed", { turns: 3 });
