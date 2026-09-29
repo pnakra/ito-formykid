@@ -12,6 +12,10 @@ const cases: [string, string | null][] = [
   ["my son said kms after losing a game", "suicide_self_harm"],
   ["My kid keeps saying mewing and looksmaxxing", null],
   ["A grown man keeps texting my daughter", "adult_contact"],
+  ["My 16-year-old went to another state with a 25-year-old she met online and I only found out when she called.", "adult_contact"],
+  ["My teen went to another state with a 25 y/o she met online", "adult_contact"],
+  ["My teen thinks her friend may be in an inappropriate relationship with a teacher.", "adult_contact"],
+  ["My daughter's teacher emailed about homework", null],
 ];
 
 for (const [text, expected] of cases) {

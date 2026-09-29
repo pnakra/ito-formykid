@@ -63,6 +63,12 @@ export const SAFETY_PATTERNS: Record<SafetyCategory, RegExp[]> = {
     /\b(?:1[89]|[2-9]\d)[- ]?(?:year[- ]?old|yo|y\/o|yrs? old)\b.{0,60}\b(?:messag|text|dm|talk|chat|friend|gamer|sends?|snap)\w*/i,
     /\b(?:messag|text|dm|talk|chat|snap)\w*\b.{0,60}\b(?:1[89]|[2-9]\d)[- ]?(?:year[- ]?old|yo|y\/o|yrs? old)\b/i,
     /\b(?:an? )?adult\b.{0,40}\b(?:privately|in private|in dms?|secret(?:ly)?)\b/i,
+    // An adult (18+) the teen met online, e.g. "a 25 y/o she met online".
+    /\b(?:1[89]|[2-9]\d) ?[- ]?(?:year[- ]?old|yo|y\/o|yrs? old)\b.{0,40}\bmet (?:online|on (?:discord|snap(?:chat)?|insta(?:gram)?|tiktok|roblox|an app|a game))\b/i,
+    // Travelling out of state with an older person.
+    /\b(?:another|a different|out of) state\b.{0,60}\b(?:adult|older|grown|(?:1[89]|[2-9]\d) ?[- ]?(?:year[- ]?old|yo|y\/o))|\b(?:adult|older|grown|(?:1[89]|[2-9]\d) ?[- ]?(?:year[- ]?old|yo|y\/o))\b.{0,60}\b(?:another|a different|out of) state\b/i,
+    // A relationship with a teacher, coach, or other trusted adult.
+    /\b(?:relationship|dating|romantic|hooking up|sexual|inappropriate|secret(?:ly)?|crush)\b.{0,50}\b(?:teacher|coach|tutor|youth pastor|counsell?or|instructor)\b|\b(?:teacher|coach|tutor|youth pastor|counsell?or|instructor)\b.{0,50}\b(?:relationship|dating|romantic|hooking up|sexual)\b/i,
   ],
   abuse_disclosure: [
     new RegExp(`\\b(?:touched|touching|touches) ${THEY}\\b`, "i"),
