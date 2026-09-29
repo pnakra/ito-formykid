@@ -22,6 +22,27 @@
       "when": 1790286453253,
       "tag": "0002_waitlist_roles_array",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790660682583,
+      "tag": "0003_scan_rate_limits",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790660811599,
+      "tag": "0004_scans_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790660881154,
+      "tag": "0005_scans_relax_checks",
+      "breakpoints": true
     }
   ]
 }

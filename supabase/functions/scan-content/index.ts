@@ -451,9 +451,76 @@ async function runTriage(
     const cat = parsed.category as EscalationCategory;
     return cat && cat in RESOURCES ? cat : null;
   } catch (err) {
-    console.error("triage error:", err);
+    console.error(JSON.stringify({ error_type: "triage_failed", name: err instanceof Error ? err.name : "unknown" }));
     return null;
   }
+}
+
+const MAX_INPUT_CHARS = 1500;
+const RATE_LIMIT_MESSAGE =
+  "You've run a lot of checks in a short time. Please wait a few minutes and try again.";
+
+// Logs may contain only request id, category, latency, status, and error type.
+function logEvent(fields: {
+  requestId: string;
+  status: number;
+  startedAt: number;
+  category?: string | null;
+  errorType?: string;
+}) {
+  const line = JSON.stringify({
+    request_id: fields.requestId,
+    category: fields.category ?? null,
+    latency_ms: Date.now() - fields.startedAt,
+    status: fields.status,
+    error_type: fields.errorType ?? null,
+  });
+  if (fields.errorType) console.error(line);
+  else console.log(line);
+}
+
+function adminClient() {
+  const url = Deno.env.get("SUPABASE_URL");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) return null;
+  return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+}
+
+async function sha256Hex(s: string) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function clientIp(req: Request) {
+  return (
+    req.headers.get("cf-connecting-ip") ||
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip") ||
+    "unknown"
+  );
+}
+
+// User identity comes only from a verified Authorization token, never the body.
+async function resolveUserId(req: Request): Promise<string | null> {
+  const auth = req.headers.get("Authorization") ?? "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!token || token.split(".").length !== 3) return null;
+  const admin = adminClient();
+  if (!admin) return null;
+  try {
+    const { data, error } = await admin.auth.getUser(token);
+    if (error || !data?.user) return null;
+    return data.user.id;
+  } catch {
+    return null;
+  }
+}
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 }
 
 serve(async (req) => {
@@ -462,15 +529,48 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    const { content, inputType, intake, userId } = await req.json();
+  const requestId = crypto.randomUUID();
+  const startedAt = Date.now();
 
-    if (!content || typeof content !== "string" || content.length > 10000) {
-      return new Response(
-        JSON.stringify({ error: "Invalid content" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+  try {
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      logEvent({ requestId, startedAt, status: 400, errorType: "bad_json" });
+      return json({ error: "Invalid request" }, 400);
+    }
+    const { content, inputType, intake } = body ?? {};
+
+    if (!content || typeof content !== "string") {
+      logEvent({ requestId, startedAt, status: 400, errorType: "invalid_content" });
+      return json({ error: "Invalid content" }, 400);
+    }
+    const parentText: string = typeof intake?.query === "string" ? intake.query : content;
+    if (parentText.length > MAX_INPUT_CHARS || content.length > MAX_INPUT_CHARS + 1000) {
+      logEvent({ requestId, startedAt, status: 400, errorType: "input_too_long" });
+      return json(
+        { error: `Please keep it under ${MAX_INPUT_CHARS} characters and try again.` },
+        400
       );
     }
+
+    // Rate limit per IP (hashed; no concern text stored).
+    const admin = adminClient();
+    if (admin) {
+      const ipHash = await sha256Hex(`itok-rl:${clientIp(req)}`);
+      const { data: verdict, error: rlErr } = await admin.rpc("check_scan_rate_limit", {
+        _ip_hash: ipHash,
+      });
+      if (rlErr) {
+        logEvent({ requestId, startedAt, status: 0, errorType: "rate_limit_check_failed" });
+      } else if (verdict !== "ok") {
+        logEvent({ requestId, startedAt, status: 429, errorType: `rate_limited_${verdict}` });
+        return json({ error: RATE_LIMIT_MESSAGE, code: "rate_limited" }, 429);
+      }
+    }
+
+    const userId = await resolveUserId(req);
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -485,14 +585,9 @@ serve(async (req) => {
     if (escalationCategory) {
       const escalation = buildEscalation(escalationCategory);
       try {
-        const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-        const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-        if (SUPABASE_URL && SERVICE_ROLE_KEY) {
-          const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
-            auth: { persistSession: false, autoRefreshToken: false },
-          });
-          await admin.from("scans").insert({
-            user_id: userId ?? null,
+        if (admin) {
+          const { error: insErr } = await admin.from("scans").insert({
+            user_id: userId,
             input_type: inputType || "text",
             input_content: content,
             risk_level: "Escalated",
@@ -503,14 +598,14 @@ serve(async (req) => {
             escalated: true,
             escalation_category: escalationCategory,
           });
+          if (insErr) logEvent({ requestId, startedAt, status: 0, category: escalationCategory, errorType: "persist_failed" });
         }
-      } catch (persistErr) {
-        console.error("Failed to persist escalated scan:", persistErr);
+      } catch {
+        logEvent({ requestId, startedAt, status: 0, category: escalationCategory, errorType: "persist_failed" });
       }
 
-      return new Response(JSON.stringify(escalation), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      logEvent({ requestId, startedAt, status: 200, category: `escalation:${escalationCategory}` });
+      return json(escalation);
     }
 
 
@@ -540,21 +635,17 @@ serve(async (req) => {
     );
 
     if (!response.ok) {
+      await response.body?.cancel();
       if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Rate limited. Please try again in a moment." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        logEvent({ requestId, startedAt, status: 429, errorType: "gateway_rate_limited" });
+        return json({ error: RATE_LIMIT_MESSAGE, code: "rate_limited" }, 429);
       }
       if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Service temporarily unavailable." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
+        logEvent({ requestId, startedAt, status: 402, errorType: "gateway_payment_required" });
+        return json({ error: "Service temporarily unavailable." }, 402);
       }
-      const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
-      throw new Error("AI analysis failed");
+      logEvent({ requestId, startedAt, status: 502, errorType: `gateway_http_${response.status}` });
+      return json({ error: "We couldn't finish this check. Please try again." }, 502);
     }
 
     const aiData = await response.json();
@@ -563,13 +654,18 @@ serve(async (req) => {
     let result;
     const toolCall = message?.tool_calls?.[0];
 
-    if (toolCall?.function?.arguments) {
-      result = JSON.parse(toolCall.function.arguments);
-    } else if (message?.content) {
-      result = extractJson(message.content);
-    } else {
-      console.error("AI response structure:", JSON.stringify(aiData).substring(0, 1000));
-      throw new Error("No usable response from AI");
+    try {
+      if (toolCall?.function?.arguments) {
+        result = JSON.parse(toolCall.function.arguments);
+      } else if (message?.content) {
+        result = extractJson(message.content);
+      } else {
+        throw new Error("empty");
+      }
+    } catch {
+      // Never log the model reply — only the error type.
+      logEvent({ requestId, startedAt, status: 502, errorType: "model_parse_failed" });
+      return json({ error: "We couldn't finish this check. Please try again." }, 502);
     }
 
     // Ensure result_type is always set
@@ -581,19 +677,15 @@ serve(async (req) => {
     // Identity is never a risk classification.
     result = enforceIdentityGuard(result, content);
 
+    const category = String((result as any).result_type ?? "briefing");
 
     // Persist the scan server-side using the service role.
     // Works for both authenticated users (user_id set) and anonymous scans (user_id null).
     try {
-      const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-      const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-      if (SUPABASE_URL && SERVICE_ROLE_KEY) {
-        const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
-          auth: { persistSession: false, autoRefreshToken: false },
-        });
+      if (admin) {
         const intakeData = intake ?? {};
-        await admin.from("scans").insert({
-          user_id: userId ?? null,
+        const { error: insErr } = await admin.from("scans").insert({
+          user_id: userId,
           input_type: inputType || "text",
           input_content: content,
           risk_level: (result as any).spectrum_label ?? "Unknown",
@@ -611,25 +703,21 @@ serve(async (req) => {
           summary_verdict: (result as any).summary_verdict ?? null,
           status: "watching",
         });
+        if (insErr) logEvent({ requestId, startedAt, status: 0, category, errorType: `persist_failed_${insErr.code ?? "unknown"}` });
       }
-    } catch (persistErr) {
-      // Don't fail the request if persistence fails — log and move on.
-      console.error("Failed to persist scan:", persistErr);
+    } catch {
+      logEvent({ requestId, startedAt, status: 0, category, errorType: "persist_failed" });
     }
 
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    logEvent({ requestId, startedAt, status: 200, category });
+    return json(result);
   } catch (e) {
-    console.error("scan-content error:", e);
-    return new Response(
-      JSON.stringify({
-        error: e instanceof Error ? e.message : "Unknown error",
-      }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    logEvent({
+      requestId,
+      startedAt,
+      status: 500,
+      errorType: e instanceof Error ? e.name : "unknown",
+    });
+    return json({ error: "Something went wrong. Please try again." }, 500);
   }
 });

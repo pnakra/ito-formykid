@@ -149,13 +149,18 @@ function ResultsPage() {
             content,
             inputType: isDescribe ? "description" : "text",
             intake: intakeData,
-            userId: user?.id ?? null,
           }),
         }
       );
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
+        if (response.status === 429) {
+          throw new Error(
+            errData.error ||
+              "You've run a lot of checks in a short time. Please wait a few minutes and try again."
+          );
+        }
         throw new Error(errData.error || "Scan failed");
       }
 
