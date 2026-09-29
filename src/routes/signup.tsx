@@ -122,7 +122,7 @@ function SignupPage() {
             </div>
 
             {error && (
-              <p className="text-sm text-risk-high-foreground">{error}</p>
+              <p className="text-sm text-error">{error}</p>
             )}
 
             <Button type="submit" className="w-full" disabled={loading}>
@@ -138,7 +138,7 @@ function SignupPage() {
           </p>
 
           <p className="mt-8 text-[13px] text-hint leading-relaxed">
-            Your first lookups are free. You always control your data, and you can delete your account at any time.
+            You always control your data, and you can delete your account at any time.
           </p>
         </div>
       </main>

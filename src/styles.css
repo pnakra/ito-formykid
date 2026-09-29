@@ -53,6 +53,7 @@
   --color-risk-neutral: var(--risk-neutral);
   --color-risk-neutral-foreground: var(--risk-neutral-foreground);
   --color-hint: var(--hint);
+  --color-error: var(--error);
   --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
   --font-serif: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
@@ -83,6 +84,8 @@
   --input: oklch(0.34 0.04 165);
   --ring: oklch(0.78 0.19 155);
   --hint: oklch(0.68 0.02 155);
+  /* Warm coral error — readable on the ink background, fits the palette. */
+  --error: oklch(0.75 0.15 30);
   /* Severity reads through weight and wording, never colour. */
   --risk-low: oklch(0.24 0.035 165);
   --risk-low-foreground: oklch(0.85 0.02 155);
