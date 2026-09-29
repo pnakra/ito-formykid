@@ -380,7 +380,6 @@ function ResultsPage() {
           <RefinementPanel
             values={{
               age: intake.age ?? "",
-              gender: intake.gender ?? "",
               concerns: intake.concerns ?? [],
               observations: intake.observations ?? [],
             }}
