@@ -588,7 +588,8 @@ function ClarifyCard({ result, onSubmit, busy, shortVague }: { result: { clarify
     result.clarifying_question ||
     (result.recognized === "unrecognized" ? "What's the exact phrase, and where did you see or hear it?" : "") ||
     (shortVague ? "What exactly did you see or hear, and where did it happen?" : "");
-  if (!question || result.in_scope === "out_of_scope") return null;
+  // Vague inputs often come back "out of scope" only because there's too little to go on, so still ask.
+  if (!question || (result.in_scope === "out_of_scope" && !shortVague && result.recognized !== "unrecognized")) return null;
   return (
     <section aria-label="Want a sharper answer?" className="mb-8 rounded-3xl border border-primary/50 bg-card p-5">
       <p className="text-[18px] font-medium text-foreground">Want a sharper answer? Tell us one more thing:</p>
