@@ -8,6 +8,7 @@ import { SafetyHelpBlock } from "@/components/SafetyHelpBlock";
 import { FeedbackBox } from "@/components/FeedbackBox";
 import { isSafetyCategory } from "@/content/safetyCopy";
 import { track } from "@/lib/track";
+import { PracticePanel } from "@/components/PracticePanel";
 
 export const Route = createFileRoute("/samples/$id")({
   loader: ({ params }) => {
@@ -58,6 +59,7 @@ function SamplePage() {
         {cat && <div className="mb-8"><SafetyHelpBlock category={cat} /></div>}
         <ReportV2
           result={r}
+          afterWhatToSay={sample.id === "joke" ? <PracticePanel /> : undefined}
           actions={
             <div className="space-y-7">
               <FeedbackBox inScope={r.in_scope} safetyCategory={cat} sampleId={sample.id} />

@@ -1,5 +1,9 @@
 # Roadmap
 
+## Active
+- [ ] Joke practice: three turns, safety stop, rate limits, no transcript storage; test both outcomes
+- [ ] Four illustrative study mockups and reusable PNGs; required picks saved and tested; clean test rows
+
 ## Done
 - [x] Calibrate triage and refresh screenshot sample from a live check
 - [x] Add admin evaluation page; run 16 live cases and six safety-only cases

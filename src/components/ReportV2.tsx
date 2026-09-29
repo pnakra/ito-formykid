@@ -79,7 +79,7 @@ function CopyLine({ label, text, field }: { label?: string; text: string; field:
 
 const body = "text-[18px] leading-[1.6] text-foreground max-w-[65ch]";
 
-export function ReportV2({ result, actions }: { result: ReportV2Data; actions?: ReactNode }) {
+export function ReportV2({ result, actions, afterWhatToSay }: { result: ReportV2Data; actions?: ReactNode; afterWhatToSay?: ReactNode }) {
   const [openWhy, setOpenWhy] = useState(false);
   const outOfScope = result.in_scope === "out_of_scope";
   const sources = SOURCES.filter((s) => result.source_ids?.includes(s.id));
@@ -173,6 +173,7 @@ export function ReportV2({ result, actions }: { result: ReportV2Data; actions?: 
             {c.repair_step && <CopyLine field="repair" label="Making it right" text={c.repair_step} />}
             {c.disclosure_response && <CopyLine field="disclosure" label="If they tell you something hard" text={c.disclosure_response} />}
           </div>
+          {afterWhatToSay}
         </Section>
       )}
 

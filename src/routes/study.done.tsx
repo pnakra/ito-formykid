@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { PROLIFIC_COMPLETION_CODE } from "@/config/features";
 import { getPid } from "@/lib/entrySource";
+import { MOCKUPS } from "@/components/mockups";
 
 const TITLE = "Finish study — is this ok for my kid?";
 const DESC = "A few short questions to finish the study.";
@@ -38,6 +39,7 @@ type Answers = {
   helped_decide: string;
   follow_up_ok: string;
   attention_check: string;
+  mockup_picks: string[];
 };
 
 const EMPTY: Answers = {
@@ -52,6 +54,7 @@ const EMPTY: Answers = {
   helped_decide: "",
   follow_up_ok: "",
   attention_check: "",
+  mockup_picks: [],
 };
 
 const REQUIRED: { key: keyof Answers; label: string }[] = [
@@ -130,7 +133,8 @@ function StudyDone() {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    const miss = REQUIRED.filter((r) => !a[r.key].trim()).map((r) => r.label);
+    const miss = REQUIRED.filter((r) => !String(a[r.key]).trim()).map((r) => r.label);
+    if (!a.mockup_picks.length) miss.push("Which of these would you actually use? Pick up to two.");
     setMissing(miss);
     if (miss.length) return;
     setSubmitting(true);
@@ -150,6 +154,7 @@ function StudyDone() {
       vs_google_chatgpt: orNull(a.vs_google_chatgpt),
       problem_wording: orNull(a.problem_wording),
       helped_decide: orNull(a.helped_decide),
+      mockup_picks: a.mockup_picks,
     });
     setSubmitting(false);
     if (err) {
@@ -253,6 +258,21 @@ function StudyDone() {
                   { value: "no", label: "No" },
                 ]}
               />
+            </Question>
+
+            <Question label="Which of these would you actually use? Pick up to two.">
+              <div className="grid gap-5 lg:grid-cols-2">
+                {MOCKUPS.map(({ id, label, Component }) => {
+                  const selected = a.mockup_picks.includes(id);
+                  return <div key={id}>
+                    <Button type="button" variant="outline" aria-pressed={selected} onClick={() => setA((old) => ({ ...old, mockup_picks: selected ? old.mockup_picks.filter((x) => x !== id) : old.mockup_picks.length < 2 ? [...old.mockup_picks, id] : old.mockup_picks }))} className={`mb-2 h-auto min-h-11 w-full whitespace-normal text-[16px] ${selected ? "border-primary bg-primary text-primary-foreground" : ""}`}>
+                      {selected ? "✓ " : ""}{label}
+                    </Button>
+                    <div className="pointer-events-none"><Component /></div>
+                  </div>;
+                })}
+              </div>
+              <Button type="button" variant="outline" aria-pressed={a.mockup_picks.includes("none")} onClick={() => setA((old) => ({ ...old, mockup_picks: old.mockup_picks.includes("none") ? [] : ["none"] }))} className={`mt-4 ${a.mockup_picks.includes("none") ? "border-primary bg-primary text-primary-foreground" : ""}`}>None of these</Button>
             </Question>
 
             <Question label="Can we invite you to a 2-minute follow-up survey in about a week?">
