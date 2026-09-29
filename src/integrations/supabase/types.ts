@@ -337,8 +337,11 @@ export type Database = {
       }
       study_responses: {
         Row: {
+          anon_id: string | null
+          attention_check: string | null
           could_not_tell: string | null
           created_at: string
+          follow_up_ok: string | null
           helped_decide: string | null
           id: string
           is_parent_11_18: string | null
@@ -351,8 +354,11 @@ export type Database = {
           would_use_words_why: string | null
         }
         Insert: {
+          anon_id?: string | null
+          attention_check?: string | null
           could_not_tell?: string | null
           created_at?: string
+          follow_up_ok?: string | null
           helped_decide?: string | null
           id?: string
           is_parent_11_18?: string | null
@@ -365,8 +371,11 @@ export type Database = {
           would_use_words_why?: string | null
         }
         Update: {
+          anon_id?: string | null
+          attention_check?: string | null
           could_not_tell?: string | null
           created_at?: string
+          follow_up_ok?: string | null
           helped_decide?: string | null
           id?: string
           is_parent_11_18?: string | null
