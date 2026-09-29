@@ -457,7 +457,7 @@ function ResultsPage() {
             </button>
           ) : (
           <>
-          <ClarifyCard key={intake.query} result={result as any} onSubmit={handleClarify} busy={refining} />
+          <ClarifyCard key={intake.query} result={result as any} onSubmit={handleClarify} busy={refining} shortVague={intake.query.trim().split(/\s+/).length < 12} />
           <ReportV2
             result={result as unknown as ReportV2Data}
             actions={
@@ -582,11 +582,12 @@ function ResultActions({
   );
 }
 
-function ClarifyCard({ result, onSubmit, busy }: { result: { clarifying_question?: string; recognized?: string; in_scope?: string }; onSubmit: (d: string) => void; busy: boolean }) {
+function ClarifyCard({ result, onSubmit, busy, shortVague }: { result: { clarifying_question?: string; recognized?: string; in_scope?: string }; onSubmit: (d: string) => void; busy: boolean; shortVague?: boolean }) {
   const [text, setText] = useState("");
   const question =
     result.clarifying_question ||
-    (result.recognized === "unrecognized" ? "What's the exact phrase, and where did you see or hear it?" : "");
+    (result.recognized === "unrecognized" ? "What's the exact phrase, and where did you see or hear it?" : "") ||
+    (shortVague ? "What exactly did you see or hear, and where did it happen?" : "");
   if (!question || result.in_scope === "out_of_scope") return null;
   return (
     <section aria-label="Want a sharper answer?" className="mb-8 rounded-3xl border border-primary/50 bg-card p-5">
