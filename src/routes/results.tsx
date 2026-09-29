@@ -128,6 +128,7 @@ function ResultsPage() {
   }, []);
 
   const runScan = async (intakeData: IntakeData & { inputMode?: "describe" | "lookup" }) => {
+    setShowAnyway(false);
     try {
       const { data: { session } } = await supabase.auth.getSession();
 
