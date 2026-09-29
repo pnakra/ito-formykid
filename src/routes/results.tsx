@@ -220,12 +220,11 @@ function ResultsPage() {
       }
       if (payload?.result_type !== "report_v2") throw new Error("We couldn't finish this check. Please try again.");
       setResult(payload as ScanResult);
-
+      setSaved(false);
 
       localStorage.setItem("itook_first_scan_done", "true");
 
-      // Scan persistence happens server-side in the edge function so that
-      // anonymous scans are also stored. scan_count is no longer bumped.
+      // Nothing is stored unless a signed-in parent taps "Save this".
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -264,7 +263,7 @@ function ResultsPage() {
     const r = result as any;
     const { error: saveErr } = await supabase.from("scans").insert({
       user_id: user.id,
-      input_type: intake.inputMode === "description" ? "description" : "text",
+      input_type: (intake as any).inputMode === "description" ? "description" : "text",
       input_content: intake.query ?? "",
       result_json: r,
       risk_level: r.in_scope ?? r.result_type ?? "saved",
