@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react'
 import { template as newSignupAlert } from './new-signup-alert'
+import { template as studyCompletionAlert } from './study-completion-alert'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -20,4 +21,5 @@ export interface TemplateEntry {
  */
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'new-signup-alert': newSignupAlert,
+  'study-completion-alert': studyCompletionAlert,
 }
