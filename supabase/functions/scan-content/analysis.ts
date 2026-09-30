@@ -1,6 +1,7 @@
 // New structured analysis: prompt, strict schema, validation, and the
 // Responses API call (streamed, function calling, one retry).
 import { SOURCES, SOURCE_IDS } from "../_shared/sources.ts";
+import { MODEL_ESCALATION_LIMITS } from "../_shared/safety-prompts.ts";
 
 export const ANALYSIS_MODEL_V2 = "openai/gpt-6-astra";
 const RESPONSES_URL = "https://ai.gateway.lovable.dev/v1/responses";
@@ -51,7 +52,8 @@ FIELDS
 - next_step: one proportionate action and why.
 - conversation.questions: 2 to 3 open questions.
 - boundary_statement, repair_step, disclosure_response, why_it_matters: use null when not useful.
-- escalation_category: "none" unless the input clearly signals one of the listed situations.
+- escalation_category: "none" unless the input clearly signals one of the listed situations. Follow these limits:
+${MODEL_ESCALATION_LIMITS}
 - source_ids: only ids from this list that genuinely support why_it_matters, otherwise empty:
 ${SOURCE_LIST}`;
 

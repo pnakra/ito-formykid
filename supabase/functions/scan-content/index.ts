@@ -338,6 +338,8 @@ Categories:
 
 Bias toward recall for immediate danger, self-harm, sextortion, adult contact, abuse, and eating disorders. Do not stretch harmful_sexual_behavior to non-sexual conduct.
 
+${MODEL_ESCALATION_LIMITS}
+
 ${IDENTITY_GUARD_TRIAGE}
 
 Respond with ONLY valid JSON:
