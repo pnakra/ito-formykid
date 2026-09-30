@@ -19,6 +19,9 @@ export function isStudySource(s: unknown) {
 
 export function storeEntry(src: EntrySource, pid?: string) {
   const prev = sessionStorage.getItem(SRC_KEY);
+  // Study 1 is closed: send new study-1 arrivals to study 2. Anyone already
+  // mid-study-1 in this browser (prev === "prolific") keeps their flow.
+  if (src === "prolific" && prev !== "prolific") src = "prolific2";
   // A new study link starts that study's steps fresh.
   if (isStudySource(src) && prev !== src) {
     [NOTICE_KEY, CONSENT_KEY, SCREENER_KEY, "itok_study_tasks"].forEach((k) => sessionStorage.removeItem(k));
