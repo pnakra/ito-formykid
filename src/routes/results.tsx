@@ -184,7 +184,23 @@ function ResultsPage() {
         char_count: intakeData.query.length,
         input_type: isDescribe ? "description" : "lookup",
       });
-      saveStudyText("scan", { text: content, input_type: isDescribe ? "description" : "lookup", intake: intakePayload });
+      // Study only: saved once the answer is back so the row includes the AI response fields.
+      const studyRow = { text: content, input_type: isDescribe ? "description" : "lookup", intake: intakePayload };
+      const saveStudyScan = (p: any) =>
+        saveStudyText("scan", {
+          ...studyRow,
+          response: p
+            ? {
+                result_type: p.result_type ?? null,
+                safety_category: isSafetyCategory(p.safety_category) ? p.safety_category : null,
+                safety_source: p.safety_source ?? null,
+                in_scope: p.in_scope ?? null,
+                recognized: p.recognized ?? null,
+                short_answer: typeof p.short_answer === "string" ? p.short_answer : null,
+                help_block_shown: isSafetyCategory(p.safety_category),
+              }
+            : null,
+        });
       const startedAt = performance.now();
 
       const response = await fetch(
@@ -204,6 +220,7 @@ function ResultsPage() {
       );
 
       if (!response.ok) {
+        saveStudyScan(null);
         const errData = await response.json().catch(() => ({}));
         if (response.status === 429) {
           throw new Error(
@@ -215,6 +232,7 @@ function ResultsPage() {
       }
 
       const payload = await response.json();
+      saveStudyScan(payload);
 
       if (payload?.result_type === "escalation") {
         setEscalation(payload as EscalationResultData);

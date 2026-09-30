@@ -606,13 +606,13 @@ serve(async (req) => {
     // Nothing is stored.
     const safetyOnly = async (cat: SafetyCategory, errorType: string) => {
       logEvent({ requestId, startedAt, status: 200, category: `safety_only:${cat}`, errorType });
-      return json({ result_type: "safety_only", safety_category: cat });
+      return json({ result_type: "safety_only", safety_category: cat, safety_source: cat === preCategory ? "pre_check" : "model" });
     };
 
     // Immediate danger: return only the help block. No model is called.
     if (preCategory === "immediate_danger") {
       logEvent({ requestId, startedAt, status: 200, category: "safety_only:immediate_danger" });
-      return json({ result_type: "safety_only", safety_category: "immediate_danger", danger_only: true });
+      return json({ result_type: "safety_only", safety_category: "immediate_danger", danger_only: true, safety_source: "pre_check" });
     }
 
     if (!LOVABLE_API_KEY) {
@@ -677,7 +677,12 @@ serve(async (req) => {
     const result: Record<string, unknown> =
       guarded.result_type === "identity_affirming"
         ? guarded
-        : { result_type: "report_v2", ...v2, safety_category: safetyCategory ?? "none" };
+        : {
+            result_type: "report_v2",
+            ...v2,
+            safety_category: safetyCategory ?? "none",
+            safety_source: !safetyCategory ? null : preCategory === safetyCategory ? "pre_check" : "model",
+          };
 
     const category =
       result.result_type === "identity_affirming"
