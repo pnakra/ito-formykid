@@ -341,6 +341,8 @@ Bias toward recall for immediate danger, self-harm, sextortion, adult contact, a
 
 ${MODEL_ESCALATION_LIMITS}
 
+Before choosing a category, find the words in the input that meet its requirement above. If there are none, return null. Watching a creator, jokes, slurs, name-calling, and bullying alone are null.
+
 ${IDENTITY_GUARD_TRIAGE}
 
 Respond with ONLY valid JSON:
