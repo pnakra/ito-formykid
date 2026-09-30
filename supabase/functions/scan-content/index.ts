@@ -331,7 +331,7 @@ Categories:
 - immediate_danger: someone may be hurt or in danger right now or today (threats, a planned meeting with an adult, a missing child).
 - suicide_self_harm: signs a young person wants to die, is hurting themselves, or has overdosed.
 - sextortion_image: sexual or private images requested, shared, or used as a threat.
-- adult_contact: an adult or much older person contacting a minor privately, sending gifts, or asking to move apps.
+- adult_contact: an adult or much older person contacting a minor privately, sending gifts, or asking to move apps. Requires contact actually described; a general worry about predators on a game or app is null. A kid viewing or seeking adult content on their own is null.
 - abuse_disclosure: a young person says they were touched, abused, or assaulted.
 - harmful_sexual_behavior: the young person sexually pressured or sexually touched someone, recorded or shared nude, sexual, or intimate images, or made an upskirt or locker-room recording. Require sexual content or an intimate recording. A non-sexual humiliating screenshot, bullying, or forwarding alone is NOT this category. Handle those in the normal report with harming_others, stopping further sharing, and repair.
 - eating_disorder: restricting food, purging, or following pro-eating-disorder content.
@@ -606,13 +606,13 @@ serve(async (req) => {
     // Nothing is stored.
     const safetyOnly = async (cat: SafetyCategory, errorType: string) => {
       logEvent({ requestId, startedAt, status: 200, category: `safety_only:${cat}`, errorType });
-      return json({ result_type: "safety_only", safety_category: cat });
+      return json({ result_type: "safety_only", safety_category: cat, safety_source: cat === preCategory ? "pre_check" : "model" });
     };
 
     // Immediate danger: return only the help block. No model is called.
     if (preCategory === "immediate_danger") {
       logEvent({ requestId, startedAt, status: 200, category: "safety_only:immediate_danger" });
-      return json({ result_type: "safety_only", safety_category: "immediate_danger", danger_only: true });
+      return json({ result_type: "safety_only", safety_category: "immediate_danger", danger_only: true, safety_source: "pre_check" });
     }
 
     if (!LOVABLE_API_KEY) {
@@ -677,7 +677,12 @@ serve(async (req) => {
     const result: Record<string, unknown> =
       guarded.result_type === "identity_affirming"
         ? guarded
-        : { result_type: "report_v2", ...v2, safety_category: safetyCategory ?? "none" };
+        : {
+            result_type: "report_v2",
+            ...v2,
+            safety_category: safetyCategory ?? "none",
+            safety_source: !safetyCategory ? null : preCategory === safetyCategory ? "pre_check" : "model",
+          };
 
     const category =
       result.result_type === "identity_affirming"

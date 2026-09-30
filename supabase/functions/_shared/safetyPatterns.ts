@@ -69,6 +69,16 @@ export const SAFETY_PATTERNS: Record<SafetyCategory, RegExp[]> = {
     /\b(?:another|a different|out of) state\b.{0,60}\b(?:adult|older|grown|(?:1[89]|[2-9]\d) ?[- ]?(?:year[- ]?old|yo|y\/o))|\b(?:adult|older|grown|(?:1[89]|[2-9]\d) ?[- ]?(?:year[- ]?old|yo|y\/o))\b.{0,60}\b(?:another|a different|out of) state\b/i,
     // A relationship with a teacher, coach, or other trusted adult.
     /\b(?:relationship|dating|romantic|hooking up|sexual|inappropriate|secret(?:ly)?|crush)\b.{0,50}\b(?:teacher|coach|tutor|youth pastor|counsell?or|instructor)\b|\b(?:teacher|coach|tutor|youth pastor|counsell?or|instructor)\b.{0,50}\b(?:relationship|dating|romantic|hooking up|sexual)\b/i,
+    // Asked to download or move to a hidden, secret, or private chat app.
+    /\b(?:download|get|install|use|move|switch|go)\b.{0,40}\b(?:hidden|secret|private|vault|disappearing)\b.{0,15}\b(?:chat(?:ting)?|messag\w*|texting)? ?apps?\b/i,
+    // Moving the conversation to another app.
+    /\b(?:move|take|switch|continue)\b.{0,20}\b(?:conversations?|chats?|talking)\b.{0,20}\b(?:to|on|over to) (?:another|a different|a private|a new|a hidden|a secret|snap(?:chat)?|telegram|whatsapp|discord|kik|signal)\b/i,
+    // Someone online or in a game asking for an address, personal info, or a photo of the kid.
+    /\b(?:online|game|gaming|roblox|minecraft|fortnite|discord|snapchat|instagram)\b.{0,80}\b(?:ask|want|pressur|push)\w*\b.{0,40}\b(?:home address|(?:their|his|her|your|my) address|personal (?:info\w*|details|address)|phone number|(?:photo|pic|picture)s? of (?:them|him|her)sel\w*)/i,
+    // A much older person gaming, friending, or chatting with the kid.
+    /\b(?:much|way|a lot) older\b.{0,60}\b(?:gam\w*|play\w*|friend\w*|messag\w*|chat\w*|talk\w*|facebook|snap\w*|insta\w*|roblox|minecraft|discord)|\b(?:gam\w*|play\w*|friend\w*|facebook|roblox|minecraft|discord)\b.{0,60}\b(?:much|way|a lot) older\b/i,
+    // Friend requests from adults.
+    /\b(?:adult|grown (?:man|woman)|older (?:man|woman|guy))\b.{0,40}\bfriend request|\bfriend request\b.{0,40}\b(?:adult|grown (?:man|woman)|older (?:man|woman|guy))\b/i,
   ],
   abuse_disclosure: [
     new RegExp(`\\b(?:touched|touching|touches) ${THEY}\\b`, "i"),
