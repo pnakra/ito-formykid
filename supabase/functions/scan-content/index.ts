@@ -15,6 +15,7 @@ import {
   ESCALATION_RULES_FOR_ANALYSIS,
   IDENTITY_GUARD_OUTPUT,
   IDENTITY_GUARD_TRIAGE,
+  MODEL_ESCALATION_LIMITS,
 } from "../_shared/safety-prompts.ts";
 
 
@@ -337,6 +338,10 @@ Categories:
 - eating_disorder: restricting food, purging, or following pro-eating-disorder content.
 
 Bias toward recall for immediate danger, self-harm, sextortion, adult contact, abuse, and eating disorders. Do not stretch harmful_sexual_behavior to non-sexual conduct.
+
+${MODEL_ESCALATION_LIMITS}
+
+Before choosing a category, find the words in the input that meet its requirement above. If there are none, return null. Watching a creator, jokes, slurs, name-calling, and bullying alone are null.
 
 ${IDENTITY_GUARD_TRIAGE}
 

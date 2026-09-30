@@ -51,3 +51,12 @@ Set escalate to false for identity alone. Escalate only when one of the four cat
 export const ESCALATION_RULES_FOR_ANALYSIS = `${ESCALATION_RULES}
 
 A separate triage step already checked for these. If one of them still appears in the input, say plainly that this needs professional help and point the parent toward it, rather than writing a content report.`;
+
+/** Limits on which safety categories a MODEL may add. The word-rule pre-check
+ *  is separate and is never cleared by a model. Used by triage and analysis. */
+export const MODEL_ESCALATION_LIMITS = `LIMITS ON ADDING A SAFETY CATEGORY:
+1. immediate_danger only when danger is happening now or about to happen: someone is present or on the way, a meeting is planned soon, an active threat to hurt someone, a kid is missing right now, or the parent answered Yes to danger right now. Past events, resolved incidents (suspect caught, lockdown over), news stories, rumors about other schools, and police already involved in a past matter are NOT immediate_danger. Handle those in the normal report.
+2. suicide_self_harm requires the text to mention suicide, self-harm, wanting to die or disappear, someone telling a kid to kill themselves, or self-harm content. Career dreams, moods, screen time, or ordinary teen withdrawal alone are not enough.
+3. eating_disorder requires the text to mention eating, food restriction, purging, weight, body size, or diet or body content. Heavy app use alone is not enough.
+4. harmful_sexual_behavior requires sexual content: sexual touching or pressure, or recording or sharing nude, sexual, or intimate images. Non-sexual pranks, non-sexual filming without consent, and peer pressure are not. Handle them in the normal report under harming_others.
+5. When unsure between a category and none for rules 1 to 4, and there is a real signal in the text, keep the category. The goal is to stop alarms with no signal, not to lower recall on real ones.`;
