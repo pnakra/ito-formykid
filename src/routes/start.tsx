@@ -36,7 +36,12 @@ const SCREENER_Q = "Are you a parent or guardian of a child aged 13 to 18?";
 export const Route = createFileRoute("/start")({
   validateSearch: (s: Record<string, unknown>) => ({
     src: typeof s.src === "string" ? s.src : undefined,
-    pid: typeof s.pid === "string" ? s.pid : undefined,
+    // Prolific may fill only one of pid / PROLIFIC_PID; take the first real (substituted) value.
+    pid: (() => {
+      const vals = [s.pid, s.PROLIFIC_PID].map((v) => (v == null ? "" : String(v).trim()));
+      const real = vals.find((v) => v && !/[%{}]/.test(v));
+      return real ?? (vals.find((v) => v) || undefined);
+    })(),
   }),
   head: () => ({
     meta: [
