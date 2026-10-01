@@ -21,6 +21,7 @@ import {
 } from "@/lib/entrySource";
 import { saveStudyAnswers } from "@/lib/studyAnswers";
 import { ChoicePills, YES_NO } from "@/components/QuickQuestions";
+import { DinnerPromptCard } from "@/components/DinnerPromptCard";
 
 const TITLE = "Get started — is this ok for my kid?";
 const DESC =
@@ -188,6 +189,7 @@ function StartPage() {
                 No account needed. Sign in only if you want to save results.
               </p>
             )}
+            {!variant && <DinnerPromptCard />}
           </section>
         )}
       </main>

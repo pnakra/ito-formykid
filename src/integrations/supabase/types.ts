@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      dinner_prompt_subscribers: {
+        Row: {
+          age_band: string
+          created_at: string
+          email: string
+          id: string
+          unsubscribe_token: string
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          age_band: string
+          created_at?: string
+          email: string
+          id?: string
+          unsubscribe_token?: string
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          age_band?: string
+          created_at?: string
+          email?: string
+          id?: string
+          unsubscribe_token?: string
+          unsubscribed_at?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           anon_id: string

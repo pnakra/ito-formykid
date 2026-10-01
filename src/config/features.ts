@@ -18,3 +18,6 @@ export const PROLIFIC2_COMPLETION_CODE = "CZE6F6V0";
 
 // "Get a monthly email" button on results. Off until the digest is live.
 export const DIGEST_SIGNUP_ENABLED = false;
+
+// Weekly dinner-table question card on /start and /home, plus email signup.
+export const DINNER_PROMPT_ENABLED = true;
