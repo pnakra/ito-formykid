@@ -68,12 +68,18 @@ export function Footer() {
           <p className="text-[18px] text-hint">
             Free. Built by a nonprofit. We never see your child's phone.
           </p>
-          <div className="flex items-center gap-4 text-[18px] text-hint">
+          <div className="flex flex-wrap items-center justify-center gap-4 text-[18px] text-hint">
             <Link
               to="/why"
               className="underline underline-offset-4 hover:text-foreground"
             >
               Why this?
+            </Link>
+            <Link
+              to="/privacy"
+              className="underline underline-offset-4 hover:text-foreground"
+            >
+              Privacy
             </Link>
             <a
               href="https://isthisok.app"

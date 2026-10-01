@@ -10,11 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as WhyRouteImport } from './routes/why'
+import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as StartRouteImport } from './routes/start'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ScanRouteImport } from './routes/scan'
 import { Route as ResultsRouteImport } from './routes/results'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as HistoryRouteImport } from './routes/history'
@@ -27,11 +29,17 @@ import { Route as StudyDoneRouteImport } from './routes/study.done'
 import { Route as SamplesIdRouteImport } from './routes/samples.$id'
 import { Route as AdminStatsRouteImport } from './routes/admin.stats'
 import { Route as AdminEvalsRouteImport } from './routes/admin.evals'
+import { Route as AdminDinnerRouteImport } from './routes/admin.dinner'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const WhyRoute = WhyRouteImport.update({
   id: '/why',
   path: '/why',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnsubscribeRoute = UnsubscribeRouteImport.update({
+  id: '/unsubscribe',
+  path: '/unsubscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UnlockRoute = UnlockRouteImport.update({
@@ -57,6 +65,11 @@ const ScanRoute = ScanRouteImport.update({
 const ResultsRoute = ResultsRouteImport.update({
   id: '/results',
   path: '/results',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -119,6 +132,11 @@ const AdminEvalsRoute = AdminEvalsRouteImport.update({
   path: '/admin/evals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDinnerRoute = AdminDinnerRouteImport.update({
+  id: '/admin/dinner',
+  path: '/admin/dinner',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -134,12 +152,15 @@ export interface FileRoutesByFullPath {
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
   '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/why': typeof WhyRoute
+  '/admin/dinner': typeof AdminDinnerRoute
   '/admin/evals': typeof AdminEvalsRoute
   '/admin/stats': typeof AdminStatsRoute
   '/samples/$id': typeof SamplesIdRoute
@@ -155,12 +176,15 @@ export interface FileRoutesByTo {
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
   '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/why': typeof WhyRoute
+  '/admin/dinner': typeof AdminDinnerRoute
   '/admin/evals': typeof AdminEvalsRoute
   '/admin/stats': typeof AdminStatsRoute
   '/samples/$id': typeof SamplesIdRoute
@@ -177,12 +201,15 @@ export interface FileRoutesById {
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
   '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
+  '/unsubscribe': typeof UnsubscribeRoute
   '/why': typeof WhyRoute
+  '/admin/dinner': typeof AdminDinnerRoute
   '/admin/evals': typeof AdminEvalsRoute
   '/admin/stats': typeof AdminStatsRoute
   '/samples/$id': typeof SamplesIdRoute
@@ -200,12 +227,15 @@ export interface FileRouteTypes {
     | '/history'
     | '/home'
     | '/login'
+    | '/privacy'
     | '/results'
     | '/scan'
     | '/signup'
     | '/start'
     | '/unlock'
+    | '/unsubscribe'
     | '/why'
+    | '/admin/dinner'
     | '/admin/evals'
     | '/admin/stats'
     | '/samples/$id'
@@ -221,12 +251,15 @@ export interface FileRouteTypes {
     | '/history'
     | '/home'
     | '/login'
+    | '/privacy'
     | '/results'
     | '/scan'
     | '/signup'
     | '/start'
     | '/unlock'
+    | '/unsubscribe'
     | '/why'
+    | '/admin/dinner'
     | '/admin/evals'
     | '/admin/stats'
     | '/samples/$id'
@@ -242,12 +275,15 @@ export interface FileRouteTypes {
     | '/history'
     | '/home'
     | '/login'
+    | '/privacy'
     | '/results'
     | '/scan'
     | '/signup'
     | '/start'
     | '/unlock'
+    | '/unsubscribe'
     | '/why'
+    | '/admin/dinner'
     | '/admin/evals'
     | '/admin/stats'
     | '/samples/$id'
@@ -264,12 +300,15 @@ export interface RootRouteChildren {
   HistoryRoute: typeof HistoryRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
   ResultsRoute: typeof ResultsRoute
   ScanRoute: typeof ScanRoute
   SignupRoute: typeof SignupRoute
   StartRoute: typeof StartRoute
   UnlockRoute: typeof UnlockRoute
+  UnsubscribeRoute: typeof UnsubscribeRoute
   WhyRoute: typeof WhyRoute
+  AdminDinnerRoute: typeof AdminDinnerRoute
   AdminEvalsRoute: typeof AdminEvalsRoute
   AdminStatsRoute: typeof AdminStatsRoute
   SamplesIdRoute: typeof SamplesIdRoute
@@ -285,6 +324,13 @@ declare module '@tanstack/react-router' {
       path: '/why'
       fullPath: '/why'
       preLoaderRoute: typeof WhyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unsubscribe': {
+      id: '/unsubscribe'
+      path: '/unsubscribe'
+      fullPath: '/unsubscribe'
+      preLoaderRoute: typeof UnsubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/unlock': {
@@ -320,6 +366,13 @@ declare module '@tanstack/react-router' {
       path: '/results'
       fullPath: '/results'
       preLoaderRoute: typeof ResultsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -406,6 +459,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminEvalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/dinner': {
+      id: '/admin/dinner'
+      path: '/admin/dinner'
+      fullPath: '/admin/dinner'
+      preLoaderRoute: typeof AdminDinnerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -424,12 +484,15 @@ const rootRouteChildren: RootRouteChildren = {
   HistoryRoute: HistoryRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
   ResultsRoute: ResultsRoute,
   ScanRoute: ScanRoute,
   SignupRoute: SignupRoute,
   StartRoute: StartRoute,
   UnlockRoute: UnlockRoute,
+  UnsubscribeRoute: UnsubscribeRoute,
   WhyRoute: WhyRoute,
+  AdminDinnerRoute: AdminDinnerRoute,
   AdminEvalsRoute: AdminEvalsRoute,
   AdminStatsRoute: AdminStatsRoute,
   SamplesIdRoute: SamplesIdRoute,

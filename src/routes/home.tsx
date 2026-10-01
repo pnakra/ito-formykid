@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronRight, Search, TrendingUp } from "lucide-react";
 import { STAY_AHEAD_ENABLED } from "@/config/features";
+import { DinnerPromptCard } from "@/components/DinnerPromptCard";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -439,6 +440,8 @@ function HomePage() {
 
       <main className="flex-1 py-8">
         <div className="mx-auto max-w-[34rem] px-5">
+
+          <div className="mb-8 -mt-10"><DinnerPromptCard /></div>
 
           {/* Mode switcher */}
           <div className="flex rounded-[10px] bg-muted p-1 mb-8">
