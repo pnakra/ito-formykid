@@ -17,6 +17,11 @@ export type SafetyCategory = (typeof SAFETY_PRIORITY)[number];
 const PIC = "(?:pics?|pix|photos?|fotos?|pictures?|images?|imgs?|nudes?|videos?|vids?|selfies?)";
 const KID = "(?:my|our) (?:kid|child|son|daughter|teen|boy|girl|\\d{1,2}[- ]?(?:year|yr)[- ]?old)";
 const THEY = "(?:him|her|them|my (?:kid|child|son|daughter|teen))";
+// Sexual propositions sent to a kid (sex, hook up, threesome, "two man", sexting, "do stuff").
+const PROPOSITION = "(?:have sex|having sex|sex with|hook ?up|hooking up|(?:a )?threesome|(?:a )?3 ?some|(?:a )?two[- ]?man|(?:a )?2[- ]?man|do stuff|sexting|sext)";
+const ASK = "(?:ask(?:ed|ing|s)?|text(?:ed|s|ing)?|messag\\w*|dm'?(?:e?d|s)?|snap(?:ped|chatted)?|want(?:s|ed)?|invit\\w*|beg\\w*|pressur\\w*|sen[dt]s?)";
+// An adult or clearly older person named in the text.
+const ADULT = "(?:adult|grown (?:man|woman|up)|older (?:man|woman|guy|dude|person|boy|girl)|(?:1[89]|[2-9]\\d) ?[- ]?(?:year[- ]?old|yo|y\\/o|yrs? old)|man|woman)";
 
 export const SAFETY_PATTERNS: Record<SafetyCategory, RegExp[]> = {
   immediate_danger: [
@@ -51,6 +56,12 @@ export const SAFETY_PATTERNS: Record<SafetyCategory, RegExp[]> = {
     new RegExp(`\\bthreat(?:en(?:ed|ing|s)?)? to (?:post|share|leak|send|release|expose)\\b|\\b(?:post|share|leak|send|expose)\\b.{0,30}\\b${PIC}\\b.{0,30}\\bunless\\b`, "i"),
     /\b(?:pay|send money|gift cards?|venmo|cash ?app)\b.{0,40}\b(?:or (?:i'?ll|they'?ll|he'?ll|she'?ll|we'?ll)|unless)\b.{0,40}\b(?:share|post|leak|send|expose|release)\b/i,
     /\bsext(?:ortion|orted|orting)\b|\bsextort\w*/i,
+    // Sexual propositions or requests sent to the kid.
+    new RegExp(`\\b${ASK}\\b.{0,60}\\b${PROPOSITION}\\b`, "i"),
+    /\b(?:threesome|3some)\b/i,
+    /\b(?:do you|wanna|want to) (?:do stuff|hook ?up|have sex)\b/i,
+    /\bsexual (?:messages?|texts?|dms?|comments?|questions?|snaps?)\b|\bsext(?:s|ed|ing)?\b/i,
+    /\bask\w*\b.{0,40}\b(?:about )?(?:her|his|their|your) (?:body|breasts?|boobs|bra|underwear|private parts|privates)\b|\bif (?:she|he|they) (?:was|were|is|are) (?:a )?virgin\b/i,
     new RegExp(`\\b${PIC}\\b.{0,40}\\b(?:already |got |was |were |been )(?:shared|posted|leaked|sent around|spread|forwarded)\\b`, "i"),
     new RegExp(`\\b(?:keep (?:it|this) (?:a )?secret|don'?t tell (?:anyone|your parents|ur parents))\\b.{0,80}\\b${PIC}\\b|\\b${PIC}\\b.{0,80}\\b(?:keep (?:it|this) (?:a )?secret|don'?t tell (?:anyone|your parents|ur parents))\\b`, "i"),
   ],
@@ -77,6 +88,10 @@ export const SAFETY_PATTERNS: Record<SafetyCategory, RegExp[]> = {
     /\b(?:online|game|gaming|roblox|minecraft|fortnite|discord|snapchat|instagram)\b.{0,80}\b(?:ask|want|pressur|push)\w*\b.{0,40}\b(?:home address|(?:their|his|her|your|my) address|personal (?:info\w*|details|address)|phone number|(?:photo|pic|picture)s? of (?:them|him|her)sel\w*)/i,
     // A much older person gaming, friending, or chatting with the kid.
     /\b(?:much|way|a lot) older\b.{0,60}\b(?:gam\w*|play\w*|friend\w*|messag\w*|chat\w*|talk\w*|facebook|snap\w*|insta\w*|roblox|minecraft|discord)|\b(?:gam\w*|play\w*|friend\w*|facebook|roblox|minecraft|discord)\b.{0,60}\b(?:much|way|a lot) older\b/i,
+    // An adult proposing sex or sexual contact to the kid.
+    new RegExp(`\\b${ADULT}\\b.{0,60}\\b${PROPOSITION}\\b`, "i"),
+    // An adult or older person asking the kid to lie, keep secrets, or sneak out.
+    new RegExp(`\\b${ADULT}\\b.{0,60}\\b(?:ask|tell|told|want|pressur|beg|get|got)\\w*\\b.{0,40}\\b(?:lie|lying|keep (?:it|this|things|them|that)? ?(?:a )?secrets?|keep (?:it|this) (?:between|quiet)|sneak (?:out|away|off)|not (?:to )?tell|don'?t tell)\\b`, "i"),
     // Friend requests from adults.
     /\b(?:adult|grown (?:man|woman)|older (?:man|woman|guy))\b.{0,40}\bfriend request|\bfriend request\b.{0,40}\b(?:adult|grown (?:man|woman)|older (?:man|woman|guy))\b/i,
   ],
@@ -91,7 +106,9 @@ export const SAFETY_PATTERNS: Record<SafetyCategory, RegExp[]> = {
     /\binappropriate(?:ly)? touch\w*|\bbad touch\b/i,
   ],
   harmful_sexual_behavior: [
-    new RegExp(`\\b${KID}\\b.{0,40}\\b(?:pressur|forc|touch|grop|record|film|video|photograph|coerc)\\w*\\b.{0,40}\\b(?:someone|somebody|a (?:girl|boy|classmate|kid|student|friend)|another|her|him|them)\\b`, "i"),
+    new RegExp(`\\b${KID}\\b.{0,40}\\b(?:touch|grop|record|film|video|photograph)\\w*\\b.{0,40}\\b(?:someone|somebody|a (?:girl|boy|classmate|kid|student|friend)|another|her|him|them)\\b`, "i"),
+    // Pressure, force, or coercion counts only with a sexual term nearby.
+    new RegExp(`\\b${KID}\\b.{0,40}\\b(?:pressur|forc|coerc)\\w*\\b.{0,40}\\b(?:someone|somebody|a (?:girl|boy|classmate|kid|student|friend)|another|her|him|them)\\b(?=.{0,60}\\b(?:sex\\w*|nudes?|touch\\w*|kiss\\w*|hook ?up|body|pics?|photos?)\\b)`, "i"),
     /\b(?:my |our )?(?:son|daughter|kid|child|teen)\b.{0,30}\b(?:recorded|filmed|videoed|took (?:a )?(?:video|pic|photo)s? of)\b.{0,40}\b(?:a (?:girl|boy|classmate|kid)|someone|her|him)\b/i,
     new RegExp(`\\b(?:shar|sen|forward|post|spread|leak)\\w*\\b.{0,30}\\b(?:someone(?:'s)?|a (?:girl|boy|classmate)(?:'s)?|her|his|their|another (?:kid|student)(?:'s)?)\\b.{0,20}\\bnudes?\\b`, "i"),
     /\bup-?skirt\w*/i,
