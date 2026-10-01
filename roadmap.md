@@ -28,3 +28,10 @@
 - [x] Consent-gated typed text; src=prolific2 study mode
 - [ ] Full live runs of both studies at 390/1280 — blocked: AI monthly spending limit (100 credits) reached
 - [ ] Real PROLIFIC2_COMPLETION_CODE — waiting on user
+
+## Pre-launch (Oct 1)
+- [x] Safety word rules: sexual propositions, adult asking to lie/sneak out, narrowed pressure rule; model limits for creators
+- [x] /privacy page, footer + scan links
+- [x] Weekly dinner question card, email list, /unsubscribe, /admin/dinner
+- [ ] Fill [CONTACT_EMAIL] on /privacy — waiting on user
+- [ ] Flip LAUNCH_OPEN — user, after human review
