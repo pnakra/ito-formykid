@@ -67,7 +67,7 @@ function SpecificPage() {
   );
   const choices = (options: string[], selected: string | undefined, choose: (value: string) => void) => (
     <div className="flex flex-wrap gap-2">
-      {options.map((option) => <Button key={option} type="button" variant={selected === option ? "default" : "outline"} className="h-auto whitespace-normal" onClick={() => choose(selected === option ? "" : option)} className="h-auto min-h-11 whitespace-normal text-left py-2">{option}</Button>)}
+      {options.map((option) => <Button key={option} type="button" variant={selected === option ? "default" : "outline"} onClick={() => choose(selected === option ? "" : option)} className="h-auto min-h-11 whitespace-normal text-left py-2">{option}</Button>)}
     </div>
   );
   const multi = (options: string[], selected: string[], choose: (value: string) => void) => (
