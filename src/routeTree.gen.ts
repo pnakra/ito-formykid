@@ -31,6 +31,7 @@ import { Route as SamplesIndexRouteImport } from './routes/samples.index'
 import { Route as StudyDoneRouteImport } from './routes/study.done'
 import { Route as SamplesIdRouteImport } from './routes/samples.$id'
 import { Route as AdminStatsRouteImport } from './routes/admin.stats'
+import { Route as AdminLookupsRouteImport } from './routes/admin.lookups'
 import { Route as AdminEvalsRouteImport } from './routes/admin.evals'
 import { Route as AdminDinnerRouteImport } from './routes/admin.dinner'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -147,6 +148,11 @@ const AdminStatsRoute = AdminStatsRouteImport.update({
   path: '/admin/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLookupsRoute = AdminLookupsRouteImport.update({
+  id: '/admin/lookups',
+  path: '/admin/lookups',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminEvalsRoute = AdminEvalsRouteImport.update({
   id: '/admin/evals',
   path: '/admin/evals',
@@ -195,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/why': typeof WhyRoute
   '/admin/dinner': typeof AdminDinnerRoute
   '/admin/evals': typeof AdminEvalsRoute
+  '/admin/lookups': typeof AdminLookupsRoute
   '/admin/stats': typeof AdminStatsRoute
   '/samples/$id': typeof SamplesIdRoute
   '/study/done': typeof StudyDoneRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByTo {
   '/why': typeof WhyRoute
   '/admin/dinner': typeof AdminDinnerRoute
   '/admin/evals': typeof AdminEvalsRoute
+  '/admin/lookups': typeof AdminLookupsRoute
   '/admin/stats': typeof AdminStatsRoute
   '/samples/$id': typeof SamplesIdRoute
   '/study/done': typeof StudyDoneRoute
@@ -254,6 +262,7 @@ export interface FileRoutesById {
   '/why': typeof WhyRoute
   '/admin/dinner': typeof AdminDinnerRoute
   '/admin/evals': typeof AdminEvalsRoute
+  '/admin/lookups': typeof AdminLookupsRoute
   '/admin/stats': typeof AdminStatsRoute
   '/samples/$id': typeof SamplesIdRoute
   '/study/done': typeof StudyDoneRoute
@@ -285,6 +294,7 @@ export interface FileRouteTypes {
     | '/why'
     | '/admin/dinner'
     | '/admin/evals'
+    | '/admin/lookups'
     | '/admin/stats'
     | '/samples/$id'
     | '/study/done'
@@ -314,6 +324,7 @@ export interface FileRouteTypes {
     | '/why'
     | '/admin/dinner'
     | '/admin/evals'
+    | '/admin/lookups'
     | '/admin/stats'
     | '/samples/$id'
     | '/study/done'
@@ -343,6 +354,7 @@ export interface FileRouteTypes {
     | '/why'
     | '/admin/dinner'
     | '/admin/evals'
+    | '/admin/lookups'
     | '/admin/stats'
     | '/samples/$id'
     | '/study/done'
@@ -373,6 +385,7 @@ export interface RootRouteChildren {
   WhyRoute: typeof WhyRoute
   AdminDinnerRoute: typeof AdminDinnerRoute
   AdminEvalsRoute: typeof AdminEvalsRoute
+  AdminLookupsRoute: typeof AdminLookupsRoute
   AdminStatsRoute: typeof AdminStatsRoute
   SamplesIdRoute: typeof SamplesIdRoute
   StudyDoneRoute: typeof StudyDoneRoute
@@ -538,6 +551,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/lookups': {
+      id: '/admin/lookups'
+      path: '/admin/lookups'
+      fullPath: '/admin/lookups'
+      preLoaderRoute: typeof AdminLookupsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/evals': {
       id: '/admin/evals'
       path: '/admin/evals'
@@ -597,6 +617,7 @@ const rootRouteChildren: RootRouteChildren = {
   WhyRoute: WhyRoute,
   AdminDinnerRoute: AdminDinnerRoute,
   AdminEvalsRoute: AdminEvalsRoute,
+  AdminLookupsRoute: AdminLookupsRoute,
   AdminStatsRoute: AdminStatsRoute,
   SamplesIdRoute: SamplesIdRoute,
   StudyDoneRoute: StudyDoneRoute,
