@@ -157,6 +157,10 @@ function ScanPage() {
               Continue
             </Button>
           </div>
+          <p className="mt-4 text-[15px] text-hint">
+            We save lookups to check the AI is answering well, not to build a profile of you. Without an account, nothing ties it back to you.{" "}
+            <Link to="/privacy" className="underline underline-offset-2">Privacy</Link>
+          </p>
         </div>
       </main>
 
