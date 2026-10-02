@@ -1,0 +1,1 @@
+CREATE POLICY "Anyone can subscribe to dinner prompts ages 10 to 12" ON public.dinner_prompt_subscribers FOR INSERT TO anon, authenticated WITH CHECK (char_length(email) BETWEEN 3 AND 254 AND email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$' AND age_band = '10-12' AND unsubscribed_at IS NULL);
