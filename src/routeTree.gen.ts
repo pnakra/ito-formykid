@@ -13,6 +13,7 @@ import { Route as WhyRouteImport } from './routes/why'
 import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as StartRouteImport } from './routes/start'
+import { Route as SpecificRouteImport } from './routes/specific'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ScanRouteImport } from './routes/scan'
 import { Route as ResultsRouteImport } from './routes/results'
@@ -50,6 +51,11 @@ const UnlockRoute = UnlockRouteImport.update({
 const StartRoute = StartRouteImport.update({
   id: '/start',
   path: '/start',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SpecificRoute = SpecificRouteImport.update({
+  id: '/specific',
+  path: '/specific',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SignupRoute = SignupRouteImport.update({
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
+  '/specific': typeof SpecificRoute
   '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
   '/unsubscribe': typeof UnsubscribeRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
+  '/specific': typeof SpecificRoute
   '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
   '/unsubscribe': typeof UnsubscribeRoute
@@ -205,6 +213,7 @@ export interface FileRoutesById {
   '/results': typeof ResultsRoute
   '/scan': typeof ScanRoute
   '/signup': typeof SignupRoute
+  '/specific': typeof SpecificRoute
   '/start': typeof StartRoute
   '/unlock': typeof UnlockRoute
   '/unsubscribe': typeof UnsubscribeRoute
@@ -231,6 +240,7 @@ export interface FileRouteTypes {
     | '/results'
     | '/scan'
     | '/signup'
+    | '/specific'
     | '/start'
     | '/unlock'
     | '/unsubscribe'
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
     | '/results'
     | '/scan'
     | '/signup'
+    | '/specific'
     | '/start'
     | '/unlock'
     | '/unsubscribe'
@@ -279,6 +290,7 @@ export interface FileRouteTypes {
     | '/results'
     | '/scan'
     | '/signup'
+    | '/specific'
     | '/start'
     | '/unlock'
     | '/unsubscribe'
@@ -304,6 +316,7 @@ export interface RootRouteChildren {
   ResultsRoute: typeof ResultsRoute
   ScanRoute: typeof ScanRoute
   SignupRoute: typeof SignupRoute
+  SpecificRoute: typeof SpecificRoute
   StartRoute: typeof StartRoute
   UnlockRoute: typeof UnlockRoute
   UnsubscribeRoute: typeof UnsubscribeRoute
@@ -345,6 +358,13 @@ declare module '@tanstack/react-router' {
       path: '/start'
       fullPath: '/start'
       preLoaderRoute: typeof StartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/specific': {
+      id: '/specific'
+      path: '/specific'
+      fullPath: '/specific'
+      preLoaderRoute: typeof SpecificRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/signup': {
@@ -488,6 +508,7 @@ const rootRouteChildren: RootRouteChildren = {
   ResultsRoute: ResultsRoute,
   ScanRoute: ScanRoute,
   SignupRoute: SignupRoute,
+  SpecificRoute: SpecificRoute,
   StartRoute: StartRoute,
   UnlockRoute: UnlockRoute,
   UnsubscribeRoute: UnsubscribeRoute,

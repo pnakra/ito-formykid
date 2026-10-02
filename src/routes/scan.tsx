@@ -4,15 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  AGE_BANDS,
-  WHERE_OPTIONS,
-  FREQUENCY_OPTIONS,
-  QUESTION_OPTIONS,
-  DANGER_OPTIONS,
-  STARTERS,
-  BLANK,
-} from "@/config/intake";
+import { STARTERS, BLANK } from "@/config/intake";
 
 const TITLE = "What are you trying to make sense of? — is this ok for my kid?";
 const DESC = "Describe what you noticed, or look up a term or creator. Get context and a next step.";
@@ -35,56 +27,12 @@ type Mode = "describe" | "lookup";
 const MODE_KEY = "itok_input_mode";
 const MAX = 1500;
 
-function Pills({
-  label,
-  options,
-  value,
-  onChange,
-}: {
-  label: string;
-  options: string[];
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <fieldset>
-      <legend className="mb-3 text-[17px] font-medium text-foreground">{label}</legend>
-      <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={label}>
-        {options.map((o) => {
-          const active = value === o;
-          return (
-            <button
-              key={o}
-              type="button"
-              role="radio"
-              aria-checked={active}
-              onClick={() => onChange(active ? "" : o)}
-              className={`min-h-11 rounded-full border px-4 text-[16px] transition-colors ${
-                active
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card text-foreground hover:border-primary/60"
-              }`}
-            >
-              {o}
-            </button>
-          );
-        })}
-      </div>
-    </fieldset>
-  );
-}
-
 function ScanPage() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [mode, setMode] = useState<Mode>("describe");
   const [text, setText] = useState("");
-  const [ageBand, setAgeBand] = useState("");
-  const [where, setWhere] = useState("");
-  const [frequency, setFrequency] = useState("");
-  const [question, setQuestion] = useState("");
-  const [danger, setDanger] = useState("");
   const textRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -113,28 +61,19 @@ function ScanPage() {
   };
 
   const handleSubmit = () => {
-    if (danger === "Yes") {
-      navigate({ to: "/help" });
-      return;
-    }
     if (!trimmed || hasBlank || text.length > MAX) return;
     sessionStorage.setItem(MODE_KEY, mode);
     sessionStorage.setItem(
       "scanIntake",
       JSON.stringify({
         age: "",
-        age_band: ageBand,
-        where,
-        frequency,
-        question_on_mind: question,
-        danger_now: danger,
         concerns: [],
         observations: [],
         query: trimmed,
         inputMode: mode,
       }),
     );
-    navigate({ to: "/results" });
+    navigate({ to: "/specific" });
   };
 
   if (authLoading) return null;
@@ -209,38 +148,14 @@ function ScanPage() {
             <p className="mt-3 text-[15px] text-hint">Replace the ___ with what happened, then tap Get context.</p>
           )}
 
-          <div className="mt-10 space-y-8">
-            <p className="label-text text-primary">OPTIONAL. SKIP ANY OF THESE.</p>
-            <Pills label="Child's age" options={AGE_BANDS} value={ageBand} onChange={setAgeBand} />
-            <Pills label="Where this came up" options={WHERE_OPTIONS} value={where} onChange={setWhere} />
-            <Pills label="How often" options={FREQUENCY_OPTIONS} value={frequency} onChange={setFrequency} />
-            <Pills
-              label="Which question is on your mind?"
-              options={QUESTION_OPTIONS}
-              value={question}
-              onChange={setQuestion}
-            />
-            <Pills
-              label="Could someone be in danger right now?"
-              options={DANGER_OPTIONS}
-              value={danger}
-              onChange={setDanger}
-            />
-            {danger === "Yes" && (
-              <p className="text-[16px] text-foreground">
-                We'll take you to people who can help right now.
-              </p>
-            )}
-          </div>
-
           <div className="mt-10">
             <Button
               onClick={handleSubmit}
-              disabled={danger !== "Yes" && (!trimmed || hasBlank)}
+              disabled={!trimmed || hasBlank}
               size="lg"
               className="h-14 w-full rounded-full text-[18px] sm:w-auto sm:px-10"
             >
-              {danger === "Yes" ? "Get help now" : "Get context"}
+              Continue
             </Button>
             <p className="mt-5 text-[15px] text-hint">
               We never see your child's phone, accounts, or messages.
