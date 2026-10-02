@@ -77,11 +77,11 @@ function HomePage() {
           <img src={heroImage} alt="A hand-drawn map with a winding path and symbols of care and conversation" width={1600} height={1008} className="order-2 h-[280px] w-full object-cover object-right md:absolute md:inset-0 md:order-none md:h-full md:object-center" fetchPriority="high" />
           <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col justify-start px-5 pb-8 pt-10 md:justify-center md:px-8 md:pb-24 md:pt-10">
             <div className="max-w-[550px] animate-fade-in">
-              <p className="mb-5 font-display text-[14px] font-medium uppercase text-primary">A little clarity goes a long way</p>
-              <h1 id="home-title" className="max-w-[570px] font-display text-[38px] font-medium leading-[1.1] text-foreground sm:text-[48px] lg:text-[60px]">The internet moves fast. You don’t have to know everything.</h1>
+              <p className="mb-5 font-display text-[14px] font-medium uppercase text-primary"></p>
+              <h1 id="home-title" className="max-w-[570px] font-display text-[38px] font-medium leading-[1.1] text-foreground sm:text-[48px] lg:text-[60px]">A little clarity goes a long way.</h1>
               <p className="mt-6 max-w-[470px] text-[18px] leading-[1.55] text-muted-foreground md:text-[20px]">A calm place to make sense of something your kid said, saw, or did online — and decide what to say next.</p>
               <div className="mt-8 flex flex-wrap items-center gap-4">
-                <Button asChild size="lg" className="h-12 px-7 text-[17px]"><Link to="/scan">Try a lookup <ArrowRight aria-hidden="true" /></Link></Button>
+                <Button asChild size="lg" className="h-12 px-7 text-[17px]"><Link to="/scan">Try it <ArrowRight aria-hidden="true" /></Link></Button>
                 <span className="text-[15px] text-muted-foreground">Free. No account needed.</span>
               </div>
             </div>
@@ -92,12 +92,12 @@ function HomePage() {
           <div data-scroll-reveal className="mx-auto grid max-w-6xl gap-8 px-5 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-20 md:px-8">
             <div>
               <p className="label-text mb-5">WHAT THIS IS</p>
-              <h2 id="intro-title" className="max-w-[530px] font-display text-[32px] leading-[1.18] md:text-[43px]">Less guessing. More understanding.</h2>
+              <h2 id="intro-title" className="max-w-[530px] font-display text-[32px] leading-[1.18] md:text-[43px]">Understanding instead of guessing. Learning instead of ignoring.</h2>
             </div>
             <div className="space-y-5 text-[18px] leading-[1.65] text-muted-foreground md:pt-8">
               <p>Maybe it’s a phrase you keep hearing. A creator they follow. A message in a group chat. Or a change you can’t quite put into words.</p>
               <p>Tell us what you noticed, or look up a term. We explain it in plain language, say what we can and can’t tell from the details, and offer a way to start a conversation.</p>
-              <p className="font-medium text-foreground">No monitoring. No verdict on your kid. Just a place to begin.</p>
+              <p className="font-medium text-foreground">No monitoring. No verdict on your kid or you as a parent. Just a place to begin.</p>
             </div>
           </div>
         </section>
@@ -107,7 +107,7 @@ function HomePage() {
             <div data-scroll-reveal className="grid items-end gap-8 md:grid-cols-[1fr_1.05fr] md:gap-14">
               <div>
                 <p className="label-text mb-5">THE QUESTIONS BEHIND EVERY ANSWER</p>
-                <h2 id="questions-title" className="max-w-[540px] font-display text-[32px] leading-[1.18] md:text-[43px]">Three questions worth asking. Even the uncomfortable one.</h2>
+                <h2 id="questions-title" className="max-w-[540px] font-display text-[32px] leading-[1.18] md:text-[43px]">Three fundamental questions behind every read.</h2>
                 <p className="mt-5 max-w-[520px] text-[18px] leading-[1.6] text-muted-foreground">It’s natural to think first about what could happen to your child. But a fuller picture also asks whether they might be hurting someone else, or themselves. We hold all three with care, not blame.</p>
               </div>
               <img src={questionsImage} alt="Three hand-drawn symbols of care, conversation, and wellbeing" width={1408} height={864} loading="lazy" className="w-full max-h-[360px] object-cover" />
