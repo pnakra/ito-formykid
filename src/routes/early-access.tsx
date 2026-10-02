@@ -8,7 +8,7 @@ import { joinWaitlist } from "@/lib/earlyAccess.functions";
 
 const TITLE = "is this ok for my kid? — early access";
 const DESC =
-  "Tell us what you saw or heard. Find out if your kid is at risk, causing harm, or just being a teen.";
+  "Tell us what you saw or heard. Find out if your kid is at risk, causing harm, or just growing up.";
 
 export const Route = createFileRoute("/early-access")({
   head: () => ({
