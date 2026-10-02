@@ -43,5 +43,5 @@
 - [x] Open the site after human review
 
 ## Site-wide polish (Oct 2)
-- [ ] Audit and fix mobile responsiveness across public, account, study, and admin pages
-- [ ] Use “is this ok for my kid?” consistently wherever the product is named
+- [x] Audit and fix mobile responsiveness across public, account, study, and admin pages
+- [x] Use “is this ok for my kid?” consistently wherever the product is named
