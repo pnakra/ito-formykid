@@ -132,7 +132,8 @@ function isPublicThirdPartyDiscussion(text: string): boolean {
   const discussing = /\b(?:my|our) (?:kid|child|son|daughter|teen)\b.{0,100}\b(?:talk(?:s|ed|ing)?|ask(?:s|ed|ing)?|read(?:s|ing)?|watch(?:es|ed|ing)?|heard|saw|discuss(?:es|ed|ing)?|mention(?:s|ed|ing)?)\b|\b(?:talk(?:s|ed|ing)?|ask(?:s|ed|ing)?|read(?:s|ing)?|watch(?:es|ed|ing)?|heard|saw|discuss(?:es|ed|ing)?)\b.{0,100}\b(?:my|our) (?:kid|child|son|daughter|teen)\b/i.test(text);
   const publicAccount = /\b(?:news|article|documentary|podcast|headline|court case|trial|public case|cornell case|jane doe|anonymous (?:person|woman|girl|victim|student)|someone else'?s (?:story|case|assault))\b/i.test(text);
   const personalDisclosure = /\b(?:my|our) (?:kid|child|son|daughter|teen)\b.{0,75}\b(?:was|is|has been|got|said|told me|disclosed|experienced)\b.{0,45}\b(?:raped|assaulted|abused|molested|touched|victim)|\b(?:raped|assaulted|abused|molested|touched)\b.{0,45}\b(?:my|our) (?:kid|child|son|daughter|teen)\b|\b(?:their|his|her) (?:friend|classmate)\b.{0,45}\b(?:was|is|got)\b.{0,20}\b(?:raped|assaulted|abused|molested)|\b(?:this happened to|happened to|did this to|same thing happened to)\b.{0,30}\b(?:my|our) (?:kid|child|son|daughter|teen)|\b(?:same thing|this|it|that) happened to (?:him|her|them|my (?:kid|child|son|daughter|teen))\b|\b(?:told me|said|disclosed)\b.{0,50}\b(?:happened to (?:him|her|them)|same thing happened)\b/i.test(text);
-  return discussing && publicAccount && !personalDisclosure;
+  const laterDisclosure = /\b(?:then|but|and)\b.{0,40}\b(?:told me|said|shared|disclosed)\b.{0,30}\b(?:same thing|it|this|that) happened to (?:her|him|them)\b/i.test(text);
+  return discussing && publicAccount && !personalDisclosure && !laterDisclosure;
 }
 
 export function preCheck(text: string, dangerNow?: unknown): SafetyCategory | null {
