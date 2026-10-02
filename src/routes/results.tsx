@@ -68,6 +68,7 @@ interface ScanResult {
 
 interface IntakeData {
   age: string;
+  inputMode?: "describe" | "lookup";
   age_band?: string;
   where?: string;
   frequency?: string;
@@ -114,6 +115,7 @@ function ResultsPage() {
   const [saved, setSaved] = useState(false);
   const [refining, setRefining] = useState(false);
   const [justRefined, setJustRefined] = useState(false);
+  const [clarificationDecision, setClarificationDecision] = useState<"pending" | "done">("pending");
 
   const [progressStep, setProgressStep] = useState(0);
 
@@ -300,6 +302,7 @@ function ResultsPage() {
 
   const handleClarify = async (detail: string) => {
     if (!intake) return;
+    setClarificationDecision("done");
     const stored = sessionStorage.getItem("scanIntake");
     const inputMode = stored ? (JSON.parse(stored).inputMode ?? "describe") : "describe";
     const query = `${intake.query.trim()}\n\nMore detail: ${detail.trim()}`.slice(0, 1500);
@@ -427,6 +430,32 @@ function ResultsPage() {
 
   if (!result || !intake) return null;
 
+  const report = result as unknown as ReportV2Data;
+  const shortVague = intake.query.trim().split(/\s+/).length < 12;
+  const clarificationQuestion = getClarificationQuestion(report, shortVague);
+  const showClarification = clarificationDecision === "pending" && intake.inputMode === "lookup" &&
+    report.result_type === "report_v2" && !isSafetyCategory((result as any).safety_category) && !!clarificationQuestion;
+
+  if (showClarification) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header isLoggedIn={!!user} />
+        <main className="flex-1 flex items-center py-12 md:py-16">
+          <div className="mx-auto w-full max-w-[34rem] px-5">
+            <ClarifyCard
+              key={intake.query}
+              question={clarificationQuestion}
+              onSubmit={handleClarify}
+              onSkip={() => { setClarificationDecision("done"); window.scrollTo({ top: 0 }); }}
+              busy={refining}
+            />
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
 
 
   return (
@@ -475,7 +504,6 @@ function ResultsPage() {
             </button>
           ) : (
           <>
-          <ClarifyCard key={intake.query} result={result as any} onSubmit={handleClarify} busy={refining} shortVague={intake.query.trim().split(/\s+/).length < 12} />
           <ReportV2
             result={result as unknown as ReportV2Data}
             actions={
@@ -600,20 +628,22 @@ function ResultActions({
   );
 }
 
-function ClarifyCard({ result, onSubmit, busy, shortVague }: { result: { clarifying_question?: string; recognized?: string; in_scope?: string }; onSubmit: (d: string) => void; busy: boolean; shortVague?: boolean }) {
-  const [text, setText] = useState("");
-  const question =
-    result.clarifying_question ||
+function getClarificationQuestion(result: { clarifying_question?: string; recognized?: string; in_scope?: string }, shortVague: boolean) {
+  if (result.in_scope === "out_of_scope" && !shortVague && result.recognized !== "unrecognized") return "";
+  return result.clarifying_question ||
     (result.recognized === "unrecognized" ? "What's the exact phrase, and where did you see or hear it?" : "") ||
     (shortVague ? "What exactly did you see or hear, and where did it happen?" : "");
-  // Vague inputs often come back "out of scope" only because there's too little to go on, so still ask.
-  if (!question || (result.in_scope === "out_of_scope" && !shortVague && result.recognized !== "unrecognized")) return null;
+}
+
+function ClarifyCard({ question, onSubmit, onSkip, busy }: { question: string; onSubmit: (d: string) => void; onSkip: () => void; busy: boolean }) {
+  const [text, setText] = useState("");
   return (
-    <section aria-label="Want a sharper answer?" className="mb-8 rounded-3xl border border-primary/50 bg-card p-5">
-      <p className="text-[18px] font-medium text-foreground">Want a sharper answer? Tell us one more thing:</p>
-      <p className="mt-2 text-[17px] text-muted-foreground">{question}</p>
+    <section aria-label="Want a sharper answer?">
+      <p className="label-text mb-4 text-primary">BEFORE YOUR REPORT</p>
+      <h1 className="font-display text-[28px] font-medium leading-tight text-foreground">Want a sharper answer?</h1>
+      <p className="mt-4 text-[18px] leading-relaxed text-foreground">{question}</p>
       <form
-        className="mt-4"
+        className="mt-6"
         onSubmit={(e) => { e.preventDefault(); if (text.trim()) onSubmit(text); }}
       >
         <Textarea
@@ -623,9 +653,10 @@ function ClarifyCard({ result, onSubmit, busy, shortVague }: { result: { clarify
           onChange={(e) => setText(e.target.value)}
           className="min-h-[80px] text-[17px]"
         />
-        <Button type="submit" disabled={busy || !text.trim()} className="mt-3 h-12 rounded-full px-6">
-          {busy ? "Checking again…" : "Check again with this"}
-        </Button>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <Button type="submit" disabled={busy || !text.trim()} className="min-h-12">{busy ? "Checking…" : "Check with this detail"}</Button>
+          <Button type="button" variant="outline" onClick={onSkip} disabled={busy} className="min-h-12">Skip to report</Button>
+        </div>
       </form>
     </section>
   );

@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Done
+- [x] Show relevant lookup follow-up on its own step, with refine or skip choices before the report
 - [x] Make lookup reports a numbered reading path, show why it matters up front, and tuck additional context and conversation ideas away
 - [x] Distinguish a public assault story from a child's own disclosure in the safety check and prompts
 - [x] Home page: gently reveal the two lower sections on scroll and match their framed layouts
