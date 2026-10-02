@@ -16,6 +16,8 @@ const cases: [string, string | null][] = [
   ["My teen went to another state with a 25 y/o she met online", "adult_contact"],
   ["My teen thinks her friend may be in an inappropriate relationship with a teacher.", "adult_contact"],
   ["My daughter's teacher emailed about homework", null],
+  ["My 15-year-old says she wants to hook up with her boyfriend", null],
+  ["She watched a show where a man and a woman have sex", null],
 ];
 
 for (const [text, expected] of cases) {
