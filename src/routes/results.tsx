@@ -447,7 +447,7 @@ function ResultsPage() {
           </>
           )}
           <p className="mt-8 text-[13px] text-hint leading-relaxed">
-            This is not a diagnosis. Free, from a nonprofit. We never see your child's phone.
+            This is not a diagnosis. Free, from a nonprofit.
           </p>
 
 
@@ -518,19 +518,24 @@ function ResultActions({
       <Button onClick={onScanAnother} size="lg">Ask about something else</Button>
       {!isStudy && (
         <div className="pt-6 flex flex-col gap-3 items-start">
-          <div>
-            <button onClick={onSaveReport} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
+          <details className="group">
+            <summary className="cursor-pointer list-none text-[15px] text-hint hover:text-foreground underline underline-offset-4">
               {saved ? "Saved" : user ? "Save this" : "Sign in to save this"}
-            </button>
-            {saved && (
-              <Link to="/history" className="ml-3 text-[15px] text-primary underline underline-offset-4">
-                Add a note in Saved
-              </Link>
-            )}
-            <p className="mt-1 text-[13px] text-hint">
-              Saved items are visible only to you. You can delete them anytime.
-            </p>
-          </div>
+            </summary>
+            <div className="mt-2">
+              <button onClick={onSaveReport} className="text-[15px] text-primary underline underline-offset-4">
+                {saved ? "Saved" : user ? "Save this report" : "Sign in to save"}
+              </button>
+              {saved && (
+                <Link to="/history" className="ml-3 text-[15px] text-primary underline underline-offset-4">
+                  Add a note in Saved
+                </Link>
+              )}
+              <p className="mt-1 text-[13px] text-hint">
+                Saved items are visible only to you. You can delete them anytime.
+              </p>
+            </div>
+          </details>
           {DIGEST_SIGNUP_ENABLED && <button onClick={onShowDigest} className="text-[15px] text-hint hover:text-foreground underline underline-offset-4">
             Get a monthly email
           </button>}
@@ -547,7 +552,7 @@ function TrustFooter() {
       <div className="border-t border-border" />
       <div className="pt-6">
         <p className="text-[13px] text-hint leading-relaxed">
-          This is not a diagnosis. Free, from a nonprofit. We never see your child's phone.
+          This is not a diagnosis. Free, from a nonprofit.
         </p>
       </div>
     </div>

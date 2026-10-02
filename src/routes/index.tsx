@@ -128,7 +128,7 @@ function LandingPage() {
             </div>
 
             <p className="mt-4 text-[15px] text-hint">
-              Free. Built by a nonprofit. We never see your child's phone.
+              Free. Built by a nonprofit.
             </p>
           </div>
         </section>
