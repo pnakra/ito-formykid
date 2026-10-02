@@ -139,6 +139,7 @@ function isPublicThirdPartyDiscussion(text: string): boolean {
 export function preCheck(text: string, dangerNow?: unknown): SafetyCategory | null {
   const hits: SafetyCategory[] = [];
   if (typeof dangerNow === "string" && dangerNow.toLowerCase() === "yes") hits.push("immediate_danger");
+  if (/\b(?:anonymous|jane doe|news|court case|article)\b/i.test(text) && /\b(?:then|but|and)\b.{0,40}\b(?:told me|said|shared|disclosed)\b.{0,30}\b(?:the )?(?:same thing|it|this|that) happened to (?:her|him|them)\b/i.test(text)) hits.push("abuse_disclosure");
   for (const cat of SAFETY_PRIORITY) {
     if (cat === "abuse_disclosure" && isPublicThirdPartyDiscussion(text)) continue;
     if (SAFETY_PATTERNS[cat].some((p) => p.test(text))) hits.push(cat);
