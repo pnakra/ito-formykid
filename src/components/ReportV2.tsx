@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { ChevronDown, Copy, Check, ArrowRight } from "lucide-react";
+import { ChevronDown, Copy, Check, ArrowRight, MessageCircle, Heart, Compass, MessagesSquare, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { track } from "@/lib/track";
 import { SOURCES } from "@/content/sources";
@@ -40,11 +40,11 @@ const LENS_QUESTION: Record<LensKey, string> = {
 
 const body = "text-[18px] leading-[1.6] text-foreground";
 
-function Step({ number, title, children, last = false }: { number: string; title: string; children: ReactNode; last?: boolean }) {
+function Step({ icon: Icon, title, children, last = false }: { icon: LucideIcon; title: string; children: ReactNode; last?: boolean }) {
   return (
     <section className="relative grid grid-cols-[2.5rem_minmax(0,1fr)] gap-3 sm:grid-cols-[3rem_minmax(0,1fr)] sm:gap-5">
       <div className="flex flex-col items-center" aria-hidden="true">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-primary bg-primary/10 font-display text-[15px] font-semibold text-primary">{number}</span>
+        <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-primary bg-primary/10 text-primary"><Icon size={15} strokeWidth={2} /></span>
         {!last && <span className="mt-2 w-px flex-1 bg-border" />}
       </div>
       <div className={`min-w-0 ${last ? "pb-2" : "pb-10 sm:pb-12"}`}>
@@ -93,32 +93,31 @@ export function ReportV2({ result, actions, afterWhatToSay }: { result: ReportV2
   const hasConversation = !outOfScope && !!(c?.opener || c?.questions?.length || c?.boundary_statement || c?.repair_step || c?.disclosure_response);
   const hasMoreConversation = !!(c?.questions?.length || c?.boundary_statement || c?.repair_step || c?.disclosure_response);
   const hasDetails = !!result.does_not_tell_us || !!result.how_sure || !!result.lenses?.length || !!w?.more_concerning?.length || !!w?.less_concerning?.length || sources.length > 0;
-  const lastStep = hasConversation ? "04" : result.next_step?.action ? "03" : "02";
 
   return (
     <article className="min-w-0">
       <p className="label-text mb-8 text-primary">YOUR REPORT</p>
       <div>
-        <Step number="01" title="The short answer">
-          <p className="font-display text-[21px] font-medium leading-[1.45] text-foreground sm:text-[24px]">{result.short_answer}</p>
+        <Step icon={MessageCircle} title="The short answer">
+          <p className={body}>{result.short_answer}</p>
           {result.recognized === "unrecognized" && !outOfScope && <p className="mt-3 text-[16px] text-muted-foreground">We don't recognize this term or creator, so this answer is general.</p>}
           {outOfScope && <p className="mt-3 text-[16px] text-muted-foreground">This tool focuses on respect, boundaries, pressure, and online sexual harm, so this answer is general.</p>}
           {result.in_scope === "adjacent" && <p className="mt-3 text-[16px] text-muted-foreground">This is outside the tool's main focus, so treat it as a starting point.</p>}
         </Step>
 
-        <Step number="02" title="Why this matters" last={lastStep === "02"}>
+        <Step icon={Heart} title="Why this matters" last={!result.next_step?.action && !hasConversation}>
           <p className={body}>{result.why_it_matters || (outOfScope ? "This may be worth a conversation, but this tool cannot tell you more about it from what you shared." : "What you shared is a starting point, not a verdict about your child. What matters is the context and how it affects them.")}</p>
         </Step>
 
         {result.next_step?.action && (
-          <Step number="03" title="A next step" last={lastStep === "03"}>
+          <Step icon={Compass} title="A next step" last={!hasConversation}>
             <p className={`${body} font-medium`}>{result.next_step.action}</p>
             {result.next_step.why && <p className="mt-3 text-[17px] leading-[1.55] text-muted-foreground">{result.next_step.why}</p>}
           </Step>
         )}
 
         {hasConversation && (
-          <Step number="04" title="What to say" last>
+          <Step icon={MessagesSquare} title="What to say" last>
             <div className="space-y-6">
               {c.opener && <CopyLine field="opener" label="To open" text={c.opener} />}
               {hasMoreConversation && <>
