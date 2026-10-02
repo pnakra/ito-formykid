@@ -45,3 +45,4 @@
 ## Site-wide polish (Oct 2)
 - [x] Audit and fix mobile responsiveness across public, account, study, and admin pages
 - [x] Use “is this ok for my kid?” consistently wherever the product is named
+- [x] Remove visitor-facing platform branding and sample preview domain; preserve required service integrations

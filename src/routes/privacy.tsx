@@ -19,7 +19,7 @@ export const Route = createFileRoute("/privacy")({
 
 const SECTIONS: { h: string; p: string[] }[] = [
   { h: "What happens to what you type", p: [
-    "To write your answer, what you type is sent to AI models from OpenAI and Google, through Lovable's AI service. Those companies handle it under their own terms.",
+    "To write your answer, what you type is sent to AI models from OpenAI and Google through our AI service provider. Those companies handle it under their own terms.",
     "Please leave out names, schools, usernames, and other details that could identify your child or anyone else.",
   ] },
   { h: "What we keep", p: [
