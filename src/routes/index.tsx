@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { ArrowRight, Heart, HandHeart, MessageCircleMore, Search, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Heart, HandHeart, Menu, MessageCircleMore, Search, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import heroImage from "@/assets/home-hero.jpg";
 import questionsImage from "@/assets/home-questions.jpg";
 
