@@ -113,6 +113,13 @@
       "when": 1790921340468,
       "tag": "0015_create_lookups",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1790922409965,
+      "tag": "0016_allow_dinner_subscribers_10_12",
+      "breakpoints": true
     }
   ]
 }

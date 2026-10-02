@@ -46,3 +46,4 @@
 - [x] Audit and fix mobile responsiveness across public, account, study, and admin pages
 - [x] Use “is this ok for my kid?” consistently wherever the product is named
 - [x] Remove visitor-facing platform branding and sample preview domain; preserve required service integrations
+- [x] Compare eight age pairs without saving; add 10–12 analysis and dinner questions; verify live age choices, evals, and studies

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
-import { STARTERS, BLANK } from "@/config/intake";
+import { STARTERS, BLANK, AGE_BANDS } from "@/config/intake";
 
 const TITLE = "What are you trying to make sense of? — is this ok for my kid?";
 const DESC = "Describe what you noticed, or look up a term or creator. Get context and a next step.";
@@ -33,6 +33,7 @@ function ScanPage() {
 
   const [mode, setMode] = useState<Mode>("describe");
   const [text, setText] = useState("");
+  const [ageBand, setAgeBand] = useState("");
   const textRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -67,6 +68,7 @@ function ScanPage() {
       "scanIntake",
       JSON.stringify({
         age: "",
+        age_band: ageBand,
         concerns: [],
         observations: [],
         query: trimmed,
@@ -92,6 +94,13 @@ function ScanPage() {
             Please leave out names, usernames, schools, contact details, passwords, and identifying
             details. Describe what happened in your own words instead of pasting private messages.
           </p>
+
+          <fieldset className="mt-6">
+            <legend className="text-[16px] font-medium text-foreground">Their age (optional)</legend>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {AGE_BANDS.map((band) => <button key={band} type="button" aria-pressed={ageBand === band} onClick={() => setAgeBand(ageBand === band ? "" : band)} className={`rounded-full border px-3 py-2 text-[15px] transition-colors ${ageBand === band ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary"}`}>{band}</button>)}
+            </div>
+          </fieldset>
 
           <label htmlFor="scan-text" className="sr-only">
             What happened

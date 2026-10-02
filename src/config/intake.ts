@@ -36,7 +36,7 @@ export const OBSERVATION_GROUPS = [
   },
 ];
 
-export const AGE_BANDS = ["13-14", "15-16", "17-18", "Prefer not to say"];
+export const AGE_BANDS = ["10-12", "13-14", "15-16", "17-18", "Prefer not to say"];
 export const WHERE_OPTIONS = ["Group chat", "Social app", "Game", "In person", "A creator or video", "Not sure"];
 export const FREQUENCY_OPTIONS = ["One time", "Recurring", "Not sure"];
 export const QUESTION_OPTIONS = [
@@ -47,7 +47,7 @@ export const QUESTION_OPTIONS = [
 ];
 export const DANGER_OPTIONS = ["Yes", "No", "Not sure"];
 
-export const AGE_OPTIONS = Array.from({ length: 6 }, (_, i) => String(i + 13));
+export const AGE_OPTIONS = Array.from({ length: 9 }, (_, i) => String(i + 10));
 
 export const AUTOFILL_EXAMPLES = ["looksmaxxing", "Fresh & Fit", "sigma male", "redpill"];
 
