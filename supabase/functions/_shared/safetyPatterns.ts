@@ -124,10 +124,22 @@ export const SAFETY_PATTERNS: Record<SafetyCategory, RegExp[]> = {
   ],
 };
 
+// A child discussing a public account of harm is not, by itself, a disclosure
+// that the harm happened to that child. Keep this exception narrow: a named
+// news/court case or anonymous person's story being discussed, and no signal
+// that the child or someone close to them was harmed or contacted.
+function isPublicThirdPartyDiscussion(text: string): boolean {
+  const discussing = /\b(?:my|our) (?:kid|child|son|daughter|teen)\b.{0,100}\b(?:talk(?:s|ed|ing)?|ask(?:s|ed|ing)?|read(?:s|ing)?|watch(?:es|ed|ing)?|heard|saw|discuss(?:es|ed|ing)?|mention(?:s|ed|ing)?)\b|\b(?:talk(?:s|ed|ing)?|ask(?:s|ed|ing)?|read(?:s|ing)?|watch(?:es|ed|ing)?|heard|saw|discuss(?:es|ed|ing)?)\b.{0,100}\b(?:my|our) (?:kid|child|son|daughter|teen)\b/i.test(text);
+  const publicAccount = /\b(?:news|article|documentary|podcast|headline|court case|trial|public case|cornell case|jane doe|anonymous (?:person|woman|girl|victim|student)|someone else'?s (?:story|case|assault))\b/i.test(text);
+  const personalDisclosure = /\b(?:my|our) (?:kid|child|son|daughter|teen)\b.{0,75}\b(?:was|is|has been|got|said|told me|disclosed|experienced)\b.{0,45}\b(?:raped|assaulted|abused|molested|touched|victim)|\b(?:raped|assaulted|abused|molested|touched)\b.{0,45}\b(?:my|our) (?:kid|child|son|daughter|teen)\b|\b(?:their|his|her) (?:friend|classmate)\b.{0,45}\b(?:was|is|got)\b.{0,20}\b(?:raped|assaulted|abused|molested)|\b(?:this happened to|happened to|did this to)\b.{0,25}\b(?:my|our) (?:kid|child|son|daughter|teen)\b/i.test(text);
+  return discussing && publicAccount && !personalDisclosure;
+}
+
 export function preCheck(text: string, dangerNow?: unknown): SafetyCategory | null {
   const hits: SafetyCategory[] = [];
   if (typeof dangerNow === "string" && dangerNow.toLowerCase() === "yes") hits.push("immediate_danger");
   for (const cat of SAFETY_PRIORITY) {
+    if (cat === "abuse_disclosure" && isPublicThirdPartyDiscussion(text)) continue;
     if (SAFETY_PATTERNS[cat].some((p) => p.test(text))) hits.push(cat);
   }
   return highest(hits);
