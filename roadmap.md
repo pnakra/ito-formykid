@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Done
+- [x] Make lookup reports a numbered reading path, show why it matters up front, and tuck additional context and conversation ideas away
 - [x] Distinguish a public assault story from a child's own disclosure in the safety check and prompts
 - [x] Home page: gently reveal the two lower sections on scroll and match their framed layouts
 - [x] Joke practice: three turns, safety stop, shared IP rate limits, no transcript storage; tested at phone and desktop widths

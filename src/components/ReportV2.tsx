@@ -85,11 +85,13 @@ function CopyLine({ label, text, field }: { label?: string; text: string; field:
 
 export function ReportV2({ result, actions, afterWhatToSay }: { result: ReportV2Data; actions?: ReactNode; afterWhatToSay?: ReactNode }) {
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [conversationOpen, setConversationOpen] = useState(false);
   const outOfScope = result.in_scope === "out_of_scope";
   const sources = SOURCES.filter((s) => result.source_ids?.includes(s.id));
   const c = result.conversation;
   const w = result.would_change_picture;
   const hasConversation = !outOfScope && !!(c?.opener || c?.questions?.length || c?.boundary_statement || c?.repair_step || c?.disclosure_response);
+  const hasMoreConversation = !!(c?.questions?.length || c?.boundary_statement || c?.repair_step || c?.disclosure_response);
   const hasDetails = !!result.does_not_tell_us || !!result.how_sure || !!result.lenses?.length || !!w?.more_concerning?.length || !!w?.less_concerning?.length || sources.length > 0;
   const lastStep = hasConversation ? "04" : result.next_step?.action ? "03" : "02";
 
@@ -119,10 +121,18 @@ export function ReportV2({ result, actions, afterWhatToSay }: { result: ReportV2
           <Step number="04" title="What to say" last>
             <div className="space-y-6">
               {c.opener && <CopyLine field="opener" label="To open" text={c.opener} />}
-              {c.questions?.map((q) => <CopyLine key={q} field="question" label="To ask" text={q} />)}
-              {c.boundary_statement && <CopyLine field="boundary" label="A boundary" text={c.boundary_statement} />}
-              {c.repair_step && <CopyLine field="repair" label="Making it right" text={c.repair_step} />}
-              {c.disclosure_response && <CopyLine field="disclosure" label="If they tell you something hard" text={c.disclosure_response} />}
+              {hasMoreConversation && <>
+                <Button type="button" variant="ghost" aria-expanded={conversationOpen} aria-controls="more-conversation" onClick={() => setConversationOpen(!conversationOpen)} className="-ml-3 gap-2 text-primary">
+                  {conversationOpen ? "Fewer conversation ideas" : "More conversation ideas"}
+                  <ChevronDown size={17} className={`transition-transform ${conversationOpen ? "rotate-180" : ""}`} />
+                </Button>
+                {conversationOpen && <div id="more-conversation" className="space-y-6">
+                  {c.questions?.map((q) => <CopyLine key={q} field="question" label="To ask" text={q} />)}
+                  {c.boundary_statement && <CopyLine field="boundary" label="A boundary" text={c.boundary_statement} />}
+                  {c.repair_step && <CopyLine field="repair" label="Making it right" text={c.repair_step} />}
+                  {c.disclosure_response && <CopyLine field="disclosure" label="If they tell you something hard" text={c.disclosure_response} />}
+                </div>}
+              </>}
             </div>
             {afterWhatToSay}
           </Step>
