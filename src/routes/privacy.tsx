@@ -38,7 +38,7 @@ const SECTIONS: { h: string; p: string[] }[] = [
   { h: "Not an emergency service", p: [
     "This tool can't send help. If someone is in danger right now, call 911.",
   ] },
-  { h: "Contact", p: ["Questions about privacy? Email [CONTACT_EMAIL]."] },
+  { h: "Contact", p: ["Questions about privacy? Email priya@overridelabsprevention.org."] },,
 ];
 
 function PrivacyPage() {
