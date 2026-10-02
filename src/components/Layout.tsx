@@ -42,7 +42,7 @@ export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boo
           ) : (
             <>
               <Link to="/why">
-                <Button variant="ghost" size="sm">Why this?</Button>
+                <Button variant="ghost" size="sm">Why this exists</Button>
               </Link>
               <Link to="/login">
                 <Button variant="ghost" size="sm">Log in</Button>
@@ -73,7 +73,7 @@ export function Footer() {
               to="/why"
               className="underline underline-offset-4 hover:text-foreground"
             >
-              Why this?
+              Why this exists
             </Link>
             <Link
               to="/privacy"
