@@ -66,7 +66,7 @@ export function Footer() {
       <div className="mx-auto max-w-3xl px-5">
         <div className="flex flex-col items-center gap-3 text-center">
           <p className="text-[18px] text-hint">
-            Free. Built by a nonprofit focused on preventing sexual violence — the questions we answer most deeply.
+            Built by a nonprofit focused on preventing sexual violence. Those are the questions we know best.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 text-[18px] text-hint">
             <Link
