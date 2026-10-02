@@ -1,58 +1,84 @@
 import { track } from "@/lib/track";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Shield, MessageCircle, Eye } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import { Shield, MessageCircle, Eye, Menu } from "lucide-react";
+import { useState } from "react";
 import { useIsStudy } from "@/lib/entrySource";
 import { STAY_AHEAD_ENABLED } from "@/config/features";
 import { StudyTasks } from "@/components/StudyTasks";
 
+type NavItem = { to: string; label: string; primary?: boolean; search?: Record<string, string> };
+
 export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boolean }) {
   const storedStudy = useIsStudy();
   const isStudy = study ?? storedStudy;
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const items: NavItem[] = isStudy
+    ? [{ to: "/study/done", label: "Finish study", primary: true }]
+    : isLoggedIn
+      ? [
+          { to: "/home", label: "Understand now", search: { tab: "understand" } },
+          ...(STAY_AHEAD_ENABLED ? [{ to: "/home", label: "Stay ahead", search: { tab: "stay_ahead" } }] : []),
+          { to: "/history", label: "Saved" },
+          { to: "/account", label: "Account" },
+        ]
+      : [
+          { to: "/why", label: "Why this exists" },
+          { to: "/login", label: "Log in" },
+          { to: "/signup", label: "Get started", primary: true },
+        ];
+
   return (
     <>
     <header className="border-b bg-background">
-      <div className="mx-auto grid min-h-14 max-w-3xl gap-1 px-5 py-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-3">
+      <div className="mx-auto flex min-h-14 max-w-3xl items-center justify-between gap-3 px-5 py-2">
         <Link to={isStudy ? "/start" : "/"} className="min-w-0 font-display text-[18px] font-semibold text-foreground">
           is this ok for my kid?
         </Link>
-        <nav className="-mx-2 flex min-w-0 flex-wrap items-center gap-1 sm:mx-0 sm:justify-end">
+
+        {/* Desktop nav */}
+        <nav className="hidden items-center gap-1 sm:flex">
           <Link to="/help" onClick={() => track("get_help_clicked", { page: typeof window !== "undefined" ? window.location.pathname : "" })}>
-            <Button variant="ghost" size="sm" className="text-[15px]">Get help</Button>
+            <Button variant="ghost" size="sm">Get help</Button>
           </Link>
-          {isStudy ? (
-            <Link to="/study/done">
-              <Button size="sm">Finish study</Button>
+          {items.map((item) => (
+            <Link key={item.label} to={item.to} search={item.search}>
+              <Button variant={item.primary ? "default" : "ghost"} size="sm">{item.label}</Button>
             </Link>
-          ) : isLoggedIn ? (
-            <>
-              <Link to="/home" search={{ tab: "understand" }}>
-                <Button variant="ghost" size="sm" className="text-[15px]">Understand now</Button>
-              </Link>
-              {STAY_AHEAD_ENABLED && <Link to="/home" search={{ tab: "stay_ahead" }}>
-                <Button variant="ghost" size="sm" className="text-[15px]">Stay ahead</Button>
-              </Link>}
-              <Link to="/history">
-                <Button variant="ghost" size="sm" className="text-[15px]">Saved</Button>
-              </Link>
-              <Link to="/account">
-                <Button variant="ghost" size="sm" className="text-[15px]">Account</Button>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link to="/why">
-                <Button variant="ghost" size="sm">Why this exists</Button>
-              </Link>
-              <Link to="/login">
-                <Button variant="ghost" size="sm">Log in</Button>
-              </Link>
-              <Link to="/signup">
-                <Button size="sm">Get started</Button>
-              </Link>
-            </>
-          )}
+          ))}
         </nav>
+
+        {/* Mobile: side menu */}
+        <div className="sm:hidden">
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" aria-label="Open menu">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-64">
+              <SheetTitle className="font-display text-[16px]">Menu</SheetTitle>
+              <nav className="mt-4 flex flex-col gap-1">
+                <Link
+                  to="/help"
+                  onClick={() => {
+                    track("get_help_clicked", { page: typeof window !== "undefined" ? window.location.pathname : "" });
+                    setMenuOpen(false);
+                  }}
+                >
+                  <Button variant="ghost" className="w-full justify-start">Get help</Button>
+                </Link>
+                {items.map((item) => (
+                  <Link key={item.label} to={item.to} search={item.search} onClick={() => setMenuOpen(false)}>
+                    <Button variant={item.primary ? "default" : "ghost"} className="w-full justify-start">{item.label}</Button>
+                  </Link>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </header>
     {isStudy && <StudyTasks />}
