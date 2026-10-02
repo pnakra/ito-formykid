@@ -576,9 +576,6 @@ function HomePage() {
                   Get context
                 </Button>
 
-                <p className="text-[15px] text-hint mt-4">
-                  We never see your child's phone, accounts, or messages.
-                </p>
               </div>
 
               {/* Recent scans */}

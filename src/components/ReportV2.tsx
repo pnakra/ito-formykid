@@ -181,8 +181,12 @@ export function ReportV2({ result, actions, afterWhatToSay }: { result: ReportV2
       {actions && <div className="mt-10">{actions}</div>}
 
       <section className="mt-10 border-t border-border pt-7">
-        <h2 className="font-display text-[19px] text-foreground">Need more help?</h2>
-        <p className="mt-2 text-[17px] text-muted-foreground">If this feels bigger than a conversation, <Link to="/help" onClick={() => track("get_help_clicked", { page: "result" })} className="inline-flex items-center gap-1 text-primary underline underline-offset-4">see who can help <ArrowRight size={15} aria-hidden="true" /></Link>.</p>
+        <details className="group">
+          <summary className="cursor-pointer list-none font-display text-[19px] text-foreground">
+            Need more help?
+          </summary>
+          <p className="mt-2 text-[17px] text-muted-foreground">If this feels bigger than a conversation, <Link to="/help" onClick={() => track("get_help_clicked", { page: "result" })} className="inline-flex items-center gap-1 text-primary underline underline-offset-4">see who can help <ArrowRight size={15} aria-hidden="true" /></Link>.</p>
+        </details>
       </section>
     </article>
   );

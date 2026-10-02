@@ -157,9 +157,6 @@ function ScanPage() {
             >
               Continue
             </Button>
-            <p className="mt-5 text-[15px] text-hint">
-              We never see your child's phone, accounts, or messages.
-            </p>
           </div>
         </div>
       </main>
