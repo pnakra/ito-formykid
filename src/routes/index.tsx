@@ -74,7 +74,7 @@ function HomePage() {
 
       <main>
         <section className="relative isolate flex min-h-[590px] overflow-hidden bg-background md:min-h-[650px] lg:min-h-[700px]" aria-labelledby="home-title">
-          <img src={heroImage} alt="A hand-drawn map with a winding path and symbols of care and conversation" width={1600} height={1008} className="absolute bottom-0 right-0 h-[330px] w-full object-cover object-[76%_65%] md:inset-0 md:h-full md:object-cover md:object-center" fetchPriority="high" />
+          <img src={heroImage} alt="A hand-drawn map with a winding path and symbols of care and conversation" width={1600} height={1008} className="absolute bottom-0 left-[-315px] w-[680px] max-w-none md:inset-0 md:h-full md:w-full md:object-cover md:object-center" fetchPriority="high" />
           <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col justify-start px-5 pb-[300px] pt-10 md:justify-center md:px-8 md:pb-24 md:pt-10">
             <div className="max-w-[550px] animate-fade-in">
               <p className="mb-5 font-display text-[14px] font-medium uppercase text-primary">A little clarity goes a long way</p>
