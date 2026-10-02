@@ -180,7 +180,7 @@ function HomePage() {
 
       <footer className="border-t border-border py-9">
         <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 text-[15px] text-muted-foreground md:flex-row md:items-center md:justify-between md:px-8">
-          <div><p className="font-display font-medium text-foreground">is this ok for my kid?</p><p>Free. Built by a nonprofit focused on preventing sexual violence — the questions we answer most deeply.</p></div>
+          <div><p className="font-display font-medium text-foreground">is this ok for my kid?</p><p>Built by a nonprofit focused on preventing sexual violence. Those are the questions we know best.</p></div>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             <Link to="/why" className="hover:text-foreground">Why this?</Link>
             <Link to="/privacy" className="hover:text-foreground">Privacy</Link>
