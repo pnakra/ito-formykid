@@ -61,7 +61,7 @@ function SpecificPage() {
   };
   const note = (label: string) => (
     <div className="mt-3">
-      <label htmlFor={`note-${label}`} className="block text-[15px] text-muted-foreground mb-2">Something else? (optional)</label>
+      <label htmlFor={`note-${label}`} className="block text-[15px] text-muted-foreground mb-2">Something else?</label>
       <Textarea id={`note-${label}`} value={notes[label] ?? ""} maxLength={300} onChange={(e) => setNotes((prev) => ({ ...prev, [label]: e.target.value }))} className="min-h-20" />
     </div>
   );
@@ -95,7 +95,7 @@ function SpecificPage() {
           {section("Their age", choices(AGE_BANDS, intake.age_band, (age_band) => set({ age_band })), false)}
           {section("Where this came up", multi(WHERE_OPTIONS, (intake.where ?? "").split(", ").filter(Boolean), (value) => toggleMultiple("where", value)))}
           {section("How often", choices(FREQUENCY_OPTIONS, intake.frequency, (frequency) => set({ frequency })))}
-          {section("Which question is on your mind?", multi(QUESTION_OPTIONS, (intake.question_on_mind ?? "").split(", ").filter(Boolean), (value) => toggleMultiple("question_on_mind", value)))}
+          {section("Which question(s) is on your mind?", multi(QUESTION_OPTIONS, (intake.question_on_mind ?? "").split(", ").filter(Boolean), (value) => toggleMultiple("question_on_mind", value)))}
           {section("What are you concerned about?", multi(CONCERN_OPTIONS, intake.concerns ?? [], (value) => toggle("concerns", value)))}
           {OBSERVATION_GROUPS.map((group) => section(group.label, multi(group.items, intake.observations ?? [], (value) => toggle("observations", value))))}
           {section("Could someone be in danger right now?", <>
