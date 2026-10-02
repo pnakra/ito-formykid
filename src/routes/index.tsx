@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { DESCRIBE_EXAMPLES } from "@/config/intake";
@@ -30,6 +30,27 @@ const CHIPS = DESCRIBE_EXAMPLES.slice(0, 3);
 function LandingPage() {
   const navigate = useNavigate();
   const [description, setDescription] = useState("");
+
+  useEffect(() => {
+    if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const sections = document.querySelectorAll<HTMLElement>('[data-scroll-reveal]');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('scroll-reveal-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    sections.forEach((section) => {
+      section.classList.add('scroll-reveal-ready');
+      observer.observe(section);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   const appendChip = (chip: string) => {
     setDescription((prev) => (prev ? `${prev.trimEnd()} ${chip}` : chip));
@@ -114,7 +135,7 @@ function LandingPage() {
 
         {/* What you get back — a real example */}
         <section className="py-14 md:py-16 bg-card">
-          <div className="mx-auto max-w-2xl px-5">
+          <div data-scroll-reveal className="mx-auto max-w-2xl px-5">
             <p className="label-text mb-6">WHAT YOU GET BACK</p>
 
             <div className="border border-border rounded-[10px] bg-background p-5 md:p-6 space-y-5">
@@ -156,10 +177,10 @@ function LandingPage() {
         </section>
 
         {/* What this isn't */}
-        <section className="py-14 md:py-16">
-          <div className="mx-auto max-w-2xl px-5">
+        <section className="border-t border-border py-14 md:py-16 bg-card">
+          <div data-scroll-reveal className="mx-auto max-w-2xl px-5">
             <p className="label-text mb-6">WHAT THIS ISN'T</p>
-            <div className="space-y-3">
+            <div className="border border-border rounded-[10px] bg-background p-5 md:p-6 space-y-5">
               <p className="text-[18px] text-foreground leading-[1.7]">Not monitoring. We never touch their phone.</p>
               <p className="text-[18px] text-foreground leading-[1.7]">Not a verdict on your parenting.</p>
               <p className="text-[18px] text-foreground leading-[1.7]">Not a script you have to follow.</p>
