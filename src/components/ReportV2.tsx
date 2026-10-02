@@ -182,8 +182,9 @@ export function ReportV2({ result, actions, afterWhatToSay }: { result: ReportV2
 
       <section className="mt-10 border-t border-border pt-7">
         <details className="group">
-          <summary className="cursor-pointer list-none font-display text-[19px] text-foreground">
-            Need more help?
+          <summary className="flex w-full cursor-pointer list-none items-center justify-between gap-3 py-2 text-left font-display text-[19px] text-foreground transition-colors hover:text-primary">
+            <span>Need more help?</span>
+            <ChevronDown size={20} className="shrink-0 transition-transform group-open:rotate-180" />
           </summary>
           <p className="mt-2 text-[17px] text-muted-foreground">If this feels bigger than a conversation, <Link to="/help" onClick={() => track("get_help_clicked", { page: "result" })} className="inline-flex items-center gap-1 text-primary underline underline-offset-4">see who can help <ArrowRight size={15} aria-hidden="true" /></Link>.</p>
         </details>

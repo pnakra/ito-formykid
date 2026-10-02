@@ -6,6 +6,7 @@ import { Header, Footer } from "@/components/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { EscalationResult, type EscalationResultData } from "@/components/EscalationResult";
 import { IdentityResult, type IdentityResultData } from "@/components/IdentityResult";
@@ -519,8 +520,9 @@ function ResultActions({
       {!isStudy && (
         <div className="pt-6 flex flex-col gap-3 items-start">
           <details className="group">
-            <summary className="cursor-pointer list-none text-[15px] text-hint hover:text-foreground underline underline-offset-4">
-              {saved ? "Saved" : user ? "Save this" : "Sign in to save this"}
+            <summary className="flex w-full cursor-pointer list-none items-center justify-between gap-3 py-2 text-left font-display text-[19px] text-foreground transition-colors hover:text-primary">
+              <span>{saved ? "Saved" : user ? "Save this" : "Sign in to save this"}</span>
+              <ChevronDown size={20} className="shrink-0 transition-transform group-open:rotate-180" />
             </summary>
             <div className="mt-2">
               <button onClick={onSaveReport} className="text-[15px] text-primary underline underline-offset-4">
