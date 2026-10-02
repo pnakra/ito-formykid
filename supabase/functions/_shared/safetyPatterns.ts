@@ -19,9 +19,13 @@ const KID = "(?:my|our) (?:kid|child|son|daughter|teen|boy|girl|\\d{1,2}[- ]?(?:
 const THEY = "(?:him|her|them|my (?:kid|child|son|daughter|teen))";
 // Sexual propositions sent to a kid (sex, hook up, threesome, "two man", sexting, "do stuff").
 const PROPOSITION = "(?:have sex|having sex|sex with|hook ?up|hooking up|(?:a )?threesome|(?:a )?3 ?some|(?:a )?two[- ]?man|(?:a )?2[- ]?man|do stuff|sexting|sext)";
-const ASK = "(?:ask(?:ed|ing|s)?|text(?:ed|s|ing)?|messag\\w*|dm'?(?:e?d|s)?|snap(?:ped|chatted)?|want(?:s|ed)?|invit\\w*|beg\\w*|pressur\\w*|sen[dt]s?)";
-// An adult or clearly older person named in the text.
-const ADULT = "(?:adult|grown (?:man|woman|up)|older (?:man|woman|guy|dude|person|boy|girl)|(?:1[89]|[2-9]\\d) ?[- ]?(?:year[- ]?old|yo|y\\/o|yrs? old)|man|woman)";
+// Verbs that mean someone is directing a proposition AT the kid. Plain
+// "wants" is excluded: "she wants to hook up with her boyfriend" is the
+// kid's own wish, not someone propositioning her.
+const ASK = "(?:ask(?:ed|ing|s)?|text(?:ed|s|ing)?|messag\\w*|dm'?(?:e?d|s)?|snap(?:ped|chatted)?|invit\\w*|beg\\w*|pressur\\w*|sen[dt]s?)";
+// An adult or clearly older person named in the text. Bare "man"/"woman" are
+// excluded: "a man and a woman have sex" in a show is not adult contact.
+const ADULT = "(?:adult|grown (?:man|woman|up)|older (?:man|woman|guy|dude|person|boy|girl)|(?:1[89]|[2-9]\\d) ?[- ]?(?:year[- ]?old|yo|y\\/o|yrs? old))";
 
 export const SAFETY_PATTERNS: Record<SafetyCategory, RegExp[]> = {
   immediate_danger: [
