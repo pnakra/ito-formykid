@@ -103,7 +103,6 @@ function SpecificPage() {
         </div>
         <div className="mt-10 flex flex-wrap gap-3">
           <Button onClick={finish} size="lg">{intake.danger_now === "Yes" ? "Get help now" : "See my report"}</Button>
-          <Button variant="outline" size="lg" onClick={() => navigate({ to: "/scan" })}>Back to what I wrote</Button>
         </div>
         <p className="mt-5 text-[15px] text-muted-foreground">Please leave out names and identifying details. <Link to="/privacy" className="underline">How we handle what you type</Link></p>
       </div>
