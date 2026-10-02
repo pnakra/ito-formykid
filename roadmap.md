@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Done
+- [x] Make lookup reports a numbered reading path, show why it matters up front, and tuck additional context and conversation ideas away
 - [x] Distinguish a public assault story from a child's own disclosure in the safety check and prompts
 - [x] Home page: gently reveal the two lower sections on scroll and match their framed layouts
 - [x] Joke practice: three turns, safety stop, shared IP rate limits, no transcript storage; tested at phone and desktop widths
@@ -28,12 +29,12 @@
 - [x] Screener/consent saved with retry; study steps enforced before tasks
 - [x] Clarifying question card, starters, 13+ age bands, concrete "can't tell you whether"
 - [x] Consent-gated typed text; src=prolific2 study mode
-- [ ] Full live runs of both studies at 390/1280 — blocked: AI monthly spending limit (100 credits) reached
-- [ ] Real PROLIFIC2_COMPLETION_CODE — waiting on user
+- [x] Full live runs of both studies at 390/1280
+- [x] PROLIFIC2_COMPLETION_CODE set to CZE6F6V0
 
 ## Pre-launch (Oct 1)
 - [x] Safety word rules: sexual propositions, adult asking to lie/sneak out, narrowed pressure rule; model limits for creators
 - [x] /privacy page, footer + scan links
 - [x] Weekly dinner question card, email list, /unsubscribe, /admin/dinner
-- [ ] Fill [CONTACT_EMAIL] on /privacy — waiting on user
-- [ ] Flip LAUNCH_OPEN — user, after human review
+- [x] Fill privacy contact email
+- [x] Open the site after human review

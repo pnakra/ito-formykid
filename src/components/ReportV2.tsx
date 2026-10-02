@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
+import { ChevronDown, Copy, Check, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { track } from "@/lib/track";
-import { ChevronDown, Copy, Check } from "lucide-react";
 import { SOURCES } from "@/content/sources";
 
 export type LensKey = "being_harmed" | "harming_others" | "harming_self";
@@ -37,202 +38,152 @@ const LENS_QUESTION: Record<LensKey, string> = {
   harming_self: "Is my kid harming themselves?",
 };
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="border-t border-border/80 pt-7">
-      <h2 className="label-text mb-4 text-primary">{title.toUpperCase()}</h2>
-      {children}
-    </section>
-  );
-}
+const body = "text-[18px] leading-[1.6] text-foreground";
 
-function Note({ children }: { children: ReactNode }) {
+function Step({ number, title, children, last = false }: { number: string; title: string; children: ReactNode; last?: boolean }) {
   return (
-    <p className="rounded-2xl border border-border/80 bg-card px-4 py-3 text-[16px] leading-[1.55] text-muted-foreground">
-      {children}
-    </p>
+    <section className="relative grid grid-cols-[2.5rem_minmax(0,1fr)] gap-3 sm:grid-cols-[3rem_minmax(0,1fr)] sm:gap-5">
+      <div className="flex flex-col items-center" aria-hidden="true">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-full border border-primary bg-primary/10 font-display text-[15px] font-semibold text-primary">{number}</span>
+        {!last && <span className="mt-2 w-px flex-1 bg-border" />}
+      </div>
+      <div className={`min-w-0 ${last ? "pb-2" : "pb-10 sm:pb-12"}`}>
+        <h2 className="mb-3 font-display text-[22px] font-medium leading-tight text-foreground">{title}</h2>
+        {children}
+      </div>
+    </section>
   );
 }
 
 function CopyLine({ label, text, field }: { label?: string; text: string; field: string }) {
   const [copied, setCopied] = useState(false);
   return (
-    <div className="rounded-2xl border border-border/80 bg-card p-4">
-      {label && <p className="mb-1 text-[14px] font-medium text-hint">{label}</p>}
-      <p className="text-[18px] leading-[1.55] text-foreground">{text}</p>
-      <button
+    <div className="border-l-2 border-primary/60 pl-4">
+      {label && <p className="mb-1 text-[14px] font-medium text-muted-foreground">{label}</p>}
+      <p className={body}>{text}</p>
+      <Button
         type="button"
+        variant="ghost"
+        size="sm"
         onClick={async () => {
-          await navigator.clipboard.writeText(text);
-          track("conversation_copied", { field });
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1800);
+          try {
+            await navigator.clipboard.writeText(text);
+            track("conversation_copied", { field });
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1800);
+          } catch { setCopied(false); }
         }}
-        className="mt-3 inline-flex min-h-10 items-center gap-2 rounded-full border border-border px-4 text-[15px] text-foreground hover:border-primary/60"
+        className="mt-2 -ml-3 gap-2 text-primary"
         aria-label={`Copy: ${text}`}
       >
-        {copied ? <Check size={16} className="text-primary" /> : <Copy size={16} />}
+        {copied ? <Check size={16} /> : <Copy size={16} />}
         {copied ? "Copied" : "Copy"}
-      </button>
+      </Button>
     </div>
   );
 }
 
-const body = "text-[18px] leading-[1.6] text-foreground max-w-[65ch]";
-
 export function ReportV2({ result, actions, afterWhatToSay }: { result: ReportV2Data; actions?: ReactNode; afterWhatToSay?: ReactNode }) {
-  const [openWhy, setOpenWhy] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [conversationOpen, setConversationOpen] = useState(false);
   const outOfScope = result.in_scope === "out_of_scope";
   const sources = SOURCES.filter((s) => result.source_ids?.includes(s.id));
   const c = result.conversation;
   const w = result.would_change_picture;
-  const hasWhy = !!result.why_it_matters || sources.length > 0;
+  const hasConversation = !outOfScope && !!(c?.opener || c?.questions?.length || c?.boundary_statement || c?.repair_step || c?.disclosure_response);
+  const hasMoreConversation = !!(c?.questions?.length || c?.boundary_statement || c?.repair_step || c?.disclosure_response);
+  const hasDetails = !!result.does_not_tell_us || !!result.how_sure || !!result.lenses?.length || !!w?.more_concerning?.length || !!w?.less_concerning?.length || sources.length > 0;
+  const lastStep = hasConversation ? "04" : result.next_step?.action ? "03" : "02";
 
   return (
-    <article className="space-y-7">
-      <header className="space-y-4">
-        <p className="label-text text-primary">WHAT WE FOUND</p>
-        {result.recognized === "unrecognized" && !outOfScope && (
-          <Note>We don't recognize this term or creator, so this answer is general.</Note>
+    <article className="min-w-0">
+      <p className="label-text mb-8 text-primary">YOUR REPORT</p>
+      <div>
+        <Step number="01" title="The short answer">
+          <p className="font-display text-[21px] font-medium leading-[1.45] text-foreground sm:text-[24px]">{result.short_answer}</p>
+          {result.recognized === "unrecognized" && !outOfScope && <p className="mt-3 text-[16px] text-muted-foreground">We don't recognize this term or creator, so this answer is general.</p>}
+          {outOfScope && <p className="mt-3 text-[16px] text-muted-foreground">This tool focuses on respect, boundaries, pressure, and online sexual harm, so this answer is general.</p>}
+          {result.in_scope === "adjacent" && <p className="mt-3 text-[16px] text-muted-foreground">This is outside the tool's main focus, so treat it as a starting point.</p>}
+        </Step>
+
+        <Step number="02" title="Why this matters" last={lastStep === "02"}>
+          <p className={body}>{result.why_it_matters || (outOfScope ? "This may be worth a conversation, but this tool cannot tell you more about it from what you shared." : "What you shared is a starting point, not a verdict about your child. What matters is the context and how it affects them.")}</p>
+        </Step>
+
+        {result.next_step?.action && (
+          <Step number="03" title="A next step" last={lastStep === "03"}>
+            <p className={`${body} font-medium`}>{result.next_step.action}</p>
+            {result.next_step.why && <p className="mt-3 text-[17px] leading-[1.55] text-muted-foreground">{result.next_step.why}</p>}
+          </Step>
         )}
-        {outOfScope && (
-          <Note>
-            This tool focuses on respect, boundaries, pressure, and online sexual harm, so this answer is general.
-          </Note>
+
+        {hasConversation && (
+          <Step number="04" title="What to say" last>
+            <div className="space-y-6">
+              {c.opener && <CopyLine field="opener" label="To open" text={c.opener} />}
+              {hasMoreConversation && <>
+                <Button type="button" variant="ghost" aria-expanded={conversationOpen} aria-controls="more-conversation" onClick={() => setConversationOpen(!conversationOpen)} className="-ml-3 gap-2 text-primary">
+                  {conversationOpen ? "Fewer conversation ideas" : "More conversation ideas"}
+                  <ChevronDown size={17} className={`transition-transform ${conversationOpen ? "rotate-180" : ""}`} />
+                </Button>
+                {conversationOpen && <div id="more-conversation" className="space-y-6">
+                  {c.questions?.map((q) => <CopyLine key={q} field="question" label="To ask" text={q} />)}
+                  {c.boundary_statement && <CopyLine field="boundary" label="A boundary" text={c.boundary_statement} />}
+                  {c.repair_step && <CopyLine field="repair" label="Making it right" text={c.repair_step} />}
+                  {c.disclosure_response && <CopyLine field="disclosure" label="If they tell you something hard" text={c.disclosure_response} />}
+                </div>}
+              </>}
+            </div>
+            {afterWhatToSay}
+          </Step>
         )}
-        {result.in_scope === "adjacent" && (
-          <Note>This is outside the tool's main focus, so treat it as a starting point.</Note>
-        )}
-        <p className="font-display text-[22px] font-medium leading-[1.45] text-foreground md:text-[24px] max-w-[62ch]">
-          {result.short_answer}
-        </p>
-        {!outOfScope && result.how_sure && (
-          <p className="text-[16px] leading-[1.55] text-muted-foreground">
-            <span className="font-medium text-foreground">How sure this is: </span>
-            {result.how_sure[0].toUpperCase() + result.how_sure.slice(1)}. {result.how_sure_reason}
-          </p>
-        )}
-      </header>
+      </div>
 
-      {!outOfScope && result.does_not_tell_us && (() => {
-        const points = result.does_not_tell_us.split(/\n+/).map((s) => s.replace(/^[-•*\d.\s]+/, "").trim()).filter(Boolean);
-        return (
-          <Section title="What this does not tell us">
-            {points.length > 1 ? (
-              <ul className="list-disc space-y-2 pl-5 text-[18px] leading-[1.6] text-foreground max-w-[65ch]">
-                {points.map((p) => <li key={p}>{p}</li>)}
-              </ul>
-            ) : (
-              <p className={body}>{result.does_not_tell_us}</p>
-            )}
-          </Section>
-        );
-      })()}
-
-      {!outOfScope && result.lenses?.length > 0 && (
-        <Section title="Your three questions">
-          <ul className="space-y-4">
-            {result.lenses.map((l) => (
-              <li key={l.key} className="rounded-2xl border border-border/80 bg-card p-4">
-                <p className="text-[18px] font-medium text-foreground">{LENS_QUESTION[l.key]}</p>
-                <p className="mt-1 text-[17px] leading-[1.55] text-muted-foreground">{l.why}</p>
-              </li>
-            ))}
-          </ul>
-        </Section>
-      )}
-
-      {!outOfScope && (w?.more_concerning?.length > 0 || w?.less_concerning?.length > 0) && (
-        <Section title="What would change the picture">
-          <div className="grid gap-5 md:grid-cols-2">
-            {w.more_concerning.length > 0 && (
-              <div>
-                <p className="mb-2 text-[17px] font-medium text-foreground">More concerning if</p>
-                <ul className="list-disc space-y-1.5 pl-5 text-[17px] leading-[1.55] text-muted-foreground">
-                  {w.more_concerning.map((x) => <li key={x}>{x}</li>)}
-                </ul>
-              </div>
-            )}
-            {w.less_concerning.length > 0 && (
-              <div>
-                <p className="mb-2 text-[17px] font-medium text-foreground">Less concerning if</p>
-                <ul className="list-disc space-y-1.5 pl-5 text-[17px] leading-[1.55] text-muted-foreground">
-                  {w.less_concerning.map((x) => <li key={x}>{x}</li>)}
-                </ul>
-              </div>
-            )}
-          </div>
-        </Section>
-      )}
-
-      {result.next_step?.action && (
-        <Section title="A next step">
-          <p className="text-[18px] font-medium leading-[1.55] text-foreground max-w-[65ch]">{result.next_step.action}</p>
-          {result.next_step.why && (
-            <p className="mt-2 text-[17px] leading-[1.55] text-muted-foreground max-w-[65ch]">{result.next_step.why}</p>
-          )}
-        </Section>
-      )}
-
-      {!outOfScope && (c?.opener || c?.questions?.length > 0) && (
-        <Section title="What to say">
-          <div className="space-y-3">
-            {c.opener && <CopyLine field="opener" label="To open" text={c.opener} />}
-            {c.questions?.map((q) => <CopyLine key={q} field="question" label="To ask" text={q} />)}
-            {c.boundary_statement && <CopyLine field="boundary" label="A boundary" text={c.boundary_statement} />}
-            {c.repair_step && <CopyLine field="repair" label="Making it right" text={c.repair_step} />}
-            {c.disclosure_response && <CopyLine field="disclosure" label="If they tell you something hard" text={c.disclosure_response} />}
-          </div>
-          {afterWhatToSay}
-        </Section>
-      )}
-
-      {!outOfScope && hasWhy && (
-        <section className="border-t border-border/80 pt-7">
-          <button
+      {hasDetails && (
+        <section className="mt-10 border-t border-border pt-6">
+          <Button
             type="button"
-            onClick={() => { if (!openWhy) track("why_expanded"); setOpenWhy(!openWhy); }}
-            aria-expanded={openWhy}
-            className="flex w-full items-center justify-between text-left"
+            variant="ghost"
+            onClick={() => { if (!detailsOpen) track("why_expanded"); setDetailsOpen(!detailsOpen); }}
+            aria-expanded={detailsOpen}
+            aria-controls="report-details"
+            className="-ml-3 flex h-auto w-[calc(100%+0.75rem)] items-center justify-between gap-3 py-2 text-left font-display text-[19px] text-foreground hover:text-primary"
           >
-            <span className="label-text text-primary">WHY THIS MATTERS</span>
-            <ChevronDown size={18} className={`text-hint transition-transform ${openWhy ? "rotate-180" : ""}`} />
-          </button>
-          {openWhy && (
-            <div className="mt-4 space-y-4">
-              {result.why_it_matters && <p className={body}>{result.why_it_matters}</p>}
-              {sources.length > 0 && (
-                <ul className="space-y-2">
-                  {sources.map((s) => (
-                    <li key={s.id}>
-                      <a
-                        href={s.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[17px] text-primary underline underline-offset-4"
-                      >
-                        {s.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
+            <span>More context &amp; sources</span>
+            <ChevronDown size={20} className={`shrink-0 transition-transform ${detailsOpen ? "rotate-180" : ""}`} />
+          </Button>
+          {detailsOpen && (
+            <div id="report-details" className="space-y-8 pt-6">
+              {!outOfScope && result.does_not_tell_us && <div>
+                <h3 className="mb-2 font-display text-[18px] text-foreground">What this can't tell us</h3>
+                <p className="whitespace-pre-line text-[17px] leading-[1.6] text-muted-foreground">{result.does_not_tell_us}</p>
+              </div>}
+              {!outOfScope && result.how_sure && <div>
+                <h3 className="mb-2 font-display text-[18px] text-foreground">How sure this is</h3>
+                <p className="text-[17px] leading-[1.6] text-muted-foreground">{result.how_sure[0].toUpperCase() + result.how_sure.slice(1)}. {result.how_sure_reason}</p>
+              </div>}
+              {!outOfScope && result.lenses?.length > 0 && <div>
+                <h3 className="mb-3 font-display text-[18px] text-foreground">Questions to keep in mind</h3>
+                <ul className="space-y-4">{result.lenses.map((l) => <li key={l.key} className="border-l border-border pl-4"><p className="font-medium text-foreground">{LENS_QUESTION[l.key]}</p><p className="mt-1 text-[17px] leading-[1.55] text-muted-foreground">{l.why}</p></li>)}</ul>
+              </div>}
+              {!outOfScope && (w?.more_concerning?.length > 0 || w?.less_concerning?.length > 0) && <div>
+                <h3 className="mb-3 font-display text-[18px] text-foreground">What would change the picture</h3>
+                <div className="grid gap-5 sm:grid-cols-2">
+                  {w.more_concerning?.length > 0 && <div><p className="font-medium text-foreground">More concerning if</p><ul className="mt-2 list-disc space-y-1 pl-5 text-[17px] leading-[1.55] text-muted-foreground">{w.more_concerning.map((x) => <li key={x}>{x}</li>)}</ul></div>}
+                  {w.less_concerning?.length > 0 && <div><p className="font-medium text-foreground">Less concerning if</p><ul className="mt-2 list-disc space-y-1 pl-5 text-[17px] leading-[1.55] text-muted-foreground">{w.less_concerning.map((x) => <li key={x}>{x}</li>)}</ul></div>}
+                </div>
+              </div>}
+              {sources.length > 0 && <div><h3 className="mb-2 font-display text-[18px] text-foreground">Sources</h3><ul className="space-y-2">{sources.map((s) => <li key={s.id}><a href={s.url} target="_blank" rel="noopener noreferrer" className="text-[17px] text-primary underline underline-offset-4">{s.title}</a></li>)}</ul></div>}
             </div>
           )}
         </section>
       )}
 
-      {actions}
+      {actions && <div className="mt-10">{actions}</div>}
 
-      <section className="border-t border-border/80 pt-7">
-        <h2 className="label-text mb-3 text-primary">GET MORE HELP</h2>
-        <p className="text-[17px] text-muted-foreground">
-          If this feels bigger than a conversation,{" "}
-          <Link to="/help" onClick={() => track("get_help_clicked", { page: "result" })} className="text-primary underline underline-offset-4">
-            see who can help
-          </Link>
-          .
-        </p>
+      <section className="mt-10 border-t border-border pt-7">
+        <h2 className="font-display text-[19px] text-foreground">Need more help?</h2>
+        <p className="mt-2 text-[17px] text-muted-foreground">If this feels bigger than a conversation, <Link to="/help" onClick={() => track("get_help_clicked", { page: "result" })} className="inline-flex items-center gap-1 text-primary underline underline-offset-4">see who can help <ArrowRight size={15} aria-hidden="true" /></Link>.</p>
       </section>
     </article>
   );
