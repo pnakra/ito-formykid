@@ -87,9 +87,9 @@ function WhyPage() {
             <p className="label-text mb-6">WHAT THE NUMBERS SAY</p>
             <div className="space-y-6">
               {STATS.map((stat) => (
-                <div key={stat.value} className="flex items-baseline gap-4">
+                <div key={stat.value} className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-center gap-x-4">
                   <span
-                    className="text-[34px] md:text-[42px] leading-none text-foreground shrink-0"
+                    className="text-[34px] md:text-[42px] leading-none text-foreground"
                     style={{ fontFamily: "var(--font-serif)", fontWeight: 400 }}
                   >
                     {stat.value}
