@@ -27,6 +27,7 @@ function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
 
   if (user) {
     navigate({ to: "/home" });
@@ -38,7 +39,7 @@ function SignupPage() {
     setError("");
     setLoading(true);
 
-    const { error: authError } = await supabase.auth.signUp({
+    const { data, error: authError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -49,11 +50,50 @@ function SignupPage() {
     if (authError) {
       setError(authError.message);
       setLoading(false);
+    } else if (data.user && data.user.identities && data.user.identities.length === 0) {
+      // Email is already registered — no confirmation email is sent in this case.
+      setAlreadyRegistered(true);
+      setLoading(false);
     } else {
       setSuccess(true);
       setLoading(false);
     }
   };
+
+  if (alreadyRegistered) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <header className="px-6 md:px-10 py-6">
+          <Link to="/" className="text-[18px] text-muted-foreground hover:text-foreground transition-colors">
+            ← Back
+          </Link>
+        </header>
+        <main className="flex-1 flex items-start justify-center pt-[12vh] pb-16 px-6 md:px-10">
+          <div className="w-full max-w-sm">
+            <h1
+              className="font-display text-[30px] font-bold text-foreground leading-[1.25] mb-3"
+            >
+              You already have an account
+            </h1>
+            <p className="text-[18px] text-muted-foreground leading-relaxed mb-8">
+              <span className="break-all text-foreground">{email}</span> is
+              already registered. Sign in instead — or reset your password if
+              you've forgotten it.
+            </p>
+            <Button asChild className="h-12 w-full rounded-full">
+              <Link to="/login">Sign in</Link>
+            </Button>
+            <p className="mt-5 text-[15px] text-muted-foreground">
+              Forgot your password?{" "}
+              <Link to="/forgot-password" className="text-foreground underline underline-offset-4">
+                Reset it
+              </Link>
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   if (success) {
     return (
