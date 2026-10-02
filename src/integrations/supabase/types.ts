@@ -78,6 +78,7 @@ export type Database = {
           helped: string
           id: string
           in_scope: string | null
+          lookup_id: string | null
           pid: string | null
           safety_category: string | null
           sample_id: string | null
@@ -89,6 +90,7 @@ export type Database = {
           helped: string
           id?: string
           in_scope?: string | null
+          lookup_id?: string | null
           pid?: string | null
           safety_category?: string | null
           sample_id?: string | null
@@ -100,10 +102,47 @@ export type Database = {
           helped?: string
           id?: string
           in_scope?: string | null
+          lookup_id?: string | null
           pid?: string | null
           safety_category?: string | null
           sample_id?: string | null
           source?: string
+        }
+        Relationships: []
+      }
+      lookups: {
+        Row: {
+          anon_id: string | null
+          created_at: string
+          id: string
+          input_type: string
+          intake: Json
+          query_text: string
+          response: Json | null
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          anon_id?: string | null
+          created_at?: string
+          id?: string
+          input_type: string
+          intake?: Json
+          query_text: string
+          response?: Json | null
+          source?: string
+          user_id?: string | null
+        }
+        Update: {
+          anon_id?: string | null
+          created_at?: string
+          id?: string
+          input_type?: string
+          intake?: Json
+          query_text?: string
+          response?: Json | null
+          source?: string
+          user_id?: string | null
         }
         Relationships: []
       }

@@ -9,8 +9,8 @@ const MAX = 500;
 type Helped = "yes" | "somewhat" | "no";
 
 export function FeedbackBox({
-  inScope, safetyCategory, sampleId,
-}: { inScope?: string | null; safetyCategory?: string | null; sampleId?: string | null }) {
+  inScope, safetyCategory, sampleId, lookupId,
+}: { lookupId?: string | null; inScope?: string | null; safetyCategory?: string | null; sampleId?: string | null }) {
   const [helped, setHelped] = useState<Helped | null>(null);
   const [comment, setComment] = useState("");
   const [sent, setSent] = useState(false);
@@ -25,6 +25,7 @@ export function FeedbackBox({
       source,
       pid: source === "prolific" ? getPid() : null,
       sample_id: sampleId ?? null,
+      lookup_id: lookupId ?? null,
       in_scope: inScope ?? null,
       safety_category: safetyCategory ?? null,
       helped,

@@ -1,4 +1,5 @@
 import { saveStudyText } from "@/lib/studyTexts";
+import { saveLookup } from "@/lib/lookups";
 import { DIGEST_SIGNUP_ENABLED } from "@/config/features";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
@@ -113,6 +114,7 @@ function ResultsPage() {
   const [digestName, setDigestName] = useState("");
   const [digestSubmitted, setDigestSubmitted] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [lookupId, setLookupId] = useState<string | null>(null);
 
   const [progressStep, setProgressStep] = useState(0);
 
@@ -187,10 +189,10 @@ function ResultsPage() {
       });
       // Study only: saved once the answer is back so the row includes the AI response fields.
       const studyRow = { text: content, input_type: isDescribe ? "description" : "lookup", intake: intakePayload };
-      const saveStudyScan = (p: any) =>
-        saveStudyText("scan", {
-          ...studyRow,
-          response: p
+      const thisLookupId = crypto.randomUUID();
+      setLookupId(thisLookupId);
+      const summarize = (p: any) =>
+        p
             ? {
                 result_type: p.result_type ?? null,
                 safety_category: isSafetyCategory(p.safety_category) ? p.safety_category : null,
@@ -200,8 +202,19 @@ function ResultsPage() {
                 short_answer: typeof p.short_answer === "string" ? p.short_answer : null,
                 help_block_shown: isSafetyCategory(p.safety_category),
               }
-            : null,
+            : null;
+      const saveStudyScan = (p: any) => {
+        const response = summarize(p);
+        saveStudyText("scan", { ...studyRow, response });
+        saveLookup({
+          id: thisLookupId,
+          userId: session?.user?.id ?? null,
+          inputType: studyRow.input_type,
+          queryText: intakeData.query,
+          intake: intakePayload,
+          response: p ? { ...response, result: p } : { error: true },
         });
+      };
       const startedAt = performance.now();
 
       const response = await fetch(
@@ -274,7 +287,7 @@ function ResultsPage() {
 
       localStorage.setItem("itook_first_scan_done", "true");
 
-      // Nothing is stored unless a signed-in parent taps "Save this".
+      // Lookup is recorded above (no name attached unless signed in).
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -438,6 +451,7 @@ function ResultsPage() {
                 user={user}
                 feedback={
                   variant === 2 ? <QuickQuestions key={ownKey} pageKey={ownKey} questions={OWN_QS} /> : studyMode ? <QuickQuestions pageKey="live" questions={LIVE_QS} /> : <FeedbackBox
+                    lookupId={lookupId}
                     inScope={(result as any).in_scope}
                     safetyCategory={isSafetyCategory((result as any).safety_category) ? (result as any).safety_category : null}
                   />

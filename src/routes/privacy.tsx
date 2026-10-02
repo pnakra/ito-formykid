@@ -23,7 +23,8 @@ const SECTIONS: { h: string; p: string[] }[] = [
     "Please leave out names, schools, usernames, and other details that could identify your child or anyone else.",
   ] },
   { h: "What we keep", p: [
-    "Checks you don't save are not stored by us.",
+    "We save every lookup: what you typed, the choices you picked, the answer you got, and any feedback you leave. We do this to check the AI is answering well, not to build a profile of you.",
+    "If you don't have an account, nothing we save is tied to your name, email, or anything else that identifies you. We delete saved lookups after one year.",
     "If you sign in and save something, only you can see it. You can delete each saved item, or your whole account, at any time.",
   ] },
   { h: "Anonymous usage counts", p: [
