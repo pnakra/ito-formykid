@@ -16,7 +16,7 @@ export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boo
         <Link to={isStudy ? "/start" : "/"} className="shrink-0 font-display text-[18px] font-semibold text-foreground">
           is this ok?
         </Link>
-        <nav className="-mx-2 flex min-w-0 flex-wrap items-center gap-1 sm:mx-0 ">
+        <nav className="flex min-w-0 flex-wrap items-center gap-1 sm:mx-0 ">
           <Link to="/help" onClick={() => track("get_help_clicked", { page: typeof window !== "undefined" ? window.location.pathname : "" })}>
             <Button variant="ghost" size="sm" className="text-[15px]">Get help</Button>
           </Link>
