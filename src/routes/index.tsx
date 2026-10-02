@@ -70,7 +70,7 @@ function LandingPage() {
         inputMode: "describe",
       })
     );
-    navigate({ to: "/results" });
+    navigate({ to: "/specific" });
   };
 
   return (

@@ -9,11 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { EscalationResult, type EscalationResultData } from "@/components/EscalationResult";
 import { IdentityResult, type IdentityResultData } from "@/components/IdentityResult";
-import { RefinementPanel, type RefinementValues } from "@/components/RefinementPanel";
 import { SHOW_RISK_SPECTRUM } from "@/config/features";
 import { useIsStudy, useStudyVariant } from "@/lib/entrySource";
 import { getTasks } from "@/lib/studyTasks";
-import { Textarea } from "@/components/ui/textarea";
 import { ReportV2, type ReportV2Data } from "@/components/ReportV2";
 import { SafetyHelpBlock } from "@/components/SafetyHelpBlock";
 import { isSafetyCategory } from "@/content/safetyCopy";
@@ -77,6 +75,7 @@ interface IntakeData {
   concerns: string[];
   observations: string[];
   query: string;
+  extra_detail?: string;
 }
 
 const PROGRESS_LINES = [
@@ -113,9 +112,6 @@ function ResultsPage() {
   const [digestName, setDigestName] = useState("");
   const [digestSubmitted, setDigestSubmitted] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [refining, setRefining] = useState(false);
-  const [justRefined, setJustRefined] = useState(false);
-  const [clarificationDecision, setClarificationDecision] = useState<"pending" | "done">("pending");
 
   const [progressStep, setProgressStep] = useState(0);
 
@@ -156,6 +152,7 @@ function ResultsPage() {
       if (intakeData.question_on_mind) contextParts.push(`Parent's question: ${intakeData.question_on_mind}`);
       if (intakeData.concerns?.length) contextParts.push(`Type of content concerned about: ${intakeData.concerns.join(", ")}`);
       if (intakeData.observations?.length) contextParts.push(`Behavioral signals noticed: ${intakeData.observations.join(", ")}`);
+      if (intakeData.extra_detail) contextParts.push(`Other context: ${intakeData.extra_detail}`);
       if (!isDescribe) {
         contextParts.push(`Specific thing to analyze: ${intakeData.query.trim()}`);
       } else {
@@ -176,6 +173,7 @@ function ResultsPage() {
         danger_now: intakeData.danger_now || undefined,
         concerns: intakeData.concerns ?? [],
         observations: intakeData.observations ?? [],
+        extra_detail: intakeData.extra_detail || undefined,
       };
 
       track("concern_submitted", {
@@ -283,43 +281,6 @@ function ResultsPage() {
     }
   };
 
-  const handleRefine = async (next: RefinementValues) => {
-    if (!intake) return;
-    const stored = sessionStorage.getItem("scanIntake");
-    const inputMode = stored ? (JSON.parse(stored).inputMode ?? "describe") : "describe";
-    const updated = { ...intake, ...next, inputMode };
-    setIntake(updated);
-    sessionStorage.setItem("scanIntake", JSON.stringify(updated));
-    setRefining(true);
-    setJustRefined(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    await runScan(updated);
-    setRefining(false);
-    setJustRefined(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-
-  const handleClarify = async (detail: string) => {
-    if (!intake) return;
-    setClarificationDecision("done");
-    const stored = sessionStorage.getItem("scanIntake");
-    const inputMode = stored ? (JSON.parse(stored).inputMode ?? "describe") : "describe";
-    const query = `${intake.query.trim()}\n\nMore detail: ${detail.trim()}`.slice(0, 1500);
-    const updated = { ...intake, query, inputMode };
-    setIntake(updated);
-    sessionStorage.setItem("scanIntake", JSON.stringify(updated));
-    track("clarify_submitted");
-    setRefining(true);
-    setJustRefined(false);
-    setLoading(true);
-    window.scrollTo({ top: 0 });
-    await runScan(updated);
-    setRefining(false);
-    setJustRefined(true);
-    window.scrollTo({ top: 0 });
-  };
-
   const handleScanAnother = () => {
     sessionStorage.removeItem("scanIntake");
     navigate({ to: "/scan" });
@@ -362,7 +323,7 @@ function ResultsPage() {
         <Header isLoggedIn={!!user} />
         <main className="flex-1 flex items-center justify-center px-5">
           <div className="max-w-[26rem] w-full">
-            <p className="text-[20px] text-foreground mb-3">{refining ? "Redoing the report." : "Reading what you wrote."}</p>
+            <p className="text-[20px] text-foreground mb-3">Reading what you wrote.</p>
             <p className="text-[17px] text-muted-foreground mb-6">{progressLine}</p>
             <div className="h-[2px] w-full bg-border overflow-hidden rounded-full">
               <div className="h-full bg-foreground/50 transition-all duration-700" style={{ width: `${progressPct}%` }} />
@@ -430,33 +391,6 @@ function ResultsPage() {
 
   if (!result || !intake) return null;
 
-  const report = result as unknown as ReportV2Data;
-  const shortVague = intake.query.trim().split(/\s+/).length < 12;
-  const clarificationQuestion = getClarificationQuestion(report, shortVague);
-  const showClarification = clarificationDecision === "pending" && intake.inputMode === "lookup" &&
-    report.result_type === "report_v2" && !isSafetyCategory((result as any).safety_category) && !!clarificationQuestion;
-
-  if (showClarification) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header isLoggedIn={!!user} />
-        <main className="flex-1 flex items-center py-12 md:py-16">
-          <div className="mx-auto w-full max-w-[34rem] px-5">
-            <ClarifyCard
-              key={intake.query}
-              question={clarificationQuestion}
-              onSubmit={handleClarify}
-              onSkip={() => { setClarificationDecision("done"); window.scrollTo({ top: 0 }); }}
-              busy={refining}
-            />
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -464,18 +398,6 @@ function ResultsPage() {
 
       <main className="flex-1 py-12 md:py-16">
         <div className="mx-auto max-w-[34rem] px-5">
-
-          {justRefined && (
-            <div className="mb-8 border-l-[3px] border-foreground/30 pl-5">
-              <p className="text-[17px] text-foreground">Updated with what you added.</p>
-              <button
-                onClick={() => setJustRefined(false)}
-                className="mt-2 text-[15px] text-hint underline underline-offset-4 hover:text-foreground"
-              >
-                Hide this
-              </button>
-            </div>
-          )}
 
 
           {(() => {
@@ -528,15 +450,6 @@ function ResultsPage() {
             This is not a diagnosis. Free, from a nonprofit. We never see your child's phone.
           </p>
 
-          <RefinementPanel
-            values={{
-              age: intake.age ?? "",
-              concerns: intake.concerns ?? [],
-              observations: intake.observations ?? [],
-            }}
-            onChange={handleRefine}
-            busy={refining}
-          />
 
         </div>
       </main>
@@ -625,40 +538,6 @@ function ResultActions({
       )}
     </div>
     </>
-  );
-}
-
-function getClarificationQuestion(result: { clarifying_question?: string; recognized?: string; in_scope?: string }, shortVague: boolean) {
-  if (result.in_scope === "out_of_scope" && !shortVague && result.recognized !== "unrecognized") return "";
-  return result.clarifying_question ||
-    (result.recognized === "unrecognized" ? "What's the exact phrase, and where did you see or hear it?" : "") ||
-    (shortVague ? "What exactly did you see or hear, and where did it happen?" : "");
-}
-
-function ClarifyCard({ question, onSubmit, onSkip, busy }: { question: string; onSubmit: (d: string) => void; onSkip: () => void; busy: boolean }) {
-  const [text, setText] = useState("");
-  return (
-    <section aria-label="Want a sharper answer?">
-      <p className="label-text mb-4 text-primary">BEFORE YOUR REPORT</p>
-      <h1 className="font-display text-[28px] font-medium leading-tight text-foreground">Want a sharper answer?</h1>
-      <p className="mt-4 text-[18px] leading-relaxed text-foreground">{question}</p>
-      <form
-        className="mt-6"
-        onSubmit={(e) => { e.preventDefault(); if (text.trim()) onSubmit(text); }}
-      >
-        <Textarea
-          aria-label={question}
-          value={text}
-          maxLength={500}
-          onChange={(e) => setText(e.target.value)}
-          className="min-h-[80px] text-[17px]"
-        />
-        <div className="mt-5 flex flex-wrap items-center gap-3">
-          <Button type="submit" disabled={busy || !text.trim()} className="min-h-12">{busy ? "Checking…" : "Check with this detail"}</Button>
-          <Button type="button" variant="outline" onClick={onSkip} disabled={busy} className="min-h-12">Skip to report</Button>
-        </div>
-      </form>
-    </section>
   );
 }
 

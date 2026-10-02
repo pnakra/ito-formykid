@@ -420,7 +420,7 @@ function HomePage() {
     }
     sessionStorage.setItem("scanIntake", JSON.stringify(intakeData));
     sessionStorage.setItem("itok_input_mode", inputMode);
-    navigate({ to: "/results" });
+    navigate({ to: "/specific" });
   };
 
   const extractQuery = (content: string) => {
