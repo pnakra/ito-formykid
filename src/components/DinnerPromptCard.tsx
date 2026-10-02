@@ -138,7 +138,7 @@ export function DinnerPromptCard() {
               <BandPicker value={subBand} onChange={setSubBand} label="Age for the weekly email" />
             </div>
             {subState === "error" && <p role="alert" className="text-[16px] text-error">Please check the email and try again.</p>}
-            <Button type="submit" disabled={subState === "busy"} className="h-12 rounded-full px-8 text-[17px]">
+            <Button type="submit" disabled={subState === "busy"} className="h-auto min-h-12 max-w-full whitespace-normal rounded-full px-5 py-2 text-center text-[16px] sm:px-8 sm:text-[17px]">
               {subState === "busy" ? "Saving…" : "Send me the weekly question"}
             </Button>
           </form>

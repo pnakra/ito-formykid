@@ -8,8 +8,12 @@ import { useAuth } from "@/hooks/useAuth";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Log in — is this ok?" },
+      { title: "Log in — is this ok for my kid?" },
       { name: "description", content: "Log in to your is this ok for my kid? account." },
+      { property: "og:title", content: "Log in — is this ok for my kid?" },
+      { property: "og:description", content: "Log in to your is this ok for my kid? account." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: LoginPage,
@@ -107,7 +111,7 @@ function LoginPage() {
 
       <footer className="px-6 md:px-10 py-8 border-t border-border">
         <p className="text-[13px] text-hint leading-relaxed max-w-md">
-          is this ok? is a nonprofit orientation tool for parents. We do not monitor
+          is this ok for my kid? is a nonprofit orientation tool for parents. We do not monitor
           devices, track children, or share your data.
         </p>
       </footer>

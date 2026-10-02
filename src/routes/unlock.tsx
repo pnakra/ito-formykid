@@ -9,10 +9,10 @@ import { markUnlocked } from "@/lib/accessGate";
 export const Route = createFileRoute("/unlock")({
   head: () => ({
     meta: [
-      { title: "Team access — is this ok?" },
-      { name: "description", content: "Password access for the is this ok? team." },
-      { property: "og:title", content: "Team access — is this ok?" },
-      { property: "og:description", content: "Password access for the is this ok? team." },
+      { title: "Team access — is this ok for my kid?" },
+      { name: "description", content: "Password access for the is this ok for my kid? team." },
+      { property: "og:title", content: "Team access — is this ok for my kid?" },
+      { property: "og:description", content: "Password access for the is this ok for my kid? team." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },

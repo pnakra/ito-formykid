@@ -8,8 +8,12 @@ import { useAuth } from "@/hooks/useAuth";
 export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
-      { title: "Sign up — is this ok?" },
+      { title: "Sign up — is this ok for my kid?" },
       { name: "description", content: "Create your is this ok for my kid? account." },
+      { property: "og:title", content: "Sign up — is this ok for my kid?" },
+      { property: "og:description", content: "Create your is this ok for my kid? account." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: SignupPage,
@@ -68,7 +72,7 @@ function SignupPage() {
             </h1>
             <p className="text-[18px] text-muted-foreground leading-relaxed">
               We sent a confirmation link to{" "}
-              <span className="text-foreground">{email}</span>.
+              <span className="break-all text-foreground">{email}</span>.
               Click it to activate your account.
             </p>
           </div>
@@ -143,7 +147,7 @@ function SignupPage() {
 
       <footer className="px-6 md:px-10 py-8 border-t border-border">
         <p className="text-[13px] text-hint leading-relaxed max-w-md">
-          is this ok? is a nonprofit orientation tool for parents. We do not monitor
+          is this ok for my kid? is a nonprofit orientation tool for parents. We do not monitor
           devices, track children, or share your data.
         </p>
       </footer>

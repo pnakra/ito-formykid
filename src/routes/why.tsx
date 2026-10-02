@@ -5,20 +5,20 @@ import { Header, Footer } from "@/components/Layout";
 export const Route = createFileRoute("/why")({
   head: () => ({
     meta: [
-      { title: "Why this exists — is this ok?" },
+      { title: "Why this exists — is this ok for my kid?" },
       {
         name: "description",
         content:
-          "Parents are worried about what their kids see online. This is why we built a calm place to ask, is this okay for my kid?",
+          "Parents are worried about what their kids see online. This is why we built a calm place to ask, is this ok for my kid?",
       },
       {
         property: "og:title",
-        content: "Why this exists — is this ok?",
+        content: "Why this exists — is this ok for my kid?",
       },
       {
         property: "og:description",
         content:
-          "Parents are worried about what their kids see online. This is why we built a calm place to ask, is this okay for my kid?",
+          "Parents are worried about what their kids see online. This is why we built a calm place to ask, is this ok for my kid?",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -111,7 +111,7 @@ function WhyPage() {
           <div className="mx-auto max-w-2xl px-5">
             <p className="label-text mb-6">WHAT THIS IS FOR</p>
             <p className="text-[18px] text-foreground leading-[1.7] mb-6">
-              This is a calm place to ask, “Is this okay for my kid?” and get guidance you can actually use.
+              This is a calm place to ask, “is this ok for my kid?” and get guidance you can actually use.
             </p>
             <p className="text-[18px] text-foreground leading-[1.7] mb-8">
               We translate the language, behavior, and influencers your child encounters into something you can talk about — with no monitoring and no judgment.

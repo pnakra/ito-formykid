@@ -11,8 +11,12 @@ import { deleteMyAccount } from "@/lib/account.functions";
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
-      { title: "Account — is this ok?" },
+      { title: "Account — is this ok for my kid?" },
       { name: "description", content: "Manage your account, saved reports, and monthly digest settings." },
+      { property: "og:title", content: "Account — is this ok for my kid?" },
+      { property: "og:description", content: "Manage your account, saved reports, and monthly digest settings." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: AccountPage,
@@ -106,7 +110,7 @@ function AccountPage() {
             <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4">
               <div>
                 <p className="label-text mb-1">Email</p>
-                <p className="text-[18px] text-foreground">{profile?.email ?? user.email}</p>
+                <p className="break-all text-[18px] text-foreground">{profile?.email ?? user.email}</p>
               </div>
 
 
