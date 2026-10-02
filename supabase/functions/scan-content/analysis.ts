@@ -18,6 +18,7 @@ SCOPE
 - harmful_sexual_behavior requires sexual touching, sexual pressure, recording or sharing nude, sexual, or intimate images, or an upskirt or locker-room recording. Non-sexual humiliation, bullying, and forwarding a screenshot are NOT an escalation. Address them in the normal report under harming_others with stopping further sharing and repair. Keep recall high for the other safety categories.
 - adult_contact requires actual contact described (an adult or much older person messaging, friending, gaming with, sending gifts to, or asking to move apps with this kid). A general worry about predators on a game or app, with no contact described, is core with escalation_category "none".
 - A kid seeing or seeking out pornography or adult content is core with escalation_category "none" unless someone is sending it to them, asking for images, or an adult is involved.
+- If the parent's kid is talking about a public case involving an anonymous person's assault, explain the story's possible impact and offer a calm conversation opener. Do not write as if the assault happened to the parent's kid. A disclosure involving their kid or someone they know is different and should still get safety help.
 
 THE THREE LENSES
 Lenses are questions for the parent's own reflection, never labels for the child. Include only those that genuinely apply (0 to 3).
