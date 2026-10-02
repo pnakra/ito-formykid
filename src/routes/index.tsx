@@ -73,9 +73,9 @@ function HomePage() {
       </header>
 
       <main>
-        <section className="relative isolate flex min-h-[590px] overflow-hidden bg-background md:min-h-[650px] lg:min-h-[700px]" aria-labelledby="home-title">
-          <img src={heroImage} alt="A hand-drawn map with a winding path and symbols of care and conversation" width={1600} height={1008} className="absolute bottom-0 left-[-315px] w-[680px] max-w-none md:inset-0 md:h-full md:w-full md:object-cover md:object-center" fetchPriority="high" />
-          <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col justify-start px-5 pb-[300px] pt-10 md:justify-center md:px-8 md:pb-24 md:pt-10">
+        <section className="relative isolate flex flex-col overflow-hidden bg-background md:min-h-[650px] lg:min-h-[700px]" aria-labelledby="home-title">
+          <img src={heroImage} alt="A hand-drawn map with a winding path and symbols of care and conversation" width={1600} height={1008} className="order-2 h-[280px] w-full object-cover object-right md:absolute md:inset-0 md:order-none md:h-full md:object-center" fetchPriority="high" />
+          <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col justify-start px-5 pb-8 pt-10 md:justify-center md:px-8 md:pb-24 md:pt-10">
             <div className="max-w-[550px] animate-fade-in">
               <p className="mb-5 font-display text-[14px] font-medium uppercase text-primary">A little clarity goes a long way</p>
               <h1 id="home-title" className="max-w-[570px] font-display text-[38px] font-medium leading-[1.1] text-foreground sm:text-[48px] lg:text-[60px]">The internet moves fast. You don’t have to know everything.</h1>
