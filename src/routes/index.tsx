@@ -65,7 +65,7 @@ function HomePage() {
         <nav aria-label="Main navigation" className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-3 px-5 py-3 md:px-8">
           <Link to="/" className="font-display text-[18px] font-bold leading-tight text-foreground sm:text-[21px]">is this ok for my kid?</Link>
           <div className="flex shrink-0 items-center gap-2 sm:gap-5">
-            <Link to="/why" className="hidden text-[15px] text-muted-foreground transition-colors hover:text-foreground sm:inline">Why this?</Link>
+            <Link to="/why" className="hidden text-[15px] text-muted-foreground transition-colors hover:text-foreground sm:inline">Why this exists</Link>
             <Link to="/login" className="hidden text-[15px] text-muted-foreground transition-colors hover:text-foreground md:inline">Sign in</Link>
             <Button asChild size="sm" className="h-9 px-4 text-[14px] sm:h-10 sm:px-5 sm:text-[15px]"><Link to="/scan">Try it <ArrowRight aria-hidden="true" /></Link></Button>
           </div>
@@ -182,7 +182,7 @@ function HomePage() {
         <div className="mx-auto flex max-w-6xl flex-col gap-5 px-5 text-[15px] text-muted-foreground md:flex-row md:items-center md:justify-between md:px-8">
           <div><p className="font-display font-medium text-foreground">is this ok for my kid?</p><p>Built by a nonprofit focused on preventing sexual violence. Those are the questions we know best.</p></div>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
-            <Link to="/why" className="hover:text-foreground">Why this?</Link>
+            <Link to="/why" className="hover:text-foreground">Why this exists</Link>
             <Link to="/privacy" className="hover:text-foreground">Privacy</Link>
             <Link to="/login" className="hover:text-foreground">Sign in</Link>
             <a href="https://isthisok.app" target="_blank" rel="noopener noreferrer" className="hover:text-foreground">isthisok.app</a>
