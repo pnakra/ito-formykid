@@ -49,7 +49,7 @@ export function DinnerPromptCard() {
 
   useEffect(() => {
     const saved = localStorage.getItem(BAND_KEY);
-    const b: AgeBand = saved === "16-18" ? "16-18" : "13-15";
+    const b: AgeBand = saved === "16-18" || saved === "10-12" ? saved : "13-15";
     setBand(b);
     setSubBand(b);
     setReady(true);

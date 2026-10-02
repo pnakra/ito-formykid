@@ -1,12 +1,26 @@
 // Weekly dinner-table questions. First drafts for review.
 // The current question is picked by ISO week number.
 
-export type AgeBand = "13-15" | "16-18";
+export type AgeBand = "10-12" | "13-15" | "16-18";
 export type DinnerPrompt = { question: string; why: string; if_they_open_up: string };
 
-export const AGE_BANDS: AgeBand[] = ["13-15", "16-18"];
+export const AGE_BANDS: AgeBand[] = ["10-12", "13-15", "16-18"];
 
 export const DINNER_PROMPTS: Record<AgeBand, DinnerPrompt[]> = {
+  "10-12": [
+    { question: "What did someone do this week that was kind?", why: "Small acts make kindness easy to spot.", if_they_open_up: "How did it make that person feel?" },
+    { question: "What makes a friend fun to play with?", why: "It helps them name what a good friendship feels like.", if_they_open_up: "What do you do when you disagree?" },
+    { question: "What's your favorite thing to do in a game right now?", why: "Showing interest makes it easier to talk about games together.", if_they_open_up: "Could you show me sometime?" },
+    { question: "If a group chat starts being mean to someone, what could you do?", why: "It gives them a simple plan for unkind moments.", if_they_open_up: "Who could help you if it feels hard to speak up?" },
+    { question: "Which app makes you laugh the most?", why: "A light question opens a door into their online world.", if_they_open_up: "What do you like seeing there?" },
+    { question: "How can you tell when a friend wants some space?", why: "It builds care for other people's boundaries.", if_they_open_up: "How would you want a friend to tell you?" },
+    { question: "If someone online asked you to keep a secret from me, what would you do?", why: "It makes asking a trusted adult feel normal.", if_they_open_up: "Who else could you tell if I wasn't nearby?" },
+    { question: "What's something you can say when you don't want a hug or a touch?", why: "It reminds them they can set limits for their body.", if_they_open_up: "What could I do to help if someone didn't listen?" },
+    { question: "Has someone ever helped you feel included in a game?", why: "It makes room to talk about belonging and fairness.", if_they_open_up: "What did they do?" },
+    { question: "If you saw something online that felt weird, who could you tell?", why: "It helps them think of trusted people before they need one.", if_they_open_up: "Would you feel okay telling me, even if you clicked it by mistake?" },
+    { question: "What can you do if a friend shares a picture you don't want shared?", why: "It opens a simple talk about privacy and asking first.", if_they_open_up: "What would you want your friend to do next?" },
+    { question: "Who can you go to if someone won't stop bothering you at school or online?", why: "It helps them name the adults who will listen.", if_they_open_up: "What would make telling them easier?" },
+  ],
   "13-15": [
     { question: "Who at school do you think treats people really well?", why: "It starts with respect without making it about them.", if_they_open_up: "What do they do that makes people feel that way?" },
     { question: "What's something a friend could ask you to do that you'd say no to?", why: "Saying it out loud makes a no easier later.", if_they_open_up: "How would you say no and still stay friends?" },

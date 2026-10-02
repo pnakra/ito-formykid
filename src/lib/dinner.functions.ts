@@ -45,7 +45,7 @@ export const getDinnerAdmin = createServerFn({ method: "GET" })
       byEmail.set(s.email, { email: s.email, age_band: s.age_band, unsubscribe_url: `${SITE}/unsubscribe?token=${s.unsubscribe_token}` });
     }
     const subscribers = [...byEmail.values()];
-    const countsByBand: Record<string, number> = { "13-15": 0, "16-18": 0 };
+    const countsByBand: Record<string, number> = { "10-12": 0, "13-15": 0, "16-18": 0 };
     for (const s of subscribers) countsByBand[s.age_band] = (countsByBand[s.age_band] ?? 0) + 1;
     const feedback: Record<string, Record<string, number>> = {};
     for (const row of ev.data as { props: { week?: string; outcome?: string } }[]) {
