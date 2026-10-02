@@ -2,7 +2,6 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Header, Footer } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { AGE_BANDS, AGE_OPTIONS, WHERE_OPTIONS, FREQUENCY_OPTIONS, QUESTION_OPTIONS, DANGER_OPTIONS, CONCERN_OPTIONS, OBSERVATION_GROUPS } from "@/config/intake";
@@ -49,7 +48,7 @@ function SpecificPage() {
   };
   const finish = () => {
     if (intake.danger_now === "Yes") { navigate({ to: "/help" }); return; }
-    const extra = Object.entries(notes).filter(([, value]) => value.trim()).map(([label, value]) => `${label}: ${value.trim()}`).join("\n");
+    const extra = Object.entries(notes).filter(([, value]) => value.trim()).map(([label, value]) => `${label}: ${value.trim()}`).join("\n").slice(0, 700);
     sessionStorage.setItem("scanIntake", JSON.stringify({ ...intake, extra_detail: extra }));
     navigate({ to: "/results" });
   };

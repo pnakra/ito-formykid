@@ -631,7 +631,7 @@ serve(async (req) => {
       content
     ) as SafetyCategory | null;
 
-    const ctx = `Age band: ${intake?.age_band || intake?.age || "not provided"}\nWhere: ${intake?.where || "not provided"}\nHow often: ${intake?.frequency || "not provided"}\nParent's question: ${intake?.question_on_mind || "not provided"}`;
+    const ctx = `Age band: ${intake?.age_band || intake?.age || "not provided"}\nWhere: ${intake?.where || "not provided"}\nHow often: ${intake?.frequency || "not provided"}\nParent's question: ${intake?.question_on_mind || "not provided"}\nConcerns: ${Array.isArray(intake?.concerns) ? intake.concerns.join(", ").slice(0, 300) : "not provided"}\nObservations: ${Array.isArray(intake?.observations) ? intake.observations.join(", ").slice(0, 300) : "not provided"}\nOther context: ${typeof intake?.extra_detail === "string" ? intake.extra_detail.slice(0, 700) : "not provided"}`;
     const parentWords = typeof intake?.query === "string" && intake.query.trim() ? intake.query : content;
     const userMessage =
       inputType === "description"

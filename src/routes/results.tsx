@@ -75,6 +75,7 @@ interface IntakeData {
   concerns: string[];
   observations: string[];
   query: string;
+  extra_detail?: string;
 }
 
 const PROGRESS_LINES = [
