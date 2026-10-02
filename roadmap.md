@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Done
+- [x] Rebuild the homepage as a visual introduction to the three-question framework, the nonprofit purpose, and a lookup-page call to action
 - [x] Put optional specificity questions between the text input and report, with free-text additions in each section; remove report-page refinement and separate sharper-answer screen
 - [x] Show relevant lookup follow-up on its own step, with refine or skip choices before the report
 - [x] Make lookup reports a numbered reading path, show why it matters up front, and tuck additional context and conversation ideas away
