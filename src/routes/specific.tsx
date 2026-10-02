@@ -71,7 +71,7 @@ function SpecificPage() {
     </div>
   );
   const multi = (options: string[], selected: string[], choose: (value: string) => void) => (
-    <div className="grid gap-2 sm:grid-cols-2">
+    <div className="grid gap-2 grid-cols-1 sm:grid-cols-2">
       {options.map((option) => <Button key={option} type="button" variant={selected.includes(option) ? "default" : "outline"} onClick={() => choose(option)} className="h-auto min-h-11 whitespace-normal justify-start text-left py-2">{option}</Button>)}
     </div>
   );
