@@ -127,8 +127,7 @@ function ScanPage() {
             </span>
           </div>
           <p className="mt-2 text-[15px] text-hint">
-            What you type is sent to an AI model to write your answer.{" "}
-            <Link to="/privacy" className="underline underline-offset-4 hover:text-foreground">How we handle it</Link>
+            {"\n"}
           </p>
 
           <p className="mt-5 text-[15px] text-hint">Not sure how to start? Tap one and fill in the blank.</p>
