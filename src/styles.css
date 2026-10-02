@@ -62,52 +62,53 @@
 }
 
 :root {
-  /* Deep ink green + fresh green accent — the product-wide theme. */
+  /* Earthy forest theme — mossy greens, warm cream text, ochre action accent.
+     Warm, family-friendly; never pastel. */
   --radius: 1rem;
-  --background: oklch(0.19 0.03 165);
-  --foreground: oklch(0.97 0.01 150);
-  --card: oklch(0.24 0.035 165);
-  --card-foreground: oklch(0.97 0.01 150);
-  --popover: oklch(0.24 0.035 165);
-  --popover-foreground: oklch(0.97 0.01 150);
-  --primary: oklch(0.78 0.19 155);
-  --primary-foreground: oklch(0.19 0.05 165);
-  --secondary: oklch(0.28 0.04 165);
-  --secondary-foreground: oklch(0.95 0.01 150);
-  --muted: oklch(0.28 0.04 165);
-  --muted-foreground: oklch(0.78 0.02 155);
-  --accent: oklch(0.32 0.06 165);
-  --accent-foreground: oklch(0.97 0.01 150);
+  --background: oklch(0.20 0.02 140);
+  --foreground: oklch(0.92 0.02 140);
+  --card: oklch(0.25 0.03 140);
+  --card-foreground: oklch(0.92 0.02 140);
+  --popover: oklch(0.25 0.03 140);
+  --popover-foreground: oklch(0.92 0.02 140);
+  --primary: oklch(0.88 0.15 90);
+  --primary-foreground: oklch(0.16 0.04 140);
+  --secondary: oklch(0.28 0.04 140);
+  --secondary-foreground: oklch(0.9 0.03 120);
+  --muted: oklch(0.28 0.04 140);
+  --muted-foreground: oklch(0.78 0.03 120);
+  --accent: oklch(0.32 0.05 140);
+  --accent-foreground: oklch(0.92 0.02 140);
   --destructive: oklch(0.55 0.2 25);
-  --destructive-foreground: oklch(0.97 0.01 150);
-  --border: oklch(0.34 0.04 165);
-  --input: oklch(0.34 0.04 165);
-  --ring: oklch(0.78 0.19 155);
-  --hint: oklch(0.68 0.02 155);
-  /* Warm coral error — readable on the ink background, fits the palette. */
+  --destructive-foreground: oklch(0.97 0.01 100);
+  --border: oklch(0.33 0.04 140);
+  --input: oklch(0.33 0.04 140);
+  --ring: oklch(0.85 0.12 90);
+  --hint: oklch(0.68 0.03 120);
+  /* Warm coral error — readable on the forest background, fits the palette. */
   --error: oklch(0.75 0.15 30);
   /* Severity reads through weight and wording, never colour. */
-  --risk-low: oklch(0.24 0.035 165);
-  --risk-low-foreground: oklch(0.85 0.02 155);
-  --risk-concerning: oklch(0.24 0.035 165);
-  --risk-concerning-foreground: oklch(0.92 0.01 150);
-  --risk-high: oklch(0.24 0.035 165);
-  --risk-high-foreground: oklch(0.97 0.01 150);
-  --risk-neutral: oklch(0.24 0.035 165);
-  --risk-neutral-foreground: oklch(0.78 0.02 155);
+  --risk-low: oklch(0.25 0.03 140);
+  --risk-low-foreground: oklch(0.82 0.03 120);
+  --risk-concerning: oklch(0.25 0.03 140);
+  --risk-concerning-foreground: oklch(0.92 0.02 140);
+  --risk-high: oklch(0.25 0.03 140);
+  --risk-high-foreground: oklch(0.97 0.01 100);
+  --risk-neutral: oklch(0.25 0.03 140);
+  --risk-neutral-foreground: oklch(0.78 0.03 120);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.19 0.03 165);
-  --sidebar-foreground: oklch(0.97 0.01 150);
-  --sidebar-primary: oklch(0.78 0.19 155);
-  --sidebar-primary-foreground: oklch(0.19 0.05 165);
-  --sidebar-accent: oklch(0.28 0.04 165);
-  --sidebar-accent-foreground: oklch(0.95 0.01 150);
-  --sidebar-border: oklch(0.34 0.04 165);
-  --sidebar-ring: oklch(0.78 0.19 155);
+  --sidebar: oklch(0.20 0.02 140);
+  --sidebar-foreground: oklch(0.92 0.02 140);
+  --sidebar-primary: oklch(0.88 0.15 90);
+  --sidebar-primary-foreground: oklch(0.16 0.04 140);
+  --sidebar-accent: oklch(0.28 0.04 140);
+  --sidebar-accent-foreground: oklch(0.9 0.03 120);
+  --sidebar-border: oklch(0.33 0.04 140);
+  --sidebar-ring: oklch(0.85 0.12 90);
 }
 
 
@@ -130,8 +131,8 @@
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);
     font-weight: 500;
-    line-height: 1.35;
-    letter-spacing: -0.02em;
+    line-height: 1.4;
+    letter-spacing: -0.015em;
   }
 }
 
