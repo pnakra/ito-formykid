@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Done
+- [x] Distinguish a public assault story from a child's own disclosure in the safety check and prompts
 - [x] Home page: gently reveal the two lower sections on scroll and match their framed layouts
 - [x] Joke practice: three turns, safety stop, shared IP rate limits, no transcript storage; tested at phone and desktop widths
 - [x] Four illustrative study mockups and 390px PNGs; required picks saved and verified; test rows removed

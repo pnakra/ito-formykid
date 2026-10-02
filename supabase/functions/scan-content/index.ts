@@ -333,7 +333,7 @@ Categories:
 - suicide_self_harm: signs a young person wants to die, is hurting themselves, or has overdosed.
 - sextortion_image: sexual or private images requested, shared, or used as a threat.
 - adult_contact: an adult or much older person contacting a minor privately, sending gifts, or asking to move apps. Requires contact actually described; a general worry about predators on a game or app is null. A kid viewing or seeking adult content on their own is null.
-- abuse_disclosure: a young person says they were touched, abused, or assaulted.
+- abuse_disclosure: a young person says they or someone they know was touched, abused, or assaulted. A child discussing an anonymous person's assault in a public case is not a disclosure.
 - harmful_sexual_behavior: the young person sexually pressured or sexually touched someone, recorded or shared nude, sexual, or intimate images, or made an upskirt or locker-room recording. Require sexual content or an intimate recording. A non-sexual humiliating screenshot, bullying, or forwarding alone is NOT this category. Handle those in the normal report with harming_others, stopping further sharing, and repair.
 - eating_disorder: restricting food, purging, or following pro-eating-disorder content.
 
