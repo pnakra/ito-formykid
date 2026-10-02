@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { ArrowRight, Heart, HandHeart, MessageCircleMore, Search, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Heart, HandHeart, Menu, MessageCircleMore, Search, ShieldCheck, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import heroImage from "@/assets/home-hero.jpg";
 import questionsImage from "@/assets/home-questions.jpg";
 
@@ -64,10 +65,33 @@ function HomePage() {
       <header className="relative z-20 border-b border-border bg-background">
         <nav aria-label="Main navigation" className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-3 px-5 py-3 md:px-8">
           <Link to="/" className="font-display text-[18px] font-bold leading-tight text-foreground sm:text-[21px]">is this ok for my kid?</Link>
-          <div className="flex shrink-0 items-center gap-2 sm:gap-5">
-            <Link to="/why" className="hidden text-[15px] text-muted-foreground transition-colors hover:text-foreground sm:inline">Why this exists</Link>
-            <Link to="/login" className="hidden text-[15px] text-muted-foreground transition-colors hover:text-foreground md:inline">Sign in</Link>
-            <Button asChild size="sm" className="h-9 px-4 text-[14px] sm:h-10 sm:px-5 sm:text-[15px]"><Link to="/scan">Try it <ArrowRight aria-hidden="true" /></Link></Button>
+          <div className="hidden shrink-0 items-center gap-5 sm:flex">
+            <Link to="/why" className="text-[15px] text-muted-foreground transition-colors hover:text-foreground">Why this exists</Link>
+            <Link to="/login" className="text-[15px] text-muted-foreground transition-colors hover:text-foreground">Sign in</Link>
+            <Button asChild size="sm" className="h-10 px-5 text-[15px]"><Link to="/scan">Try it <ArrowRight aria-hidden="true" /></Link></Button>
+          </div>
+          <div className="sm:hidden">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" aria-label="Open menu">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-64">
+                <SheetTitle className="font-display text-[16px]">Menu</SheetTitle>
+                <div className="mt-4 flex flex-col gap-1">
+                  <SheetClose asChild>
+                    <Link to="/why"><Button variant="ghost" className="w-full justify-start">Why this exists</Button></Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link to="/login"><Button variant="ghost" className="w-full justify-start">Sign in</Button></Link>
+                  </SheetClose>
+                  <SheetClose asChild>
+                    <Link to="/scan"><Button className="w-full justify-start">Try it</Button></Link>
+                  </SheetClose>
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
         </nav>
       </header>
