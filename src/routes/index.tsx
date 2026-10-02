@@ -196,7 +196,7 @@ function HomePage() {
             <p className="label-text mb-5">WHEN YOU’RE READY</p>
             <h2 id="try-title" className="max-w-[740px] font-display text-[34px] leading-[1.17] md:text-[48px]">You don’t need the right words to get started.</h2>
             <p className="mt-5 max-w-[600px] text-[18px] leading-[1.6] text-muted-foreground">Start with what you’ve noticed. You can keep it brief, and leave out names or private details.</p>
-            <Button asChild size="lg" className="mt-8 h-12 px-7 text-[17px]"><Link to="/scan">Try a lookup <ArrowRight aria-hidden="true" /></Link></Button>
+            <Button asChild size="lg" className="mt-8 h-12 px-7 text-[17px]"><Link to="/scan">Try it <ArrowRight aria-hidden="true" /></Link></Button>
             <p className="mt-4 text-[15px] text-muted-foreground">Free, unlimited, and no account needed.</p>
           </div>
         </section>
