@@ -83,6 +83,7 @@ function SpecificPage() {
         <p className="label-text text-primary mb-3">BEFORE YOUR REPORT</p>
         <h1 className="font-display text-[30px] font-medium text-foreground">Make this more specific</h1>
         <p className="mt-3 text-[17px] text-muted-foreground">Everything here is optional. Skip any question you don't know.</p>
+        <Button variant="outline" className="mt-5" onClick={finish}>Skip to report</Button>
         <div className="mt-8 space-y-8">
           {section("Their age", <>
             {choices(AGE_BANDS, intake.age_band, (age_band) => set({ age_band }))}
