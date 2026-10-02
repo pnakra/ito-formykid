@@ -109,7 +109,7 @@ function ScanPage() {
             }
             className="mt-4 min-h-[170px] text-[18px] leading-relaxed"
           />
-          <div className="mt-2 flex items-center justify-between gap-4">
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
             <label className="flex cursor-pointer items-center gap-2 text-[16px] text-muted-foreground">
               <input
                 type="checkbox"

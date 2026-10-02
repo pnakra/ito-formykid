@@ -447,7 +447,7 @@ function HomePage() {
           <div className="flex rounded-[10px] bg-muted p-1 mb-8">
             <button
               onClick={() => setActiveMode("understand")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[17px] font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-2 sm:px-4 py-2.5 text-[15px] sm:text-[17px] font-medium transition-all ${
                 activeMode === "understand"
                   ? "bg-background text-foreground"
                   : "text-muted-foreground hover:text-foreground"
@@ -459,7 +459,7 @@ function HomePage() {
             {STAY_AHEAD_ENABLED && (
               <button
                 onClick={() => setActiveMode("stay_ahead")}
-                className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-4 py-2.5 text-[17px] font-medium transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 rounded-[8px] px-2 sm:px-4 py-2.5 text-[15px] sm:text-[17px] font-medium transition-all ${
                   activeMode === "stay_ahead"
                     ? "bg-background text-foreground"
                     : "text-muted-foreground hover:text-foreground"
@@ -747,7 +747,7 @@ function HomePage() {
                     return (
                       <div key={factor.key} className="rounded-[14px] border bg-card px-4 py-3">
                         <p className="text-[17px] text-foreground mb-2">{factor.label}</p>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                           {(["good", "needs_attention", "not_sure"] as const).map((opt) => {
                             const labels: Record<string, string> = {
                               good: "Going well",

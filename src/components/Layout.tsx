@@ -12,11 +12,11 @@ export function Header({ isLoggedIn, study }: { isLoggedIn: boolean; study?: boo
   return (
     <>
     <header className="border-b bg-background">
-      <div className="mx-auto flex min-h-14 max-w-3xl flex-wrap items-center justify-between gap-x-2 gap-y-1 px-5 py-2 sm:flex-nowrap">
-        <Link to={isStudy ? "/start" : "/"} className="shrink-0 font-display text-[18px] font-semibold text-foreground">
-          is this ok?
+      <div className="mx-auto grid min-h-14 max-w-3xl gap-1 px-5 py-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-3">
+        <Link to={isStudy ? "/start" : "/"} className="min-w-0 font-display text-[18px] font-semibold text-foreground">
+          is this ok for my kid?
         </Link>
-        <nav className="-mx-2 flex min-w-0 flex-wrap items-center gap-1 sm:mx-0 sm:flex-nowrap">
+        <nav className="-mx-2 flex min-w-0 flex-wrap items-center gap-1 sm:mx-0 sm:justify-end">
           <Link to="/help" onClick={() => track("get_help_clicked", { page: typeof window !== "undefined" ? window.location.pathname : "" })}>
             <Button variant="ghost" size="sm" className="text-[15px]">Get help</Button>
           </Link>

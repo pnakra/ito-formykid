@@ -146,7 +146,7 @@ export function ReportV2({ result, actions, afterWhatToSay }: { result: ReportV2
             onClick={() => { if (!detailsOpen) track("why_expanded"); setDetailsOpen(!detailsOpen); }}
             aria-expanded={detailsOpen}
             aria-controls="report-details"
-            className="-ml-3 flex h-auto w-[calc(100%+0.75rem)] items-center justify-between gap-3 py-2 text-left font-display text-[19px] text-foreground hover:text-primary"
+            className="flex h-auto w-auto items-center justify-between gap-3 py-2 text-left font-display text-[19px] text-foreground hover:text-primary"
           >
             <span>More context &amp; sources</span>
             <ChevronDown size={20} className={`shrink-0 transition-transform ${detailsOpen ? "rotate-180" : ""}`} />

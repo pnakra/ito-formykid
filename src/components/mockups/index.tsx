@@ -18,7 +18,7 @@ export function DigestMockup() {
   </div></Frame>;
 }
 export function DinnerPromptMockup() {
-  return <Frame><div className="space-y-5"><Label>WEEKLY PROMPT · EXAMPLE</Label><Box><p className="text-[14px] text-hint">is this ok? · now</p><p className="mt-2 text-[16px]">A question for tonight: What does respect look like in a group chat?</p></Box>
+  return <Frame><div className="space-y-5"><Label>WEEKLY PROMPT · EXAMPLE</Label><Box><p className="text-[14px] text-hint">is this ok for my kid? · now</p><p className="mt-2 text-[16px]">A question for tonight: What does respect look like in a group chat?</p></Box>
     <Box><Label>THIS WEEK'S QUESTION</Label><Heading>What does respect look like in a group chat?</Heading><div className="mt-5 border-t border-border/80 pt-4"><p className="text-[16px] font-medium">How did it go?</p><div className="mt-3 flex flex-wrap gap-2">{["We talked", "Not yet", "Try another time"].map(x => <span key={x} className="rounded-full border border-border px-3 py-1.5 text-[13px]">{x}</span>)}</div></div></Box>
   </div></Frame>;
 }

@@ -100,7 +100,7 @@ function EvalsPage() {
           {EVAL_CASES.map((c, i) => { const n = i + 1; const r = rows[n]?.result; return <article key={n} className="rounded-2xl border border-border/80 bg-card p-5 text-[18px]">
             <p className="label-text text-primary">CASE {n}</p><p className="mt-2 text-foreground">{c.input}</p>
             <p className="mt-3 text-hint">Expected: {c.expected}</p>
-            <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2 text-foreground">
+            <dl className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-x-3 gap-y-2 text-foreground">
               <div><dt className="label-text">Status</dt><dd>{rows[n]?.status ?? "Not run"}</dd></div>
               <div><dt className="label-text">Scope</dt><dd>{r?.in_scope ?? "—"}</dd></div>
               <div><dt className="label-text">Safety</dt><dd>{r?.safety_category ?? "—"}</dd></div>

@@ -41,3 +41,7 @@
 - [x] Weekly dinner question card, email list, /unsubscribe, /admin/dinner
 - [x] Fill privacy contact email
 - [x] Open the site after human review
+
+## Site-wide polish (Oct 2)
+- [x] Audit and fix mobile responsiveness across public, account, study, and admin pages
+- [x] Use “is this ok for my kid?” consistently wherever the product is named
