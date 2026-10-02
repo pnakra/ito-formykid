@@ -4,7 +4,7 @@ import { Header, Footer } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
-import { AGE_BANDS, AGE_OPTIONS, WHERE_OPTIONS, FREQUENCY_OPTIONS, QUESTION_OPTIONS, DANGER_OPTIONS, CONCERN_OPTIONS, OBSERVATION_GROUPS } from "@/config/intake";
+import { AGE_BANDS, WHERE_OPTIONS, FREQUENCY_OPTIONS, QUESTION_OPTIONS, DANGER_OPTIONS, CONCERN_OPTIONS, OBSERVATION_GROUPS } from "@/config/intake";
 
 const TITLE = "Make this more specific — is this ok for my kid?";
 const DESC = "Add any details that might help, or go straight to your answer.";
@@ -46,10 +46,17 @@ function SpecificPage() {
     const list = intake[key] ?? [];
     set({ [key]: list.includes(value) ? list.filter((x) => x !== value) : [...list, value] });
   };
+  const toggleMultiple = (key: "where" | "question_on_mind", value: string) => {
+    const selected = (intake[key] ?? "").split(", ").filter(Boolean);
+    const next = value === "Not sure" ? (selected.includes(value) ? [] : [value])
+      : selected.includes(value) ? selected.filter((item) => item !== value)
+      : [...selected.filter((item) => item !== "Not sure"), value];
+    set({ [key]: next.join(", ") });
+  };
   const finish = () => {
     if (intake.danger_now === "Yes") { navigate({ to: "/help" }); return; }
     const extra = Object.entries(notes).filter(([, value]) => value.trim()).map(([label, value]) => `${label}: ${value.trim()}`).join("\n").slice(0, 700);
-    sessionStorage.setItem("scanIntake", JSON.stringify({ ...intake, extra_detail: extra }));
+    sessionStorage.setItem("scanIntake", JSON.stringify({ ...intake, age: undefined, extra_detail: extra }));
     navigate({ to: "/results" });
   };
   const note = (label: string) => (
@@ -58,11 +65,11 @@ function SpecificPage() {
       <Textarea id={`note-${label}`} value={notes[label] ?? ""} maxLength={300} onChange={(e) => setNotes((prev) => ({ ...prev, [label]: e.target.value }))} className="min-h-20" />
     </div>
   );
-  const section = (label: string, children: React.ReactNode) => (
+  const section = (label: string, children: React.ReactNode, withNote = true) => (
     <section className="border-t border-border pt-6 space-y-3" key={label}>
       <h2 className="font-display text-[20px] font-medium text-foreground">{label} <span className="font-body text-[15px] font-normal text-muted-foreground">(optional)</span></h2>
       {children}
-      {note(label)}
+      {withNote && note(label)}
     </section>
   );
   const choices = (options: string[], selected: string | undefined, choose: (value: string) => void) => (
@@ -85,16 +92,10 @@ function SpecificPage() {
         <p className="mt-3 text-[17px] text-muted-foreground">Everything here is optional. Skip any question you don't know.</p>
         <Button variant="outline" className="mt-5" onClick={finish}>Skip to report</Button>
         <div className="mt-8 space-y-8">
-          {section("Their age", <>
-            {choices(AGE_BANDS, intake.age_band, (age_band) => set({ age_band }))}
-            <label className="block text-[15px] text-muted-foreground" htmlFor="specific-age">Exact age, if you know it</label>
-            <select id="specific-age" value={intake.age ?? ""} onChange={(e) => set({ age: e.target.value })} className="h-11 rounded-lg border border-input bg-background px-3 text-foreground">
-              <option value="">Not sure</option>{AGE_OPTIONS.map((age) => <option key={age} value={age}>{age}</option>)}
-            </select>
-          </>)}
-          {section("Where this came up", choices(WHERE_OPTIONS, intake.where, (where) => set({ where })))}
+          {section("Their age", choices(AGE_BANDS, intake.age_band, (age_band) => set({ age_band })), false)}
+          {section("Where this came up", multi(WHERE_OPTIONS, (intake.where ?? "").split(", ").filter(Boolean), (value) => toggleMultiple("where", value)))}
           {section("How often", choices(FREQUENCY_OPTIONS, intake.frequency, (frequency) => set({ frequency })))}
-          {section("Which question is on your mind?", choices(QUESTION_OPTIONS, intake.question_on_mind, (question_on_mind) => set({ question_on_mind })))}
+          {section("Which question is on your mind?", multi(QUESTION_OPTIONS, (intake.question_on_mind ?? "").split(", ").filter(Boolean), (value) => toggleMultiple("question_on_mind", value)))}
           {section("What are you concerned about?", multi(CONCERN_OPTIONS, intake.concerns ?? [], (value) => toggle("concerns", value)))}
           {OBSERVATION_GROUPS.map((group) => section(group.label, multi(group.items, intake.observations ?? [], (value) => toggle("observations", value))))}
           {section("Could someone be in danger right now?", <>
